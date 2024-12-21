@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useState } from "react";
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -8,7 +9,7 @@ const Navbar: React.FC = () => {
   return (
     <nav className="fixed w-full z-999 top-0 start-0 bg-[#ffffffcc] backdrop-blur-[10px]">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-10 py-6">
-        <a
+        <Link
           href="/"
           className="flex space-x-3 rtl:space-x-reverse items-end"
         >
@@ -16,7 +17,7 @@ const Navbar: React.FC = () => {
           <span className="self-center text-2xl font-semibold whitespace-nowrap">
             Qalamda
           </span>
-        </a>
+        </Link>
         <div className="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
           <div className="flex gap-4">
             {user ? (
@@ -29,14 +30,14 @@ const Navbar: React.FC = () => {
                 </button>
               </a>
             ) : (
-              <a href="/login" className="sm:flex vxs:hidden">
+              <Link href="/login" className="sm:flex vxs:hidden">
                 <button
                   type="button"
                   className="text-gray-900 bg-transparent hover:bg-gray-900 hover:text-white hover:outline-none outline font-medium rounded-lg text-sm px-6 py-2 text-center"
                 >
                   Login
                 </button>
-              </a>
+              </Link>
             )}
           </div>
           <button

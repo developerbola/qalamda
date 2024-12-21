@@ -15,6 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <meta property="og:image" content="/long-logo.png" />
         <link rel="icon" href="/logo-white.ico" />
       </head>
       <body>
