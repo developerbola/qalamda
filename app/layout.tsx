@@ -15,14 +15,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <meta property="og:image" content="/long-logo.png" />
-        <link rel="icon" href="/white-logo.svg" />
+        <meta property="og:image" content="/og-image.png" />
+        <link rel="icon" href="/qalamda-favicon.svg?v1" />
       </head>
       <body>
         <Navbar />
-        <main style={{ minHeight: "calc(100vh - 85px)", marginTop: "85px" }}>
-          {children}
-        </main>
+        <main>{children}</main>
       </body>
     </html>
   );
