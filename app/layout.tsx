@@ -5,16 +5,6 @@ import { Navbar } from "@/components/components";
 export const metadata: Metadata = {
   title: "Qalamda | Online maqolalar",
   description: "Maqolalar joylanadigan o'zbek tilidagi platforma.",
-  openGraph: {
-    images: [
-      {
-        url: "/long-logo.png",
-        width: 200,
-        height: 540,
-        alt: "Qalamda meta image",
-      },
-    ],
-  },
 };
 
 export default function RootLayout({
@@ -26,11 +16,13 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <meta property="og:image" content="/long-logo.png" />
-        <link rel="icon" href="/logo-white.ico" />
+        <link rel="icon" href="/white-logo.svg" />
       </head>
       <body>
         <Navbar />
-        <main>{children}</main>
+        <main style={{ minHeight: "calc(100vh - 85px)", marginTop: "85px" }}>
+          {children}
+        </main>
       </body>
     </html>
   );

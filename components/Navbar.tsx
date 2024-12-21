@@ -13,7 +13,7 @@ const Navbar: React.FC = () => {
           href="/"
           className="flex space-x-3 rtl:space-x-reverse items-end"
         >
-          <img src="/logo-black.ico" className="h-8 w-auto" alt="Logo" />
+          <img src="/logo-black.svg" className="h-8 w-auto" alt="Logo" />
           <span className="self-center text-2xl font-semibold whitespace-nowrap">
             Qalamda
           </span>
