@@ -21,14 +21,14 @@ const Navbar: React.FC = () => {
         <div className="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
           <div className="flex gap-4">
             {user ? (
-              <a href="/profile">
+              <Link href="/profile">
                 <button
                   className="cursor-pointer uppercase font-semibold text-xl text-white bg-gray-950 rounded-full h-[40px] w-[40px] flex items-center justify-center"
                   onClick={() => setLogout(!logout)}
                 >
                   {user.name[0]}
                 </button>
-              </a>
+              </Link>
             ) : (
               <Link href="/login" className="sm:flex vxs:hidden">
                 <button
