@@ -21,7 +21,7 @@ const StartPage = () => {
             className={`${playwrite.className} sm:text-5xl vxs:text-[2rem]`}
             style={{ lineHeight: 1.8 }}
           >
-            O'qing, o'rganing, bo'lishing!
+            O'qing, o'rganing, ulashing!
           </h1>
           <p className={`${poppins.className} sm:text-xl vxs:text-[1.1rem]`}>
             Maqolalar o'qish va bilimlaringizni boshqalar bilan ulashish uchun
