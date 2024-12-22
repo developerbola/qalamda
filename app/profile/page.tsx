@@ -1,7 +1,19 @@
-import React from "react";
+"use client";
+import { useUser } from "../context/UserContext";
 
 const page = () => {
-  return <div className="flex items-center justify-center">Profile Page</div>;
+  const { user, setUser } = useUser();
+  return (
+    <div className="flex flex-col items-center justify-center h-screen">
+      <div>Profile: {user ? user.name : "No User"}</div>
+      <button
+        className="p-2 px-5 bg-red-600 text-white rounded-lg"
+        onClick={() => setUser(null)}
+      >
+        log out
+      </button>
+    </div>
+  );
 };
 
 export default page;

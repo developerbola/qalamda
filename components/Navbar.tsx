@@ -1,16 +1,13 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useUser } from "@/app/context/UserContext";
 const Navbar: React.FC = () => {
-  const [logout, setLogout] = useState<boolean>(false);
   const pathname = usePathname();
   const noComponentPaths = ["/login", "/signup"];
   if (noComponentPaths.includes(pathname)) return;
-
-  let user: User | null = { name: "name" };
-  user = null;
+  const { user, setUser } = useUser();
 
   return (
     <nav className="fixed w-full z-999 top-0 start-0 backdrop-blur-[10px]">
@@ -24,10 +21,7 @@ const Navbar: React.FC = () => {
           <div className="flex gap-4">
             {user ? (
               <Link href="/profile">
-                <button
-                  className="cursor-pointer uppercase font-semibold text-xl text-white bg-gray-950 rounded-full h-[40px] w-[40px] flex items-center justify-center"
-                  onClick={() => setLogout(!logout)}
-                >
+                <button className="cursor-pointer uppercase font-semibold text-xl text-white bg-gray-950 rounded-full h-[40px] w-[40px] flex items-center justify-center">
                   {(user as User).name[0]}
                 </button>
               </Link>
@@ -41,14 +35,21 @@ const Navbar: React.FC = () => {
                     Get Started
                   </button>
                 </Link>
-                <Link href="/login">
+                {/* <Link href="/login">
                   <button
                     type="button"
                     className="xs:text-gray-900 vxs:text-white xs:bg-transparent vxs:bg-gray-900 xs:hover:bg-gray-900 xs:hover:text-white hover:outline-none outline sm:font-medium vxs:font-normal rounded-full text-md px-5 py-[6px] text-center"
                   >
                     Sign In
                   </button>
-                </Link>
+                </Link> */}
+                <button
+                  type="button"
+                  className="xs:text-gray-900 vxs:text-white xs:bg-transparent vxs:bg-gray-900 xs:hover:bg-gray-900 xs:hover:text-white hover:outline-none outline sm:font-medium vxs:font-normal rounded-full text-md px-5 py-[6px] text-center"
+                  onClick={() => setUser({ name: "John Doe" })}
+                >
+                  Sign In as John Doe
+                </button>
               </div>
             )}
           </div>
