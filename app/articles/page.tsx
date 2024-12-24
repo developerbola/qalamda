@@ -1,5 +1,5 @@
-const page = () => {
+const Articles = () => {
   return <div>Maqolalar sahifasi</div>;
 };
 
-export default page;
+export default Articles;

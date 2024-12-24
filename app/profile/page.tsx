@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const page = () => {
+const Profile = () => {
   const [user, setUser] = useState<User | null>(null);
   return (
     <div className="flex flex-col items-center justify-center h-screen">
@@ -17,4 +17,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Profile;

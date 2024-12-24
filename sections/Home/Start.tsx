@@ -11,7 +11,7 @@ const poppins = Poppins({
   display: "swap",
   subsets: ["latin"],
 });
-const StartPage = () => {
+const Start = () => {
   const user = false;
   return (
     <div className="w-full flex items-center justify-center">
@@ -46,4 +46,4 @@ const StartPage = () => {
   );
 };
 
-export default StartPage;
+export default Start;
