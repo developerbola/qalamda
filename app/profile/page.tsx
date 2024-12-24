@@ -1,8 +1,9 @@
 "use client";
-import { useUser } from "../context/UserContext";
+
+import { useState } from "react";
 
 const page = () => {
-  const { user, setUser } = useUser();
+  const [user, setUser] = useState<User | null>(null);
   return (
     <div className="flex flex-col items-center justify-center h-screen">
       <div>Profile: {user ? user.name : "No User"}</div>

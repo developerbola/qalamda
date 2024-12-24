@@ -2,12 +2,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useUser } from "@/app/context/UserContext";
+import { useState } from "react";
 const Navbar: React.FC = () => {
   const pathname = usePathname();
   const noComponentPaths = ["/login", "/signup"];
+  const [user, setUser] = useState(null);
   if (noComponentPaths.includes(pathname)) return;
-  const { user, setUser } = useUser();
 
   return (
     <nav className="fixed w-full z-999 top-0 start-0 backdrop-blur-[10px]">
@@ -35,21 +35,14 @@ const Navbar: React.FC = () => {
                     Get Started
                   </button>
                 </Link>
-                {/* <Link href="/login">
+                <Link href="/login">
                   <button
                     type="button"
                     className="xs:text-gray-900 vxs:text-white xs:bg-transparent vxs:bg-gray-900 xs:hover:bg-gray-900 xs:hover:text-white hover:outline-none outline sm:font-medium vxs:font-normal rounded-full text-md px-5 py-[6px] text-center"
                   >
                     Sign In
                   </button>
-                </Link> */}
-                <button
-                  type="button"
-                  className="xs:text-gray-900 vxs:text-white xs:bg-transparent vxs:bg-gray-900 xs:hover:bg-gray-900 xs:hover:text-white hover:outline-none outline sm:font-medium vxs:font-normal rounded-full text-md px-5 py-[6px] text-center"
-                  onClick={() => setUser({ name: "John Doe" })}
-                >
-                  Sign In as John Doe
-                </button>
+                </Link>
               </div>
             )}
           </div>

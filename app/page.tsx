@@ -1,5 +1,6 @@
-import { Articles, StartPage } from "@/sections/sections";
-const HomeScreen = () => {
+"use client";
+import { Articles, Start } from "@/sections/sections";
+const HomePage = () => {
   return (
     <>
       <Articles />
@@ -8,11 +9,11 @@ const HomeScreen = () => {
 };
 
 export default function Home() {
-  const user = false;
+  const user = true;
   return (
     <>
       <div className="h-screen flex items-center justify-center">
-        {user ? <HomeScreen /> : <StartPage />}
+        {user ? <HomePage /> : <Start />}
       </div>
     </>
   );
