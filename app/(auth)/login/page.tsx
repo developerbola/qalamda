@@ -39,7 +39,7 @@ const Login = () => {
               Sign In
             </button>
             <p className="text-sm font-light text-gray-900">
-              Akkauntingiz yo'qmi?{" "}
+              Akkauntingiz yo`qmi?{" "}
               <a
                 href="/signup"
                 className="font-medium text-primary-600 underline"

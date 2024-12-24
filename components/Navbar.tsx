@@ -2,13 +2,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 const Navbar: React.FC = () => {
   const pathname = usePathname();
   const noComponentPaths = ["/login", "/signup"];
-  const [user, setUser] = useState(null);
   if (noComponentPaths.includes(pathname)) return;
-
+  const user = null;
   return (
     <nav className="fixed w-full z-999 top-0 start-0 backdrop-blur-[10px]">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto md:px-[130px] sm:px-[80px] vxs:px-10 py-6">

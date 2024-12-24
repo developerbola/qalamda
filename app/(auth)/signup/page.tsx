@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -29,18 +30,18 @@ const SignUp = () => {
   };
   return (
     <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto h-screen lg:py-0">
-      <a
+      <Link
         href="/"
         className="flex items-center text-2xl font-semibold text-gray-900"
       >
         <Image src="/logo.svg" alt="logo" width={200} height={60} priority />
-      </a>
+      </Link>
       <div className="w-full md:mt-0 sm:max-w-md xl:p-0 ">
         <div className="p-6 sm:p-8 flex flex-col gap-2">
           <form className="space-y-2 md:space-y-4" onSubmit={handleSubmit}>
             <div>
               <label className="block mb-2 text-sm font-medium text-gray-900">
-                To'liq ismingiz
+                To`liq ismingiz
               </label>
               <input
                 type="text"
