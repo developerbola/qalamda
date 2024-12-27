@@ -9,7 +9,7 @@ const HomePage = () => {
 };
 
 export default function Home() {
-  const user = false;
+  const user = true;
   return (
     <>
       <div className="h-screen flex items-center justify-center">

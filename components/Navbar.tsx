@@ -6,10 +6,19 @@ const Navbar: React.FC = () => {
   const pathname = usePathname();
   const noComponentPaths = ["/login", "/signup"];
   if (noComponentPaths.includes(pathname)) return;
-  const user = null;
+  let user = null;
+  user = {
+    name: "John Doe",
+  };
   return (
     <nav className="fixed w-full z-999 top-0 start-0 backdrop-blur-[10px]">
-      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto md:px-[130px] sm:px-[80px] vxs:px-10 py-6">
+      <div
+        className={`max-w-screen-xl flex flex-wrap items-center justify-between mx-auto ${
+          user
+            ? "md:px-[70px] sm:px-[50px] vxs:px-10"
+            : "md:px-[130px] sm:px-[80px] vxs:px-10"
+        } py-6`}
+      >
         <Link href="/" className="flex space-x-3 rtl:space-x-reverse items-end">
           <span className={`flex items-center self-center`}>
             <Image src={"/logo.svg"} alt="logo" width={120} height={30} />
@@ -18,11 +27,16 @@ const Navbar: React.FC = () => {
         <div className="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
           <div className="flex gap-4">
             {user ? (
-              <Link href="/profile">
-                <button className="cursor-pointer uppercase font-semibold text-xl text-white bg-gray-950 rounded-full h-[40px] w-[40px] flex items-center justify-center">
-                  {(user as User).name[0]}
-                </button>
-              </Link>
+              <div className="flex gap-4 items-center">
+                <Link href={"/new-write"}>
+                  <button>New Write</button>
+                </Link>
+                <Link href="/profile">
+                  <button className="cursor-pointer uppercase font-semibold text-xl text-white bg-gray-950 rounded-full h-[40px] w-[40px] flex items-center justify-center">
+                    {(user as User).name[0]}
+                  </button>
+                </Link>
+              </div>
             ) : (
               <div className="flex items-center">
                 <Link href="/signup">
