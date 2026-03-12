@@ -19,7 +19,7 @@ export const toggleLikeController = async (c) => {
     .from(table)
     .select("id")
     .eq("id", targetId)
-    .single();
+    .maybeSingle();
 
   if (targetError || !target) {
     return c.json({ error: `${targetType} not found` }, 404);
@@ -32,9 +32,9 @@ export const toggleLikeController = async (c) => {
     .eq("user_id", userPayload.id)
     .eq("target_type", targetType)
     .eq("target_id", targetId)
-    .single();
+    .maybeSingle();
 
-  if (existingError && !existingError.message.includes("No data")) {
+  if (existingError) {
     throw existingError;
   }
 
@@ -104,7 +104,7 @@ export const likeStatusController = async (c) => {
       .eq("user_id", userPayload.id)
       .eq("target_type", targetType)
       .eq("target_id", targetId)
-      .single(),
+      .maybeSingle(),
     supabase
       .from("likes")
       .select("*", { count: "exact" })
