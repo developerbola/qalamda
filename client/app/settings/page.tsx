@@ -11,6 +11,7 @@ export default function SettingsPage() {
   const { user, updateUser } = useAuth();
   const router = useRouter();
   const [fullName, setFullName] = useState(user?.full_name || '');
+  const [username, setUsername] = useState(user?.username || '');
   const [bio, setBio] = useState(user?.bio || '');
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url || '');
   const [saving, setSaving] = useState(false);
@@ -33,6 +34,7 @@ export default function SettingsPage() {
     try {
       const res = await userAPI.updateProfile({
         fullName: fullName.trim() || undefined,
+        username: username.trim() || undefined,
         bio: bio.trim() || undefined,
         avatarUrl: avatarUrl.trim() || undefined,
       });
@@ -139,16 +141,18 @@ export default function SettingsPage() {
               />
             </div>
 
-            {/* Username (read-only) */}
+            {/* Username */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Username (cannot be changed)
+              <label htmlFor="username" className="block text-sm font-medium text-slate-700 mb-2">
+                Username
               </label>
               <input
+                id="username"
                 type="text"
-                value={user.username}
-                disabled
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg  text-slate-500"
+                value={username}
+                onChange={(e) => setUsername(e.target.value.toLowerCase())}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                placeholder="username"
               />
             </div>
 

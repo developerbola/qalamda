@@ -45,7 +45,7 @@ export const updateProfileController = async (c) => {
   }
 
   // Validate input
-  if (!body.fullName && !body.bio && !body.avatarUrl) {
+  if (!body.fullName && !body.bio && !body.avatarUrl && !body.username) {
     return c.json({ error: "No fields to update" }, 400);
   }
 
@@ -53,6 +53,23 @@ export const updateProfileController = async (c) => {
   if (body.fullName) updates.full_name = body.fullName;
   if (body.bio) updates.bio = body.bio;
   if (body.avatarUrl) updates.avatar_url = body.avatarUrl;
+  
+  if (body.username) {
+    const newUsername = body.username.trim().toLowerCase();
+    
+    // Check if username is taken
+    const { data: existingUser } = await supabase
+      .from("users")
+      .select("id")
+      .eq("username", newUsername)
+      .neq("id", user.id)
+      .maybeSingle();
+
+    if (existingUser) {
+      return c.json({ error: "Username is already taken" }, 400);
+    }
+    updates.username = newUsername;
+  }
 
   const { data: updatedUser, error } = await supabase
     .from("users")
