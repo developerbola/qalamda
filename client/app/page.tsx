@@ -224,27 +224,21 @@ export default function HomePage() {
   }
 
   const renderArticleCard = (article: Article) => {
-    console.log(article);
-
     return (
-      <Link href={`/article/${article.slug}`}>
-        <article key={article.id} className="group flex flex-col gap-6 py-6">
+      <Link href={`/article/${article.slug}`} key={article.id}>
+        <article className="group flex flex-col gap-6 py-6 border-t border-border/30">
           {/* Author Avatar */}
           <Link
             href={`/profile/${article.users.username}`}
             className="flex items-center gap-2 text-sm hover:underline"
           >
-            {article.users.avatar_url ? (
+            {article.users.avatar_url && (
               <Avatar className="size-5">
                 <AvatarImage src={article.users.avatar_url} />
                 <AvatarFallback>
                   {article.users.username.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-            ) : (
-              <div className="size-5 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                <UserIcon className="h-5 w-5 text-white" />
-              </div>
             )}
             {article.users.full_name}
           </Link>
@@ -256,7 +250,6 @@ export default function HomePage() {
               <span>{formatDate(article.created_at)}</span>
               {article.reading_time_minutes && (
                 <>
-                  <span>·</span>
                   <span className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
                     {article.reading_time_minutes} min
@@ -264,12 +257,14 @@ export default function HomePage() {
                 </>
               )}
             </div>
-
             {/* Title */}
 
             <h2 className="text-xl font-bol transition mb-2 line-clamp-2">
               {article.title}
             </h2>
+            <p className="text-sm font-bol transition mb-2 line-clamp-2">
+              {article.excerpt}
+            </p>
 
             {/* Tags & Actions */}
             <div className="flex items-center justify-between">
@@ -344,7 +339,7 @@ export default function HomePage() {
               <Link
                 key={tag.id}
                 href={`/?tag=${tag.slug}`}
-                className="px-3 py-1 bg-white rounded-full text-sm text-neutral-700 hover:border-blue-300 hover:text-blue-600 transition"
+                className="px-3 py-1 rounded-full text-sm text-neutral-700 hover:border-blue-300 hover:text-blue-600 transition"
               >
                 {tag.name}
                 <span className="ml-1">({tag.article_count})</span>
@@ -378,9 +373,7 @@ export default function HomePage() {
             <p className="text-neutral-500">No articles found.</p>
           </div>
         ) : (
-          <div className="border-t border-border/80">
-            {articles.map(renderArticleCard)}
-          </div>
+          <div className="">{articles.map(renderArticleCard)}</div>
         )}
 
         {/* Pagination */}

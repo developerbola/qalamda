@@ -15,6 +15,7 @@ import {
   User as UserIcon,
   ArrowLeft,
   Send,
+  Loader2,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -325,7 +326,7 @@ export default function ArticlePage() {
   if (loading) {
     return (
       <div className="min-h-screen  flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <Loader2 className="animate-spin h-12 w-12" />
       </div>
     );
   }

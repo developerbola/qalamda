@@ -6,7 +6,7 @@ import { formatDistanceToNow } from "date-fns";
 import { bookmarkAPI } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { Bookmark, Clock, Heart, MessageCircle } from "lucide-react";
+import { Bookmark, Clock, Heart, Loader2, MessageCircle } from "lucide-react";
 
 interface Article {
   id: string;
@@ -61,7 +61,7 @@ export default function BookmarksPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <Loader2 className="animate-spin" />
       </div>
     );
   }
@@ -75,7 +75,7 @@ export default function BookmarksPage() {
         </div>
 
         {articles.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
+          <div className="rounded-xl shadow-sm border border-slate-200 p-12 text-center">
             <Bookmark className="h-12 w-12 text-slate-300 mx-auto mb-4" />
             <p className="text-slate-500 mb-4">
               You haven't bookmarked any articles yet.
@@ -89,7 +89,7 @@ export default function BookmarksPage() {
             {articles.map((article) => (
               <article
                 key={article.id}
-                className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition"
+                className="rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition"
               >
                 <div className="flex items-start gap-4">
                   {article.cover_image && (

@@ -16,6 +16,7 @@ import {
   Clock,
   Plus,
   Check,
+  Loader2,
 } from "lucide-react";
 
 interface UserProfile {
@@ -169,7 +170,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen  flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <Loader2 className="animate-spin" />
       </div>
     );
   }
@@ -193,7 +194,7 @@ export default function ProfilePage() {
     <div className="min-h-screen pt-20">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Profile Header */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+        <div className="rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
             {/* Avatar */}
             {profile.avatar_url ? (
@@ -291,7 +292,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Tabs */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 mb-6">
+        <div className="rounded-xl shadow-sm border border-slate-200 mb-6">
           <div className="flex border-b border-slate-200">
             <button
               onClick={() => setActiveTab("articles")}
@@ -325,7 +326,7 @@ export default function ProfilePage() {
             {[...Array(3)].map((_, i) => (
               <div
                 key={i}
-                className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 animate-pulse"
+                className="rounded-xl shadow-sm border border-slate-200 p-6 animate-pulse"
               >
                 <div className="h-6 bg-slate-200 rounded w-3/4 mb-3"></div>
                 <div className="h-4 bg-slate-200 rounded w-full mb-2"></div>
@@ -334,7 +335,7 @@ export default function ProfilePage() {
             ))}
           </div>
         ) : articles.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
+          <div className="rounded-xl shadow-sm border border-slate-200 p-12 text-center">
             <p className="text-slate-500">
               {activeTab === "articles"
                 ? "No articles yet."
@@ -351,7 +352,7 @@ export default function ProfilePage() {
             {articles.map((article) => (
               <article
                 key={article.id}
-                className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition"
+                className="rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition"
               >
                 <div className="flex items-start gap-4">
                   {article.cover_image && (

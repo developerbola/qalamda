@@ -1,33 +1,33 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { userAPI } from '@/lib/api';
-import { useAuth } from '@/lib/auth';
-import { Button } from '@/components/ui/button';
-import { User, Save } from 'lucide-react';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { userAPI } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
+import { Button } from "@/components/ui/button";
+import { User, Save } from "lucide-react";
 
 export default function SettingsPage() {
   const { user, updateUser } = useAuth();
   const router = useRouter();
-  const [fullName, setFullName] = useState(user?.full_name || '');
-  const [username, setUsername] = useState(user?.username || '');
-  const [bio, setBio] = useState(user?.bio || '');
-  const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url || '');
+  const [fullName, setFullName] = useState(user?.full_name || "");
+  const [username, setUsername] = useState(user?.username || "");
+  const [bio, setBio] = useState(user?.bio || "");
+  const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url || "");
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
   if (!user) {
-    if (typeof window !== 'undefined') {
-      router.push('/auth');
+    if (typeof window !== "undefined") {
+      router.push("/auth");
     }
     return null;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setSuccess(false);
     setSaving(true);
 
@@ -43,7 +43,7 @@ export default function SettingsPage() {
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (error: any) {
-      setError(error.response?.data?.error || 'Failed to update profile');
+      setError(error.response?.data?.error || "Failed to update profile");
     } finally {
       setSaving(false);
     }
@@ -63,7 +63,7 @@ export default function SettingsPage() {
           <p className="text-slate-600">Update your profile information.</p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <div className="rounded-xl shadow-sm border border-slate-200 p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
               <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
@@ -79,7 +79,10 @@ export default function SettingsPage() {
 
             {/* Avatar URL */}
             <div>
-              <label htmlFor="avatarUrl" className="block text-sm font-medium text-slate-700 mb-2">
+              <label
+                htmlFor="avatarUrl"
+                className="block text-sm font-medium text-slate-700 mb-2"
+              >
                 Avatar URL
               </label>
               <input
@@ -97,7 +100,7 @@ export default function SettingsPage() {
                     alt="Avatar preview"
                     className="w-20 h-20 rounded-full object-cover"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = 'none';
+                      (e.target as HTMLImageElement).style.display = "none";
                     }}
                   />
                 </div>
@@ -106,7 +109,10 @@ export default function SettingsPage() {
 
             {/* Full Name */}
             <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-slate-700 mb-2">
+              <label
+                htmlFor="fullName"
+                className="block text-sm font-medium text-slate-700 mb-2"
+              >
                 Full Name
               </label>
               <input
@@ -121,7 +127,10 @@ export default function SettingsPage() {
 
             {/* Bio */}
             <div>
-              <label htmlFor="bio" className="block text-sm font-medium text-slate-700 mb-2">
+              <label
+                htmlFor="bio"
+                className="block text-sm font-medium text-slate-700 mb-2"
+              >
                 Bio
               </label>
               <textarea
@@ -149,7 +158,10 @@ export default function SettingsPage() {
 
             {/* Username */}
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-slate-700 mb-2">
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-slate-700 mb-2"
+              >
                 Username
               </label>
               <input
@@ -166,9 +178,24 @@ export default function SettingsPage() {
               <Button type="submit" disabled={saving || !hasChanges}>
                 {saving ? (
                   <>
-                    <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    <svg
+                      className="animate-spin h-4 w-4 mr-2"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
                     </svg>
                     Saving...
                   </>

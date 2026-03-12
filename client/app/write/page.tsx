@@ -1,46 +1,46 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { articleAPI } from '@/lib/api';
-import { useAuth } from '@/lib/auth';
-import { Button } from '@/components/ui/button';
-import { Save, Send, Image as ImageIcon } from 'lucide-react';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { articleAPI } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
+import { Button } from "@/components/ui/button";
+import { Save, Send, Image as ImageIcon } from "lucide-react";
 
 export default function WritePage() {
   const { user } = useAuth();
   const router = useRouter();
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [excerpt, setExcerpt] = useState('');
-  const [coverImage, setCoverImage] = useState('');
-  const [tags, setTags] = useState('');
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [excerpt, setExcerpt] = useState("");
+  const [coverImage, setCoverImage] = useState("");
+  const [tags, setTags] = useState("");
   const [isPublished, setIsPublished] = useState(false);
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   if (!user) {
-    if (typeof window !== 'undefined') {
-      router.push('/auth');
+    if (typeof window !== "undefined") {
+      router.push("/auth");
     }
     return null;
   }
 
   const handleSave = async (publish: boolean) => {
     if (!title.trim() || !content.trim()) {
-      setError('Title and content are required');
+      setError("Title and content are required");
       return;
     }
 
-    setError('');
+    setError("");
     const setLoading = publish ? setPublishing : setSaving;
 
     try {
       const tagArray = tags
-        .split(',')
-        .map(t => t.trim())
-        .filter(t => t.length > 0);
+        .split(",")
+        .map((t) => t.trim())
+        .filter((t) => t.length > 0);
 
       const res = await articleAPI.create({
         title: title.trim(),
@@ -53,7 +53,7 @@ export default function WritePage() {
 
       router.push(`/article/${res.data.article.slug}`);
     } catch (error: any) {
-      setError(error.response?.data?.error || 'Failed to save article');
+      setError(error.response?.data?.error || "Failed to save article");
     } finally {
       setLoading(false);
     }
@@ -83,9 +83,24 @@ export default function WritePage() {
             >
               {saving ? (
                 <>
-                  <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  <svg
+                    className="animate-spin h-4 w-4 mr-2"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
                   </svg>
                   Saving...
                 </>
@@ -99,9 +114,24 @@ export default function WritePage() {
             <Button onClick={handlePublish} disabled={publishing}>
               {publishing ? (
                 <>
-                  <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  <svg
+                    className="animate-spin h-4 w-4 mr-2"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
                   </svg>
                   Publishing...
                 </>
@@ -121,7 +151,7 @@ export default function WritePage() {
           </div>
         )}
 
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-6">
+        <div className="rounded-xl shadow-sm border border-slate-200 p-6 space-y-6">
           {/* Title */}
           <div>
             <input
@@ -148,7 +178,9 @@ export default function WritePage() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <ImageIcon className="h-4 w-4 text-slate-400" />
-              <span className="text-sm font-medium text-slate-700">Cover Image URL</span>
+              <span className="text-sm font-medium text-slate-700">
+                Cover Image URL
+              </span>
             </div>
             <input
               type="url"
@@ -193,23 +225,22 @@ export default function WritePage() {
                 onChange={(e) => setIsPublished(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
               <span className="ml-3 text-sm font-medium text-slate-700">
-                {isPublished ? 'Published' : 'Draft'}
+                {isPublished ? "Published" : "Draft"}
               </span>
             </label>
             <span className="text-sm text-slate-500">
-              {isPublished 
-                ? 'Your story will be visible to everyone' 
-                : 'Only you can see this draft'
-              }
+              {isPublished
+                ? "Your story will be visible to everyone"
+                : "Only you can see this draft"}
             </span>
           </div>
         </div>
 
         {/* Word Count */}
         <div className="mt-4 text-sm text-slate-500 text-right">
-          {content.split(/\s+/).filter(w => w.length > 0).length} words
+          {content.split(/\s+/).filter((w) => w.length > 0).length} words
         </div>
       </div>
     </div>

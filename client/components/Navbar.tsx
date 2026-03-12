@@ -65,12 +65,12 @@ export default function Navbar() {
     <nav className="fixed flex items-center justify-center top-0 z-50 w-full bg-background h-16 border-b border-border/40">
       <div className="flex items-center justify-between w-2/3">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 h-5 w-[100px]">
+        <Link href="/" className="h-max w-[120px]">
           <img src="/logo.svg" alt="qalamda logo" className="h-full w-auto" />
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-6">
+        {/* <div className="hidden md:flex items-center gap-6">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -85,7 +85,7 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-        </div>
+        </div> */}
 
         {/* Search Bar */}
         <form
@@ -303,7 +303,7 @@ export default function Navbar() {
                 {t("theme")}
               </p>
               <div className="grid grid-cols-2 gap-2">
-                {["light", "dark", "sepia", "slate"].map((tKey) => (
+                {["light", "dark", "sepia"].map((tKey) => (
                   <Button
                     key={tKey}
                     variant={theme === tKey ? "default" : "outline"}
@@ -317,7 +317,6 @@ export default function Navbar() {
                         tKey === "light" && "bg-white",
                         tKey === "dark" && "bg-black",
                         tKey === "sepia" && "bg-[#f4ecd8]",
-                        tKey === "slate" && "bg-[#0f172a]",
                       )}
                     />
                     <span className="capitalize text-sm font-medium">

@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { tagAPI } from '@/lib/api';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { tagAPI } from "@/lib/api";
+import { Loader2 } from "lucide-react";
 
 interface Tag {
   id: string;
@@ -22,7 +23,7 @@ export default function TagsPage() {
         const res = await tagAPI.getAll();
         setTags(res.data.tags);
       } catch (error) {
-        console.error('Failed to fetch tags:', error);
+        console.error("Failed to fetch tags:", error);
       } finally {
         setLoading(false);
       }
@@ -34,7 +35,7 @@ export default function TagsPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <Loader2 className="animate-spin" />
       </div>
     );
   }
@@ -48,7 +49,7 @@ export default function TagsPage() {
         </div>
 
         {tags.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
+          <div className="rounded-xl shadow-sm border border-slate-200 p-12 text-center">
             <p className="text-slate-500">No tags available yet.</p>
           </div>
         ) : (
@@ -57,7 +58,7 @@ export default function TagsPage() {
               <Link
                 key={tag.id}
                 href={`/?tag=${tag.slug}`}
-                className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md hover:border-blue-300 transition group"
+                className="rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md hover:border-blue-300 transition group"
               >
                 <h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 mb-2">
                   {tag.name}
@@ -68,7 +69,8 @@ export default function TagsPage() {
                   </p>
                 )}
                 <div className="text-sm text-slate-500">
-                  {tag.article_count} article{tag.article_count !== 1 ? 's' : ''}
+                  {tag.article_count} article
+                  {tag.article_count !== 1 ? "s" : ""}
                 </div>
               </Link>
             ))}
