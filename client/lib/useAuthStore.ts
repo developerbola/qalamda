@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 /**
  * Modern User Interface focusing on profile data.
@@ -24,13 +25,23 @@ type AuthState = {
 };
 
 /**
- * Lightweight store for user profile state.
- * No persistence layer needed as Supabase provides the persistent session.
+ * Persisted store for user profile state.
+ * Syncs with localStorage to provide instant profile data on load.
  */
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  loading: true,
-  setUser: (u) => set({ user: u }),
-  setLoading: (v) => set({ loading: v }),
-  logoutStore: () => set({ user: null, loading: false }),
-}));
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      user: null,
+      loading: true,
+      setUser: (u) => set({ user: u }),
+      setLoading: (v) => set({ loading: v }),
+      logoutStore: () => set({ user: null, loading: false }),
+    }),
+    {
+      name: "qalamda-auth",
+      storage: createJSONStorage(() => localStorage),
+      // Only persist the user profile, not the loading state
+      partialize: (state) => ({ user: state.user }),
+    }
+  )
+);
