@@ -69,7 +69,7 @@ export default function ProfilePage() {
   const fetchArticles = async () => {
     try {
       const res = await articleAPI.getAll({ author: username });
-      setArticles(res.data.articles);
+      setArticles(res.data.articles || []);
     } catch (error) {
       console.error('Failed to fetch articles:', error);
     } finally {
@@ -81,7 +81,7 @@ export default function ProfilePage() {
     if (!isOwnProfile) return;
     try {
       const res = await userAPI.getBookmarks();
-      setArticles(res.data.bookmarks);
+      setArticles(res.data.bookmarks || []);
     } catch (error) {
       console.error('Failed to fetch bookmarks:', error);
     } finally {

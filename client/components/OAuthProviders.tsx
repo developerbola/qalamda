@@ -1,29 +1,33 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { useAuth } from '@/lib/auth';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/auth";
 
 interface OAuthProviderProps {
-  provider: 'github' | 'google';
+  provider: "github" | "google";
   onLogin?: () => void;
   onError?: (error: string) => void;
 }
 
-export function OAuthProvider({ provider, onLogin, onError }: OAuthProviderProps) {
+export function OAuthProvider({
+  provider,
+  onLogin,
+  onError,
+}: OAuthProviderProps) {
   const [loading, setLoading] = useState(false);
   const { signInWithOAuth } = useAuth();
 
   const handleLogin = async () => {
     setLoading(true);
     try {
-      const { error } = await signInWithOAuth(provider);
-      if (error) {
-        if (onError) onError(error);
+      const res = await signInWithOAuth(provider);
+      if (res?.error) {
+        if (onError) onError(res.error);
       } else if (onLogin) {
         onLogin();
       }
     } catch (err: any) {
       if (onError) {
-        onError(err.message || 'OAuth failure');
+        onError(err.message || "OAuth failure");
       }
     } finally {
       setLoading(false);
@@ -37,7 +41,9 @@ export function OAuthProvider({ provider, onLogin, onError }: OAuthProviderProps
       disabled={loading}
       className="w-full justify-center flex gap-2"
     >
-      {loading ? 'Connecting...' : `Continue with ${provider.charAt(0).toUpperCase() + provider.slice(1)}`}
+      {loading
+        ? "Connecting..."
+        : `Continue with ${provider.charAt(0).toUpperCase() + provider.slice(1)}`}
     </Button>
   );
 }

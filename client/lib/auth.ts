@@ -160,6 +160,7 @@ export function useAuth() {
         },
       });
       if (error) throw error;
+      return { error: null };
     } catch (error: any) {
       return { error: error.message };
     }
