@@ -131,17 +131,25 @@ export default function ArticlePage() {
 
   const handleLike = async () => {
     if (!user) {
+      console.log("[handleLike] No user found, redirecting to /auth");
       window.location.href = "/auth";
       return;
     }
-    if (!article) return;
+    if (!article) {
+      console.log("[handleLike] No article found, skipping");
+      return;
+    }
 
     try {
       const res = await likeAPI.toggle("article", article.id);
       setLiked(res.data.liked);
       setLikesCount(res.data.likes_count);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to toggle like:", error);
+      if (error.response?.status === 401) {
+        console.log("[handleLike] 401 received, redirecting to /auth");
+        window.location.href = "/auth";
+      }
     }
   };
 

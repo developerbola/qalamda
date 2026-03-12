@@ -17,7 +17,13 @@ import {
 const app = new Hono();
 
 // Middleware
-app.use("*", cors());
+app.use(
+  "*",
+  cors({
+    origin: (origin) => origin, // Allow any origin for now, or specify your URL
+    credentials: true,
+  }),
+);
 app.use("*", prettyJSON());
 
 // Health Check
