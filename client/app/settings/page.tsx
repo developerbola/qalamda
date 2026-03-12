@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { userAPI } from '@/lib/api';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { User, Save } from 'lucide-react';
 
@@ -48,7 +48,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen ">
       <div className="max-w-2xl mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900 mb-2">Settings</h1>
@@ -135,7 +135,7 @@ export default function SettingsPage() {
                 type="email"
                 value={user.email}
                 disabled
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg bg-slate-50 text-slate-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg  text-slate-500"
               />
             </div>
 
@@ -148,7 +148,7 @@ export default function SettingsPage() {
                 type="text"
                 value={user.username}
                 disabled
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg bg-slate-50 text-slate-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg  text-slate-500"
               />
             </div>
 

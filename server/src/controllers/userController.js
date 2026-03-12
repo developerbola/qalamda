@@ -1,0 +1,177 @@
+import { supabase } from "../supabase.js";
+
+// Get user profile by username
+export const getUserController = async (c) => {
+  const { username } = c.req.param();
+
+  const { data: user, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("username", username)
+    .single();
+
+  if (error) {
+    return c.json({ error: "User not found" }, 404);
+  }
+
+  // Get follower/following counts
+  const [followersCount, followingCount] = await Promise.all([
+    supabase
+      .from("follows")
+      .select("id")
+      .eq("following_id", user.id)
+      .count("exact"),
+    supabase
+      .from("follows")
+      .select("id")
+      .eq("follower_id", user.id)
+      .count("exact"),
+  ]);
+
+  return c.json({
+    user: {
+      ...user,
+      followers_count: followersCount.count,
+      following_count: followingCount.count,
+    },
+  });
+};
+
+// Update user profile
+export const updateProfileController = async (c) => {
+  const user = c.get("user");
+  const body = await c.req.json();
+
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  // Validate input
+  if (!body.fullName && !body.bio && !body.avatarUrl) {
+    return c.json({ error: "No fields to update" }, 400);
+  }
+
+  const updates = {};
+  if (body.fullName) updates.full_name = body.fullName;
+  if (body.bio) updates.bio = body.bio;
+  if (body.avatarUrl) updates.avatar_url = body.avatarUrl;
+
+  const { data: updatedUser, error } = await supabase
+    .from("users")
+    .update(updates)
+    .eq("id", user.id)
+    .select("*")
+    .single();
+
+  if (error) {
+    return c.json({ error: "User not found" }, 404);
+  }
+
+  return c.json({ user: updatedUser });
+};
+
+// Follow a user
+export const followController = async (c) => {
+  const user = c.get("user");
+  const { userId } = c.req.param();
+
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  if (userId === user.id) {
+    return c.json({ error: "Cannot follow yourself" }, 400);
+  }
+
+  // Check if target user exists
+  const { data: targetUser, error: targetError } = await supabase
+    .from("users")
+    .select("id")
+    .eq("id", userId)
+    .single();
+
+  if (targetError || !targetUser) {
+    return c.json({ error: "User not found" }, 404);
+  }
+
+  // Check if already following
+  const { data: existing, error: followError } = await supabase
+    .from("follows")
+    .select("id")
+    .eq("follower_id", user.id)
+    .eq("following_id", userId)
+    .single();
+
+  if (followError && !followError.message.includes("No data")) {
+    throw followError;
+  }
+
+  if (existing) {
+    return c.json({ error: "Already following this user" }, 400);
+  }
+
+  // Create follow relationship
+  await supabase.from("follows").insert({
+    follower_id: user.id,
+    following_id: userId,
+  });
+
+  return c.json({ message: "Followed successfully" });
+};
+
+// Unfollow a user
+export const unfollowController = async (c) => {
+  const user = c.get("user");
+  const { userId } = c.req.param();
+
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  const { error } = await supabase
+    .from("follows")
+    .delete()
+    .eq("follower_id", user.id)
+    .eq("following_id", userId);
+
+  if (error) {
+    return c.json({ error: "Not following this user" }, 400);
+  }
+
+  return c.json({ message: "Unfollowed successfully" });
+};
+
+// Check follow status
+export const followStatusController = async (c) => {
+  const user = c.get("user");
+  const { userId } = c.req.param();
+
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  const [isFollowing, followersCount, followingCount] = await Promise.all([
+    supabase
+      .from("follows")
+      .select("id")
+      .eq("follower_id", user.id)
+      .eq("following_id", userId)
+      .single(),
+    supabase
+      .from("follows")
+      .select("id")
+      .eq("following_id", userId)
+      .count("exact"),
+    supabase
+      .from("follows")
+      .select("id")
+      .eq("follower_id", userId)
+      .count("exact"),
+  ]);
+
+  return c.json({
+    is_following: !!isFollowing,
+    followers_count: followersCount.count,
+    following_count: followingCount.count,
+  });
+};

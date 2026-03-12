@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { articleAPI } from '@/lib/api';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { Save, Send, Image as ImageIcon } from 'lucide-react';
 
@@ -70,7 +70,7 @@ export default function WritePage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen ">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">

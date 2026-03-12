@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { formatDistanceToNow } from 'date-fns';
 import { articleAPI, tagAPI, likeAPI, bookmarkAPI } from '@/lib/api';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { Bookmark, Clock, MessageCircle, Heart, User as UserIcon } from 'lucide-react';
 
@@ -191,7 +191,7 @@ export default function HomePage() {
   };
 
   const renderArticleCard = (article: Article) => (
-    <article key={article.id} className="group flex gap-6 py-6 border-b border-slate-100 last:border-0">
+    <article key={article.id} className="group flex gap-6 py-6">
       {/* Author Avatar */}
       <Link href={`/profile/${article.author_username}`} className="flex-shrink-0">
         {article.author_avatar_url ? (
@@ -298,7 +298,7 @@ export default function HomePage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">

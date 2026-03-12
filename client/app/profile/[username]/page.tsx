@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { userAPI, articleAPI } from '@/lib/api';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { User as UserIcon, Bookmark, Edit, Heart, MessageCircle, Clock, Plus, Check } from 'lucide-react';
 
@@ -158,7 +158,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen  flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
@@ -166,7 +166,7 @@ export default function ProfilePage() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen  flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-slate-900 mb-2">User not found</h1>
           <Link href="/">
@@ -178,7 +178,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen ">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Profile Header */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">

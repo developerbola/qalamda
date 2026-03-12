@@ -2,7 +2,7 @@ import { Poppins, Playwrite_DE_VA, Geist } from "next/font/google";
 import "./styles/index.css";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/Navbar";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthInit } from "@/lib/auth";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -35,10 +35,9 @@ export default function RootLayout({
         />
       </head>
       <body className={`${playwrite.variable} ${poppins.variable} antialiased`}>
-        <AuthProvider>
-          <Navbar />
-          {children}
-        </AuthProvider>
+        <AuthInit />
+        <Navbar />
+        <main className="pt-20">{children}</main>
       </body>
     </html>
   );

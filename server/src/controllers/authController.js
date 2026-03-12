@@ -1,25 +1,4 @@
-import { z } from "zod";
-
-// Auth middleware to protect routes
-export const authMiddleware = async (c, next) => {
-  try {
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.api.getUserByCookie(c.req);
-
-    if (error || !user) {
-      return c.json({ error: "Unauthorized" }, 401);
-    }
-
-    c.set("user", user);
-    await next();
-  } catch (error) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-};
-
-// ==================== AUTH CONTROLLERS ====================
+import { supabase } from "../supabase.js";
 
 // Register controller
 export const registerController = async (c) => {
@@ -74,18 +53,56 @@ export const registerController = async (c) => {
       return c.json({ error: error.message }, 400);
     }
 
-    return c.json({
-      user: {
-        id: data.user.id,
-        email: data.user.email,
-        username: body.username,
-        full_name: body.fullName,
-        created_at: data.user.created_at,
-      },
-      token: data.access_token,
-    });
+    // Upsert into users table
+    const profile = {
+      id: data.user.id,
+      email: data.user.email,
+      username: body.username,
+      full_name: body.fullName || null,
+      avatar_url: null,
+      bio: null,
+      created_at: data.user.created_at,
+      updated_at: new Date().toISOString(),
+    };
+
+    const { data: inserted, error: insertErr } = await supabase
+      .from("users")
+      .upsert(profile, { onConflict: "id" })
+      .select()
+      .single();
+
+    if (insertErr) {
+      return c.json({ error: insertErr.message }, 500);
+    }
+
+    return c.json({ user: inserted, token: data.access_token });
   } catch (error) {
     return c.json({ error: error.message || "Registration failed" }, 500);
+  }
+};
+
+// Return current user based on Bearer token
+export const getMeController = async (c) => {
+  try {
+    const authHeader = c.req.headers.get("authorization") || c.req.header?.("authorization");
+    if (!authHeader) return c.json({ error: "Unauthorized" }, 401);
+    const token = authHeader.replace(/^Bearer\s+/i, "");
+
+    const { data: userData, error: userErr } = await supabase.auth.getUser(token);
+    if (userErr || !userData?.user) return c.json({ error: "Unauthorized" }, 401);
+
+    const { data: profile } = await supabase.from("users").select("*").eq("id", userData.user.id).single();
+
+    return c.json({ user: profile || {
+      id: userData.user.id,
+      email: userData.user.email,
+      username: userData.user.user_metadata?.username || (userData.user.email ? userData.user.email.split('@')[0] : null),
+      full_name: userData.user.user_metadata?.full_name || userData.user.user_metadata?.name || null,
+      avatar_url: userData.user.user_metadata?.avatar_url || userData.user.user_metadata?.picture || null,
+      created_at: userData.user.created_at,
+    } });
+  } catch (err) {
+    return c.json({ error: err.message || "Unauthorized" }, 401);
   }
 };
 
@@ -136,5 +153,42 @@ export const logoutController = async (c) => {
     return c.json({ message: "Logged out successfully" });
   } catch (error) {
     return c.json({ error: error.message || "Logout failed" }, 500);
+  }
+};
+
+// Ensure a canonical users row exists for the authenticated user
+export const syncProfileController = async (c) => {
+  try {
+    const supaUser = c.get("user");
+    if (!supaUser) return c.json({ error: "Unauthorized" }, 401);
+
+    const meta = supaUser.user_metadata || {};
+    const email = supaUser.email || meta.email || null;
+    const username = meta.username || (email ? email.split("@")[0] : null);
+    const full_name = meta.full_name || meta.name || null;
+    const avatar_url = meta.avatar_url || meta.picture || null;
+
+    const profile = {
+      id: supaUser.id,
+      email,
+      username,
+      full_name,
+      avatar_url,
+      bio: null,
+      created_at: supaUser.created_at || null,
+      updated_at: new Date().toISOString(),
+    };
+
+    const { data, error } = await supabase
+      .from("users")
+      .upsert(profile, { onConflict: "id" })
+      .select()
+      .single();
+
+    if (error) return c.json({ error: error.message }, 500);
+
+    return c.json({ user: data });
+  } catch (err) {
+    return c.json({ error: err.message || "Sync failed" }, 500);
   }
 };

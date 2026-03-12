@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/lib/auth";
 import { LogIn, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
@@ -16,8 +16,17 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
+  const [username, setUsername] = useState("");
+  const [fullName, setFullName] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const lastUsed = localStorage.getItem("lastUsed");
+  const [lastUsed, setLastUsed] = useState<string | null>(null);
+
+  const auth = useAuth();
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setLastUsed(localStorage.getItem("lastUsed"));
+  }, []);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,18 +35,12 @@ const Auth = () => {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-        if (error) throw error;
-        alert("Check your email for the confirmation link!");
+        const res: any = await auth.register(email, username, password, fullName);
+        if (res?.error) throw new Error(res.error || "Registration failed");
+        alert("Account created — you are signed in.");
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (error) throw error;
+        const res: any = await auth.login(email, password);
+        if (res?.error) throw new Error(res.error || "Login failed");
       }
     } catch (err: any) {
       setError(err.message);
@@ -46,35 +49,12 @@ const Auth = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleOAuth = async (provider: "google" | "github") => {
     setError(null);
-    localStorage.setItem("lastUsed", "google");
+    localStorage.setItem("lastUsed", provider);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-
-      if (error) throw error;
-    } catch (err: any) {
-      setError(err.message);
-    }
-  };
-
-  const handleGithubLogin = async () => {
-    setError(null);
-    localStorage.setItem("lastUsed", "github");
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "github",
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-
-      if (error) throw error;
+      const res: any = await auth.signInWithOAuth(provider);
+      if (res?.error) throw new Error(res.error || "OAuth failed");
     } catch (err: any) {
       setError(err.message);
     }
@@ -109,6 +89,33 @@ const Auth = () => {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
+
+            {isSignUp && (
+              <>
+                <div className="space-y-2">
+                  <Label>Username</Label>
+                  <Input
+                    type="text"
+                    className="h-11 px-4"
+                    required
+                    value={username}
+                    placeholder="username"
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Full name</Label>
+                  <Input
+                    type="text"
+                    className="h-11 px-4"
+                    value={fullName}
+                    placeholder="Full name (optional)"
+                    onChange={(e) => setFullName(e.target.value)}
+                  />
+                </div>
+              </>
+            )}
 
             <div className="space-y-2">
               <Label>Password</Label>
@@ -164,7 +171,7 @@ const Auth = () => {
             )}
             <Button
               variant="outline"
-              onClick={handleGoogleLogin}
+              onClick={() => handleOAuth("google")}
               disabled={loading}
               className="w-[46%] flex items-center gap-3 rounded-sm! h-11"
             >
@@ -204,7 +211,7 @@ const Auth = () => {
             </Button>
             <Button
               variant="outline"
-              onClick={handleGithubLogin}
+              onClick={() => handleOAuth("github")}
               disabled={loading}
               className="w-[46%] flex items-center gap-3 rounded-sm! h-11"
             >

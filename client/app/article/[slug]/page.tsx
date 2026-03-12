@@ -1,14 +1,22 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
-import Image from 'next/image';
-import Link from 'next/link';
-import { formatDistanceToNow } from 'date-fns';
-import { articleAPI, commentAPI, likeAPI, bookmarkAPI } from '@/lib/api';
-import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import { Bookmark, Clock, MessageCircle, Heart, User as UserIcon, ArrowLeft, Send } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { formatDistanceToNow } from "date-fns";
+import { articleAPI, commentAPI, likeAPI, bookmarkAPI } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
+import { Button } from "@/components/ui/button";
+import {
+  Bookmark,
+  Clock,
+  MessageCircle,
+  Heart,
+  User as UserIcon,
+  ArrowLeft,
+  Send,
+} from "lucide-react";
 
 interface Comment {
   id: string;
@@ -45,27 +53,29 @@ interface Article {
 export default function ArticlePage() {
   const params = useParams();
   const slug = params.slug as string;
-  
+
   const { user } = useAuth();
   const [article, setArticle] = useState<Article | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
-  const [commentText, setCommentText] = useState('');
+  const [commentText, setCommentText] = useState("");
   const [submittingComment, setSubmittingComment] = useState(false);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
   const [bookmarked, setBookmarked] = useState(false);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
-  const [replyText, setReplyText] = useState('');
+  const [replyText, setReplyText] = useState("");
 
   const fetchArticle = async () => {
     try {
       const res = await articleAPI.getBySlug(slug);
       setArticle(res.data.article);
       setLikesCount(res.data.article.likes_count);
-      setComments(res.data.article.comments_count > 0 ? await fetchComments() : []);
+      setComments(
+        res.data.article.comments_count > 0 ? await fetchComments() : [],
+      );
     } catch (error) {
-      console.error('Failed to fetch article:', error);
+      console.error("Failed to fetch article:", error);
     } finally {
       setLoading(false);
     }
@@ -76,7 +86,7 @@ export default function ArticlePage() {
       const res = await commentAPI.getByArticle(article!.id);
       return res.data.comments;
     } catch (error) {
-      console.error('Failed to fetch comments:', error);
+      console.error("Failed to fetch comments:", error);
       return [];
     }
   };
@@ -84,7 +94,7 @@ export default function ArticlePage() {
   const checkLikeStatus = async () => {
     if (!user || !article) return;
     try {
-      const res = await likeAPI.getStatus('article', article.id);
+      const res = await likeAPI.getStatus("article", article.id);
       setLiked(res.data.liked);
     } catch (error) {
       // Ignore
@@ -95,7 +105,9 @@ export default function ArticlePage() {
     if (!user || !article) return;
     try {
       const res = await bookmarkAPI.getAll();
-      setBookmarked(res.data.bookmarks.some((b: Article) => b.id === article.id));
+      setBookmarked(
+        res.data.bookmarks.some((b: Article) => b.id === article.id),
+      );
     } catch (error) {
       // Ignore
     }
@@ -116,23 +128,23 @@ export default function ArticlePage() {
 
   const handleLike = async () => {
     if (!user) {
-      window.location.href = '/auth';
+      window.location.href = "/auth";
       return;
     }
     if (!article) return;
 
     try {
-      const res = await likeAPI.toggle('article', article.id);
+      const res = await likeAPI.toggle("article", article.id);
       setLiked(res.data.liked);
       setLikesCount(res.data.likes_count);
     } catch (error) {
-      console.error('Failed to toggle like:', error);
+      console.error("Failed to toggle like:", error);
     }
   };
 
   const handleBookmark = async () => {
     if (!user) {
-      window.location.href = '/auth';
+      window.location.href = "/auth";
       return;
     }
     if (!article) return;
@@ -141,7 +153,7 @@ export default function ArticlePage() {
       const res = await bookmarkAPI.toggle(article.id);
       setBookmarked(res.data.bookmarked);
     } catch (error) {
-      console.error('Failed to toggle bookmark:', error);
+      console.error("Failed to toggle bookmark:", error);
     }
   };
 
@@ -153,11 +165,13 @@ export default function ArticlePage() {
     setSubmittingComment(true);
     try {
       const res = await commentAPI.create(article.id, { content: commentText });
-      setComments(prev => [...prev, res.data.comment]);
-      setCommentText('');
-      setArticle(prev => prev ? { ...prev, comments_count: prev.comments_count + 1 } : null);
+      setComments((prev) => [...prev, res.data.comment]);
+      setCommentText("");
+      setArticle((prev) =>
+        prev ? { ...prev, comments_count: prev.comments_count + 1 } : null,
+      );
     } catch (error) {
-      console.error('Failed to post comment:', error);
+      console.error("Failed to post comment:", error);
     } finally {
       setSubmittingComment(false);
     }
@@ -168,48 +182,55 @@ export default function ArticlePage() {
     if (!replyText.trim()) return;
 
     try {
-      const res = await commentAPI.create(article.id, { 
-        content: replyText, 
-        parentId 
+      const res = await commentAPI.create(article.id, {
+        content: replyText,
+        parentId,
       });
-      setComments(prev => [...prev, res.data.comment]);
+      setComments((prev) => [...prev, res.data.comment]);
       setReplyingTo(null);
-      setReplyText('');
-      setArticle(prev => prev ? { ...prev, comments_count: prev.comments_count + 1 } : null);
+      setReplyText("");
+      setArticle((prev) =>
+        prev ? { ...prev, comments_count: prev.comments_count + 1 } : null,
+      );
     } catch (error) {
-      console.error('Failed to post reply:', error);
+      console.error("Failed to post reply:", error);
     }
   };
 
   const handleDeleteComment = async (commentId: string) => {
     if (!user) return;
-    
-    if (!confirm('Delete this comment?')) return;
+
+    if (!confirm("Delete this comment?")) return;
 
     try {
       await commentAPI.delete(commentId);
-      setComments(prev => prev.filter(c => c.id !== commentId));
-      setArticle(prev => prev ? { ...prev, comments_count: prev.comments_count - 1 } : null);
+      setComments((prev) => prev.filter((c) => c.id !== commentId));
+      setArticle((prev) =>
+        prev ? { ...prev, comments_count: prev.comments_count - 1 } : null,
+      );
     } catch (error) {
-      console.error('Failed to delete comment:', error);
+      console.error("Failed to delete comment:", error);
     }
   };
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return '';
+    if (!dateString) return "";
     try {
       return formatDistanceToNow(new Date(dateString), { addSuffix: true });
     } catch {
-      return '';
+      return "";
     }
   };
 
   const renderComment = (comment: Comment) => {
     const isReply = comment.parent_id !== null;
     const isAuthor = user?.id === comment.id; // This should be user.id comparison
-    
+
     return (
-      <div key={comment.id} className={`${isReply ? 'ml-12 mt-4' : 'py-4 border-b border-slate-100'}`}>
+      <div
+        key={comment.id}
+        className={`${isReply ? "ml-12 mt-4" : "py-4 border-b border-slate-100"}`}
+      >
         <div className="flex gap-3">
           {comment.avatar_url ? (
             <Image
@@ -220,14 +241,18 @@ export default function ArticlePage() {
               className="rounded-full object-cover"
             />
           ) : (
-            <div className={`rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center ${isReply ? 'w-8 h-8' : 'w-10 h-10'}`}>
-              <UserIcon className={`${isReply ? 'h-4 w-4' : 'h-5 w-5'} text-white`} />
+            <div
+              className={`rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center ${isReply ? "w-8 h-8" : "w-10 h-10"}`}
+            >
+              <UserIcon
+                className={`${isReply ? "h-4 w-4" : "h-5 w-5"} text-white`}
+              />
             </div>
           )}
-          
+
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <Link 
+              <Link
                 href={`/profile/${comment.username}`}
                 className="font-medium text-slate-900 hover:text-blue-600 text-sm"
               >
@@ -248,10 +273,12 @@ export default function ArticlePage() {
               )}
             </div>
             <p className="text-slate-700 text-sm">{comment.content}</p>
-            
+
             {user && !isReply && (
               <button
-                onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+                onClick={() =>
+                  setReplyingTo(replyingTo === comment.id ? null : comment.id)
+                }
                 className="text-xs text-blue-600 hover:text-blue-700 mt-2"
               >
                 Reply
@@ -284,7 +311,7 @@ export default function ArticlePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen  flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
@@ -292,9 +319,11 @@ export default function ArticlePage() {
 
   if (!article) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen  flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">Article not found</h1>
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">
+            Article not found
+          </h1>
           <Link href="/">
             <Button>Back to Home</Button>
           </Link>
@@ -307,7 +336,10 @@ export default function ArticlePage() {
     <div className="min-h-screen bg-white">
       <div className="max-w-3xl mx-auto px-4 py-8">
         {/* Back Button */}
-        <Link href="/" className="inline-flex items-center text-sm text-slate-500 hover:text-blue-600 mb-6">
+        <Link
+          href="/"
+          className="inline-flex items-center text-sm text-slate-500 hover:text-blue-600 mb-6"
+        >
           <ArrowLeft className="h-4 w-4 mr-1" />
           Back to home
         </Link>
@@ -348,7 +380,7 @@ export default function ArticlePage() {
               )}
             </Link>
             <div>
-              <Link 
+              <Link
                 href={`/profile/${article.author_username}`}
                 className="font-medium text-slate-900 hover:text-blue-600"
               >
@@ -358,7 +390,9 @@ export default function ArticlePage() {
                 <p className="text-sm text-slate-500">{article.author_bio}</p>
               )}
               <div className="flex items-center gap-3 text-xs text-slate-500 mt-1">
-                <span>{formatDate(article.published_at || article.created_at)}</span>
+                <span>
+                  {formatDate(article.published_at || article.created_at)}
+                </span>
                 {article.reading_time_minutes && (
                   <>
                     <span>·</span>
@@ -400,11 +434,11 @@ export default function ArticlePage() {
               onClick={handleLike}
               className={`flex items-center gap-2 px-4 py-2 rounded-full transition ${
                 liked
-                  ? 'bg-red-50 text-red-500'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  ? "bg-red-50 text-red-500"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
-              <Heart className={`h-5 w-5 ${liked ? 'fill-current' : ''}`} />
+              <Heart className={`h-5 w-5 ${liked ? "fill-current" : ""}`} />
               <span>{likesCount} likes</span>
             </button>
 
@@ -418,11 +452,13 @@ export default function ArticlePage() {
             onClick={handleBookmark}
             className={`p-2 rounded-full transition ${
               bookmarked
-                ? 'bg-blue-50 text-blue-600'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? "bg-blue-50 text-blue-600"
+                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
             }`}
           >
-            <Bookmark className={`h-5 w-5 ${bookmarked ? 'fill-current' : ''}`} />
+            <Bookmark
+              className={`h-5 w-5 ${bookmarked ? "fill-current" : ""}`}
+            />
           </button>
         </div>
 
@@ -458,16 +494,21 @@ export default function ArticlePage() {
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
                   />
                   <div className="flex justify-end mt-2">
-                    <Button type="submit" disabled={!commentText.trim() || submittingComment}>
-                      {submittingComment ? 'Posting...' : 'Comment'}
+                    <Button
+                      type="submit"
+                      disabled={!commentText.trim() || submittingComment}
+                    >
+                      {submittingComment ? "Posting..." : "Comment"}
                     </Button>
                   </div>
                 </div>
               </div>
             </form>
           ) : (
-            <div className="mb-8 p-4 bg-slate-50 rounded-lg text-center">
-              <p className="text-slate-600 mb-2">Sign in to join the discussion</p>
+            <div className="mb-8 p-4  rounded-lg text-center">
+              <p className="text-slate-600 mb-2">
+                Sign in to join the discussion
+              </p>
               <Link href="/auth">
                 <Button>Sign In</Button>
               </Link>
@@ -477,18 +518,19 @@ export default function ArticlePage() {
           {/* Comments List */}
           <div>
             {comments.length === 0 ? (
-              <p className="text-slate-500 text-center py-8">No comments yet. Be the first to comment!</p>
+              <p className="text-slate-500 text-center py-8">
+                No comments yet. Be the first to comment!
+              </p>
             ) : (
               comments
-                .filter(c => c.parent_id === null)
-                .map(comment => (
+                .filter((c) => c.parent_id === null)
+                .map((comment) => (
                   <div key={comment.id}>
                     {renderComment(comment)}
                     {/* Replies */}
                     {comments
-                      .filter(c => c.parent_id === comment.id)
-                      .map(reply => renderComment(reply))
-                    }
+                      .filter((c) => c.parent_id === comment.id)
+                      .map((reply) => renderComment(reply))}
                   </div>
                 ))
             )}
