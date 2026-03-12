@@ -67,12 +67,23 @@ export const createCommentController = async (c) => {
     return c.json({ error: commentError.message }, 500);
   }
 
+  // Update comments_count in articles table
+  const { count: newCommentCount } = await supabase
+    .from("comments")
+    .select("*", { count: "exact", head: true })
+    .eq("article_id", articleId);
+
+  await supabase
+    .from("articles")
+    .update({ comments_count: newCommentCount || 0 })
+    .eq("id", articleId);
+
   // Get author info
   const { data: author } = await supabase
     .from("users")
     .select("username, full_name, avatar_url")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
   return c.json({
     comment: {
@@ -94,9 +105,9 @@ export const deleteCommentController = async (c) => {
   // Verify comment exists and user owns it
   const { data: comment, error: commentError } = await supabase
     .from("comments")
-    .select("author_id")
+    .select("author_id, article_id")
     .eq("id", commentId)
-    .single();
+    .maybeSingle();
 
   if (commentError || !comment) {
     return c.json({ error: "Comment not found" }, 404);
@@ -106,8 +117,21 @@ export const deleteCommentController = async (c) => {
     return c.json({ error: "Not authorized to delete this comment" }, 403);
   }
 
+  const articleId = comment.article_id;
+
   // Delete comment
   await supabase.from("comments").delete().eq("id", commentId);
+
+  // Update comments_count in articles table
+  const { count: newCommentCount } = await supabase
+    .from("comments")
+    .select("*", { count: "exact", head: true })
+    .eq("article_id", articleId);
+
+  await supabase
+    .from("articles")
+    .update({ comments_count: newCommentCount || 0 })
+    .eq("id", articleId);
 
   return c.json({ message: "Comment deleted" });
 };
