@@ -29,16 +29,16 @@ likeRoutes(app);
 tagRoutes(app);
 
 
-// export default {
-//   port: 3001,
-//   fetch: app.fetch,
-// };
+export default {
+  port: 3001,
+  fetch: app.fetch,
+};
 
-const handler = handle(app);
+// const handler = handle(app);
 
-export const GET = handler;
-export const POST = handler;
-export const PATCH = handler;
-export const PUT = handler;
-export const OPTIONS = handler;
-export const DELETE = handler;
+// export const GET = handler;
+// export const POST = handler;
+// export const PATCH = handler;
+// export const PUT = handler;
+// export const OPTIONS = handler;
+// export const DELETE = handler;
