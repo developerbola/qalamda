@@ -14,7 +14,7 @@ export const toggleBookmarkController = async (c) => {
     .from("articles")
     .select("id")
     .eq("id", articleId)
-    .single();
+    .maybeSingle();
 
   if (articleError || !article) {
     return c.json({ error: "Article not found" }, 404);
@@ -26,9 +26,9 @@ export const toggleBookmarkController = async (c) => {
     .select("id")
     .eq("user_id", userPayload.id)
     .eq("article_id", articleId)
-    .single();
+    .maybeSingle();
 
-  if (existingError && !existingError.message.includes("No data")) {
+  if (existingError) {
     throw existingError;
   }
 

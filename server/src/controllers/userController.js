@@ -8,7 +8,7 @@ export const getUserController = async (c) => {
     .from("users")
     .select("*")
     .eq("username", username)
-    .single();
+    .maybeSingle();
 
   if (error) {
     return c.json({ error: "User not found" }, 404);
@@ -59,7 +59,7 @@ export const updateProfileController = async (c) => {
     .update(updates)
     .eq("id", user.id)
     .select("*")
-    .single();
+    .maybeSingle();
 
   if (error) {
     return c.json({ error: "User not found" }, 404);
@@ -86,7 +86,7 @@ export const followController = async (c) => {
     .from("users")
     .select("id")
     .eq("id", userId)
-    .single();
+    .maybeSingle();
 
   if (targetError || !targetUser) {
     return c.json({ error: "User not found" }, 404);
@@ -98,9 +98,9 @@ export const followController = async (c) => {
     .select("id")
     .eq("follower_id", user.id)
     .eq("following_id", userId)
-    .single();
+    .maybeSingle();
 
-  if (followError && !followError.message.includes("No data")) {
+  if (followError) {
     throw followError;
   }
 

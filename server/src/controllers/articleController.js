@@ -51,7 +51,7 @@ export const createArticleController = async (c) => {
       published_at: publishedAt,
     })
     .select("*")
-    .single();
+    .maybeSingle();
 
   if (articleError) {
     return c.json({ error: articleError.message }, 500);
@@ -67,9 +67,9 @@ export const createArticleController = async (c) => {
         .from("tags")
         .select("id")
         .eq("slug", tagSlug)
-        .single();
+        .maybeSingle();
 
-      if (tagError && !tagError.message.includes("No data")) {
+      if (tagError) {
         throw tagError;
       }
 
@@ -82,7 +82,7 @@ export const createArticleController = async (c) => {
             slug: tagSlug,
           })
           .select("id")
-          .single();
+          .maybeSingle();
         tagId = newTag.id;
       } else {
         tagId = tag.id;
@@ -101,7 +101,7 @@ export const createArticleController = async (c) => {
     .from("articles")
     .select("*")
     .eq("id", article.id)
-    .single();
+    .maybeSingle();
 
   return c.json({ article: fullArticle });
 };
@@ -114,7 +114,7 @@ export const getArticlesController = async (c) => {
   // If tag filter provided, resolve article IDs for the tag
   let articleIds = null;
   if (tag) {
-    const { data: t } = await supabase.from("tags").select("id").eq("slug", tag).single();
+    const { data: t } = await supabase.from("tags").select("id").eq("slug", tag).maybeSingle();
     if (!t) return c.json({ articles: [], total: 0, page: parseInt(page), totalPages: 0 });
     const { data: ats } = await supabase.from("article_tags").select("article_id").eq("tag_id", t.id);
     articleIds = (ats || []).map((a) => a.article_id);
@@ -126,7 +126,7 @@ export const getArticlesController = async (c) => {
   // Resolve author filter to author_id if provided
   let authorId = null;
   if (author) {
-    const { data: user, error: userErr } = await supabase.from("users").select("id").eq("username", author).single();
+    const { data: user, error: userErr } = await supabase.from("users").select("id").eq("username", author).maybeSingle();
     if (userErr || !user) return c.json({ articles: [], total: 0, page: parseInt(page), totalPages: 0 });
     authorId = user.id;
   }
@@ -156,7 +156,7 @@ export const getArticleController = async (c) => {
     .from("articles")
     .select(`id, title, slug, excerpt, cover_image, content, reading_time_minutes, published_at, likes_count, comments_count, author_id, users(username, full_name, avatar_url, bio)`)
     .eq("slug", slug)
-    .single();
+    .maybeSingle();
 
   if (error || !article) return c.json({ error: "Article not found" }, 404);
 
@@ -178,7 +178,7 @@ export const updateArticleController = async (c) => {
     .from("articles")
     .select("author_id")
     .eq("id", articleId)
-    .single();
+    .maybeSingle();
 
   if (existingError || !existing) {
     return c.json({ error: "Article not found" }, 404);
@@ -253,7 +253,7 @@ export const updateArticleController = async (c) => {
     .update(updates)
     .eq("id", articleId)
     .select("*")
-    .single();
+    .maybeSingle();
 
   if (updateError) {
     return c.json({ error: updateError.message }, 500);
@@ -273,9 +273,9 @@ export const updateArticleController = async (c) => {
         .from("tags")
         .select("id")
         .eq("slug", tagSlug)
-        .single();
+        .maybeSingle();
 
-      if (tagError && !tagError.message.includes("No data")) {
+      if (tagError) {
         throw tagError;
       }
 
@@ -288,7 +288,7 @@ export const updateArticleController = async (c) => {
             slug: tagSlug,
           })
           .select("id")
-          .single();
+          .maybeSingle();
         tagId = newTag.id;
       } else {
         tagId = tag.id;
@@ -314,7 +314,7 @@ export const deleteArticleController = async (c) => {
     .from("articles")
     .select("author_id")
     .eq("id", articleId)
-    .single();
+    .maybeSingle();
 
   if (existingError || !existing) {
     return c.json({ error: "Article not found" }, 404);
