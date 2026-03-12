@@ -1,124 +1,147 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { authAPI } from "@/lib/api";
 import { supabase } from "@/lib/supabase";
-import { useAuthStore, User } from "@/lib/useAuthStore";
+
+export interface User {
+  id: string;
+  email: string;
+  username: string;
+  full_name: string | null;
+  bio: string | null;
+  avatar_url: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Storage Keys
+ */
+const PROFILE_KEY = "qalamda_profile";
+
+/**
+ * Simple global listener for state synchronization without Zustand data storage.
+ */
+let globalUser: User | null = null;
+const listeners = new Set<(u: User | null) => void>();
+
+const updateGlobalUser = (u: User | null) => {
+  globalUser = u;
+  if (typeof window !== "undefined") {
+    if (u) sessionStorage.setItem(PROFILE_KEY, JSON.stringify(u));
+    else sessionStorage.removeItem(PROFILE_KEY);
+  }
+  listeners.forEach((l) => l(u));
+};
+
+// Initialize from storage
+if (typeof window !== "undefined") {
+  const saved = sessionStorage.getItem(PROFILE_KEY);
+  if (saved) {
+    try {
+      globalUser = JSON.parse(saved);
+    } catch (e) {
+      sessionStorage.removeItem(PROFILE_KEY);
+    }
+  }
+}
+
+/**
+ * Normalization helper
+ */
+const normalize = (raw: any): User | null => {
+  if (!raw) return null;
+  const u = raw.user || raw;
+  const meta = u.user_metadata || {};
+  const email = u.email || meta.email || null;
+  return {
+    id: u.id,
+    email,
+    username:
+      u.username ||
+      meta.username ||
+      (email ? email.split("@")[0] : `user_${u.id.slice(0, 5)}`),
+    full_name: u.full_name || meta.full_name || meta.name || null,
+    bio: meta.bio || null,
+    avatar_url: u.avatar_url || meta.avatar_url || meta.picture || null,
+    created_at: u.created_at || null,
+    updated_at: u.updated_at || null,
+  } as User;
+};
 
 /**
  * High-Level Auth Bridge.
- * Orchestrates Supabase authentication with our custom PostgreSQL profile.
  */
 export function AuthInit() {
-  const setUser = useAuthStore((s) => s.setUser);
-  const setLoading = useAuthStore((s) => s.setLoading);
-  const logoutStore = useAuthStore((s) => s.logoutStore);
-  
-  // Track listeners to avoid multiple attachments
-  const isStarted = useRef(false);
-
   useEffect(() => {
-    if (isStarted.current) return;
-    isStarted.current = true;
-
-    // Standard normalization for user objects
-    const normalize = (raw: any): User | null => {
-      if (!raw) return null;
-      const u = raw.user || raw;
-      const meta = u.user_metadata || {};
-      const email = u.email || meta.email || null;
-      return {
-        id: u.id,
-        email,
-        username: u.username || meta.username || (email ? email.split("@")[0] : `user_${u.id.slice(0, 5)}`),
-        full_name: u.full_name || meta.full_name || meta.name || null,
-        bio: meta.bio || null,
-        avatar_url: u.avatar_url || meta.avatar_url || meta.picture || null,
-        created_at: u.created_at || null,
-        updated_at: u.updated_at || null,
-      } as User;
-    };
-
-    /**
-     * Primary session detection loop.
-     */
-    const syncCurrentState = async () => {
-      try {
-        setLoading(true);
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (session?.user) {
-          // Detect profile from our database
-          try {
-            const { data } = await authAPI.getMe();
-            if (data?.user) {
-              setUser(normalize(data.user));
-            } else {
-              // Self-heal if profile is totally missing
-              const { data: synced } = await authAPI.syncProfile();
-              if (synced?.user) setUser(normalize(synced.user));
-            }
-          } catch (e) {
-            console.error("[AuthInit] Failed to sync profile with DB", e);
-            // Fallback to JWT metadata if backend is offline
-            setUser(normalize(session.user));
+    const sync = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session?.user) {
+        try {
+          const { data } = await authAPI.getMe();
+          if (data?.user) {
+            updateGlobalUser(normalize(data.user));
+          } else {
+            const { data: synced } = await authAPI.syncProfile();
+            if (synced?.user) updateGlobalUser(normalize(synced.user));
           }
-        } else {
-          logoutStore();
+        } catch (e) {
+          updateGlobalUser(normalize(session.user));
         }
-      } catch (err) {
-        console.error("[AuthInit] CRITICAL ERROR", err);
-      } finally {
-        setLoading(false);
+      } else {
+        updateGlobalUser(null);
       }
     };
 
-    // 1. Immediate execution
-    syncCurrentState();
+    sync();
 
-    // 2. State Change Listener (Native Supabase)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === "SIGNED_IN" && session?.user) {
-            // Speed up perceived login by syncing now
-            try {
-              const { data: synced } = await authAPI.syncProfile();
-              if (synced?.user) setUser(normalize(synced.user));
-            } catch (e) {
-               setUser(normalize(session.user));
-            }
-        }
-        
-        if (event === "SIGNED_OUT") {
-          logoutStore();
-        }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if ((event === "SIGNED_IN" || event === "USER_UPDATED") && session?.user) {
+        sync();
+      }
+      if (event === "SIGNED_OUT") {
+        updateGlobalUser(null);
+      }
+    });
 
-        if (event === "USER_UPDATED" && session?.user) {
-          syncCurrentState(); // Refresh profile on updates
-        }
-      },
-    );
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [setUser, setLoading, logoutStore]);
+    return () => subscription.unsubscribe();
+  }, []);
 
   return null;
 }
 
 /**
- * Clean UI Hooks for all components.
- * No longer requires manual backend proxying.
+ * Hook to access user data from Storage/Global state.
  */
 export function useAuth() {
-  const user = useAuthStore((s) => s.user);
-  const loading = useAuthStore((s) => s.loading);
-  const logoutStore = useAuthStore((s) => s.logoutStore);
+  const [user, setUser] = useState<User | null>(globalUser);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const l = (u: User | null) => {
+      setUser(u);
+      setLoading(false);
+    };
+    listeners.add(l);
+    // Resolve initial loading state
+    if (globalUser !== undefined) setLoading(false);
+    
+    return () => {
+      listeners.delete(l);
+    };
+  }, []);
 
   const login = async (email: string, password: string) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
       if (error) throw error;
       return { data };
     } catch (error: any) {
@@ -126,17 +149,18 @@ export function useAuth() {
     }
   };
 
-  const register = async (email: string, _username: string, password: string, fullName?: string) => {
+  const register = async (
+    email: string,
+    username: string,
+    password: string,
+    fullName?: string,
+  ) => {
     try {
-      /**
-       * Note: Username and Full Name are passed as metadata.
-       * The sync backend will reliably migrate this to the public DB.
-       */
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: { username: _username, full_name: fullName },
+          data: { username, full_name: fullName },
         },
       });
       if (error) throw error;
@@ -148,7 +172,7 @@ export function useAuth() {
 
   const logout = async () => {
     await supabase.auth.signOut();
-    logoutStore();
+    updateGlobalUser(null);
   };
 
   const signInWithOAuth = async (provider: "github" | "google") => {
@@ -166,9 +190,9 @@ export function useAuth() {
     }
   };
 
-  const updateUser = (updatedUser: User) => {
-    useAuthStore.getState().setUser(updatedUser);
-  };
+  const updateUser = useCallback((u: User) => {
+    updateGlobalUser(u);
+  }, []);
 
   return {
     user,

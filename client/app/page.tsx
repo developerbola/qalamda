@@ -5,6 +5,7 @@ import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { articleAPI, tagAPI, likeAPI, bookmarkAPI } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import Starter from "@/components/Starter";
 import { Button } from "@/components/ui/button";
 import {
   Bookmark,
@@ -12,6 +13,7 @@ import {
   MessageCircle,
   Heart,
   User as UserIcon,
+  Loader2,
 } from "lucide-react";
 
 interface Article {
@@ -42,7 +44,7 @@ interface Tag {
 }
 
 export default function HomePage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [articles, setArticles] = useState<Article[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
@@ -205,6 +207,18 @@ export default function HomePage() {
       return "";
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loader2 className="animate-spin text-blue-600" size={32} />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Starter />;
+  }
 
   const renderArticleCard = (article: Article) => (
     <article key={article.id} className="group flex gap-6 py-6">

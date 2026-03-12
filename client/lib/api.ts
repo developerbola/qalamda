@@ -1,6 +1,5 @@
 import axios from "axios";
 import { supabase } from "@/lib/supabase";
-import { useAuthStore } from "@/lib/useAuthStore";
 
 /**
  * ==================== AXIOS INTERCEPTOR ====================
@@ -41,8 +40,8 @@ api.interceptors.response.use(
         
         // Prevent redirect loops for auth pages
         if (!path.startsWith("/auth")) {
+          sessionStorage.removeItem("qalamda_profile");
           supabase.auth.signOut();
-          useAuthStore.getState().logoutStore();
           window.location.href = "/auth";
         }
       }

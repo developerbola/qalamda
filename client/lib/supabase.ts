@@ -9,5 +9,13 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
-// Use default localStorage for persistence
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Use sessionStorage for persistence with a specific key
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    storage: typeof window !== "undefined" ? window.sessionStorage : undefined,
+    storageKey: "user",
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true,
+  },
+});
