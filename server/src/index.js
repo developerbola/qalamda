@@ -12,7 +12,7 @@ import {
   commentRoutes,
   likeRoutes,
   tagRoutes,
-} from "./routes/apiRoutes";
+} from "./routes/apiRoutes.js";
 
 const app = new Hono();
 
