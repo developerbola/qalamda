@@ -1,13 +1,12 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { formatDistanceToNow } from 'date-fns';
-import { articleAPI, bookmarkAPI } from '@/lib/api';
-import { useAuth } from '@/lib/auth';
-import { Button } from '@/components/ui/button';
-import { Bookmark, Clock, Heart, MessageCircle } from 'lucide-react';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { formatDistanceToNow } from "date-fns";
+import { bookmarkAPI } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
+import { Button } from "@/components/ui/button";
+import { Bookmark, Clock, Heart, MessageCircle } from "lucide-react";
 
 interface Article {
   id: string;
@@ -32,7 +31,7 @@ export default function BookmarksPage() {
 
   useEffect(() => {
     if (!user) {
-      window.location.href = '/auth';
+      window.location.href = "/auth";
       return;
     }
 
@@ -41,7 +40,7 @@ export default function BookmarksPage() {
         const res = await bookmarkAPI.getAll();
         setArticles(res.data.bookmarks);
       } catch (error) {
-        console.error('Failed to fetch bookmarks:', error);
+        console.error("Failed to fetch bookmarks:", error);
       } finally {
         setLoading(false);
       }
@@ -51,11 +50,11 @@ export default function BookmarksPage() {
   }, [user]);
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return '';
+    if (!dateString) return "";
     try {
       return formatDistanceToNow(new Date(dateString), { addSuffix: true });
     } catch {
-      return '';
+      return "";
     }
   };
 
@@ -78,7 +77,9 @@ export default function BookmarksPage() {
         {articles.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
             <Bookmark className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500 mb-4">You haven't bookmarked any articles yet.</p>
+            <p className="text-slate-500 mb-4">
+              You haven't bookmarked any articles yet.
+            </p>
             <Link href="/">
               <Button>Explore Articles</Button>
             </Link>
@@ -86,10 +87,13 @@ export default function BookmarksPage() {
         ) : (
           <div className="space-y-4">
             {articles.map((article) => (
-              <article key={article.id} className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition">
+              <article
+                key={article.id}
+                className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition"
+              >
                 <div className="flex items-start gap-4">
                   {article.cover_image && (
-                    <Image
+                    <img
                       src={article.cover_image}
                       alt=""
                       width={120}
@@ -99,7 +103,10 @@ export default function BookmarksPage() {
                   )}
                   <div className="flex-1 min-w-0">
                     <h2 className="text-lg font-bold text-slate-900 mb-2 line-clamp-2">
-                      <Link href={`/article/${article.slug}`} className="hover:text-blue-600 transition">
+                      <Link
+                        href={`/article/${article.slug}`}
+                        className="hover:text-blue-600 transition"
+                      >
                         {article.title}
                       </Link>
                     </h2>
@@ -109,7 +116,7 @@ export default function BookmarksPage() {
                       </p>
                     )}
                     <div className="flex items-center gap-4 text-xs text-slate-500">
-                      <Link 
+                      <Link
                         href={`/profile/${article.author_username}`}
                         className="font-medium hover:text-blue-600"
                       >
@@ -129,7 +136,9 @@ export default function BookmarksPage() {
                           {article.reading_time_minutes} min
                         </span>
                       )}
-                      <span>{formatDate(article.published_at || article.created_at)}</span>
+                      <span>
+                        {formatDate(article.published_at || article.created_at)}
+                      </span>
                     </div>
                   </div>
                 </div>

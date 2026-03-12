@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { articleAPI, tagAPI, likeAPI, bookmarkAPI } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
@@ -215,7 +214,7 @@ export default function HomePage() {
         className="flex-shrink-0"
       >
         {article.author_avatar_url ? (
-          <Image
+          <img
             src={article.author_avatar_url}
             alt={article.author_full_name || article.author_username}
             width={40}
@@ -270,7 +269,7 @@ export default function HomePage() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {article.cover_image && (
-              <Image
+              <img
                 src={article.cover_image}
                 alt=""
                 width={60}

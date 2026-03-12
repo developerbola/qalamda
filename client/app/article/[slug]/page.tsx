@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { articleAPI, commentAPI, likeAPI, bookmarkAPI } from "@/lib/api";
@@ -237,7 +236,7 @@ export default function ArticlePage() {
       >
         <div className="flex gap-3">
           {comment.avatar_url ? (
-            <Image
+            <img
               src={comment.avatar_url}
               alt={comment.full_name || comment.username}
               width={isReply ? 32 : 40}
@@ -370,7 +369,7 @@ export default function ArticlePage() {
           <div className="flex items-center gap-3 mb-6">
             <Link href={`/profile/${article.author_username}`}>
               {article.author_avatar_url ? (
-                <Image
+                <img
                   src={article.author_avatar_url}
                   alt={article.author_full_name || article.author_username}
                   width={48}
@@ -413,7 +412,7 @@ export default function ArticlePage() {
           {/* Cover Image */}
           {article.cover_image && (
             <div className="mb-6 rounded-xl overflow-hidden">
-              <Image
+              <img
                 src={article.cover_image}
                 alt=""
                 width={800}
@@ -477,7 +476,7 @@ export default function ArticlePage() {
             <form onSubmit={handleSubmitComment} className="mb-8">
               <div className="flex gap-3">
                 {user.avatar_url ? (
-                  <Image
+                  <img
                     src={user.avatar_url}
                     alt={user.full_name || user.username}
                     width={40}
