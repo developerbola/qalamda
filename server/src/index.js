@@ -20,8 +20,10 @@ const app = new Hono();
 app.use(
   "*",
   cors({
-    origin: (origin) => origin, // Allow any origin for now, or specify your URL
+    origin: (origin) => origin,
     credentials: true,
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowHeaders: ["Content-Type", "Authorization", "Accept"],
   }),
 );
 app.use("*", prettyJSON());

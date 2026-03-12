@@ -20,10 +20,30 @@ export const api = axios.create({
  * Request: Hydrate with JWT from Supabase.
  */
 api.interceptors.request.use(async (config) => {
-  const { data: { session } } = await supabase.auth.getSession();
-  
-  if (session?.access_token) {
-    config.headers.Authorization = `Bearer ${session.access_token}`;
+  let token = null;
+
+  if (typeof window !== "undefined") {
+    const raw = sessionStorage.getItem("user");
+    if (raw) {
+      try {
+        const session = JSON.parse(raw);
+        token = session?.access_token;
+      } catch (e) {
+        console.error("[API Request] Failed to parse session from storage", e);
+      }
+    }
+  }
+
+  // Fallback to SDK if manual retrieval fails
+  if (!token) {
+    const { data: { session } } = await supabase.auth.getSession();
+    token = session?.access_token;
+  }
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  } else {
+    console.warn("[API Request] No active session or access token found");
   }
   return config;
 });
