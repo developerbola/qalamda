@@ -1,12 +1,13 @@
 {
   "name": "server",
+  "type": "module",
+  "version": "1.0.0",
   "scripts": {
     "dev": "bun run --hot src/index.js",
     "build": "bun build src/index.js --outdir dist",
-    "start": "bun run dist/index.js"
+    "start": "node src/index.js"
   },
   "dependencies": {
-    "@supabase/auth-helpers-nextjs": "^0.15.0",
     "@supabase/supabase-js": "^2.99.1",
     "dotenv": "^17.3.1",
     "hono": "^4.12.7"
