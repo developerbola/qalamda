@@ -5,13 +5,25 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { Search, User, LogOut, Bookmark, Menu, X, Settings, Globe, Palette, Check } from "lucide-react";
+import {
+  Search,
+  User,
+  LogOut,
+  Bookmark,
+  Menu,
+  X,
+  Settings,
+  Globe,
+  Palette,
+  Check,
+} from "lucide-react";
 import { useTheme } from "@/lib/theme";
 import { useLanguage } from "@/lib/language";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -61,7 +73,7 @@ export default function Navbar() {
                 "text-sm font-medium transition-colors",
                 pathname === link.href
                   ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               {link.label}
@@ -91,92 +103,138 @@ export default function Navbar() {
           {user ? (
             <>
               <Link href="/bookmarks">
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:text-foreground"
+                >
                   <Bookmark className="h-4 w-4" />
                 </Button>
               </Link>
 
               <DropdownMenu>
-                <DropdownMenuTrigger>
-                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-accent/50 cursor-pointer transition-colors border border-transparent hover:border-border/50">
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-accent/50 cursor-pointer transition-colors border border-transparent hover:border-border/50 h-auto"
+                  >
                     <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-border/50 shadow-sm">
                       {user.avatar_url ? (
-                        <img src={user.avatar_url} alt={user.username} className="w-full h-full object-cover" />
+                        <img
+                          src={user.avatar_url}
+                          alt={user.username}
+                          className="w-full h-full object-cover"
+                        />
                       ) : (
                         <User className="h-4 w-4 text-primary" />
                       )}
                     </div>
-                    <span className="text-sm font-medium text-foreground">{user.username}</span>
-                  </div>
+                    <span className="text-sm font-medium text-foreground">
+                      {user.username}
+                    </span>
+                  </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 mt-2">
-                  <DropdownMenuLabel className="text-xs text-muted-foreground uppercase py-2 px-3">{t("settings")}</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  
-                  <Link href={`/profile/${user.username}`}>
-                    <DropdownMenuItem className="cursor-pointer py-2 px-3">
-                      <User className="mr-3 h-4 w-4 text-muted-foreground" />
-                      <span>{t("profile")}</span>
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="text-xs text-muted-foreground uppercase py-2 px-3">
+                      {t("settings")}
+                    </DropdownMenuLabel>
+                    <Link href={`/profile/${user.username}`}>
+                      <DropdownMenuItem className="cursor-pointer py-2 px-3">
+                        <User className="mr-3 h-4 w-4 text-muted-foreground" />
+                        <span>{t("profile")}</span>
+                      </DropdownMenuItem>
+                    </Link>
+
+                    <Link href="/settings">
+                      <DropdownMenuItem className="cursor-pointer py-2 px-3">
+                        <Settings className="mr-3 h-4 w-4 text-muted-foreground" />
+                        <span>{t("settings")}</span>
+                      </DropdownMenuItem>
+                    </Link>
+                  </DropdownMenuGroup>
+
+                  <DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger className="py-2 px-3">
+                        <Palette className="mr-3 h-4 w-4 text-muted-foreground" />
+                        <span>{t("theme")}</span>
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent className="w-40">
+                        <DropdownMenuItem
+                          onClick={() => setTheme("light")}
+                          className="justify-between"
+                        >
+                          {t("light")}{" "}
+                          {theme === "light" && <Check className="h-3 w-3" />}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => setTheme("dark")}
+                          className="justify-between"
+                        >
+                          {t("dark")}{" "}
+                          {theme === "dark" && <Check className="h-3 w-3" />}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => setTheme("sepia")}
+                          className="justify-between"
+                        >
+                          {t("sepia")}{" "}
+                          {theme === "sepia" && <Check className="h-3 w-3" />}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => setTheme("slate")}
+                          className="justify-between"
+                        >
+                          {t("slate")}{" "}
+                          {theme === "slate" && <Check className="h-3 w-3" />}
+                        </DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
+
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger className="py-2 px-3">
+                        <Globe className="mr-3 h-4 w-4 text-muted-foreground" />
+                        <span>{t("language")}</span>
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent className="w-32">
+                        <DropdownMenuItem
+                          onClick={() => setLanguage("en")}
+                          className="justify-between"
+                        >
+                          English{" "}
+                          {language === "en" && <Check className="h-3 w-3" />}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => setLanguage("uz")}
+                          className="justify-between"
+                        >
+                          Uzbek{" "}
+                          {language === "uz" && <Check className="h-3 w-3" />}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => setLanguage("ru")}
+                          className="justify-between"
+                        >
+                          Russian{" "}
+                          {language === "ru" && <Check className="h-3 w-3" />}
+                        </DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
+                  </DropdownMenuGroup>
+
+                  <DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      className="text-destructive focus:text-destructive cursor-pointer py-2 px-3"
+                      onClick={() => logout()}
+                    >
+                      <LogOut className="mr-3 h-4 w-4" />
+                      <span>{t("signOut")}</span>
                     </DropdownMenuItem>
-                  </Link>
-                  
-                  <Link href="/settings">
-                    <DropdownMenuItem className="cursor-pointer py-2 px-3">
-                      <Settings className="mr-3 h-4 w-4 text-muted-foreground" />
-                      <span>{t("settings")}</span>
-                    </DropdownMenuItem>
-                  </Link>
-
-                  <DropdownMenuSeparator />
-
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger className="py-2 px-3">
-                      <Palette className="mr-3 h-4 w-4 text-muted-foreground" />
-                      <span>{t("theme")}</span>
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent className="w-40">
-                      <DropdownMenuItem onClick={() => setTheme("light")} className="justify-between">
-                        {t("light")} {theme === "light" && <Check className="h-3 w-3" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setTheme("dark")} className="justify-between">
-                        {t("dark")} {theme === "dark" && <Check className="h-3 w-3" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setTheme("sepia")} className="justify-between">
-                        {t("sepia")} {theme === "sepia" && <Check className="h-3 w-3" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setTheme("slate")} className="justify-between">
-                        {t("slate")} {theme === "slate" && <Check className="h-3 w-3" />}
-                      </DropdownMenuItem>
-                    </DropdownMenuSubContent>
-                  </DropdownMenuSub>
-
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger className="py-2 px-3">
-                      <Globe className="mr-3 h-4 w-4 text-muted-foreground" />
-                      <span>{t("language")}</span>
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent className="w-32">
-                      <DropdownMenuItem onClick={() => setLanguage("en")} className="justify-between">
-                        English {language === "en" && <Check className="h-3 w-3" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setLanguage("uz")} className="justify-between">
-                        Uzbek {language === "uz" && <Check className="h-3 w-3" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setLanguage("ru")} className="justify-between">
-                        Russian {language === "ru" && <Check className="h-3 w-3" />}
-                      </DropdownMenuItem>
-                    </DropdownMenuSubContent>
-                  </DropdownMenuSub>
-
-                  <DropdownMenuSeparator />
-                  
-                  <DropdownMenuItem 
-                    className="text-destructive focus:text-destructive cursor-pointer py-2 px-3"
-                    onClick={() => logout()}
-                  >
-                    <LogOut className="mr-3 h-4 w-4" />
-                    <span>{t("signOut")}</span>
-                  </DropdownMenuItem>
+                  </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
             </>
@@ -188,7 +246,10 @@ export default function Navbar() {
                 </Button>
               </Link>
               <Link href="/auth?mode=signup">
-                <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                <Button
+                  size="sm"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
+                >
                   {t("getStarted")}
                 </Button>
               </Link>
@@ -224,7 +285,7 @@ export default function Navbar() {
                     "block px-3 py-3 rounded-xl text-base font-medium transition-all active:scale-95",
                     pathname === link.href
                       ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                      : "text-muted-foreground hover:bg-accent hover:text-foreground",
                   )}
                 >
                   {link.label}
@@ -236,7 +297,9 @@ export default function Navbar() {
 
             {/* Theme Selector (Mobile) */}
             <div className="space-y-3 px-1">
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-2">{t("theme")}</p>
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-2">
+                {t("theme")}
+              </p>
               <div className="grid grid-cols-2 gap-2">
                 {["light", "dark", "sepia", "slate"].map((tKey) => (
                   <Button
@@ -246,14 +309,18 @@ export default function Navbar() {
                     className="justify-start gap-3 h-11 px-4 rounded-xl border-border/60"
                     onClick={() => setTheme(tKey as any)}
                   >
-                    <div className={cn(
-                      "w-4 h-4 rounded-full border shadow-sm",
-                      tKey === "light" && "bg-white",
-                      tKey === "dark" && "bg-black",
-                      tKey === "sepia" && "bg-[#f4ecd8]",
-                      tKey === "slate" && "bg-[#0f172a]"
-                    )} />
-                    <span className="capitalize text-sm font-medium">{t(tKey)}</span>
+                    <div
+                      className={cn(
+                        "w-4 h-4 rounded-full border shadow-sm",
+                        tKey === "light" && "bg-white",
+                        tKey === "dark" && "bg-black",
+                        tKey === "sepia" && "bg-[#f4ecd8]",
+                        tKey === "slate" && "bg-[#0f172a]",
+                      )}
+                    />
+                    <span className="capitalize text-sm font-medium">
+                      {t(tKey)}
+                    </span>
                   </Button>
                 ))}
               </div>
@@ -261,12 +328,14 @@ export default function Navbar() {
 
             {/* Language Selector (Mobile) */}
             <div className="space-y-3 px-1">
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-2">{t("language")}</p>
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-2">
+                {t("language")}
+              </p>
               <div className="flex flex-wrap gap-2">
                 {[
                   { code: "en", label: "EN" },
                   { code: "uz", label: "UZ" },
-                  { code: "ru", label: "RU" }
+                  { code: "ru", label: "RU" },
                 ].map((lang) => (
                   <Button
                     key={lang.code}
@@ -287,20 +356,38 @@ export default function Navbar() {
             <div className="space-y-2">
               {user ? (
                 <>
-                  <Link href={`/profile/${user.username}`} onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="ghost" className="w-full justify-start h-12 text-base px-3 hover:bg-accent/50">
+                  <Link
+                    href={`/profile/${user.username}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start h-12 text-base px-3 hover:bg-accent/50"
+                    >
                       <User className="h-5 w-5 mr-3 text-muted-foreground" />
                       {t("profile")}
                     </Button>
                   </Link>
-                  <Link href="/bookmarks" onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="ghost" className="w-full justify-start h-12 text-base px-3 hover:bg-accent/50">
+                  <Link
+                    href="/bookmarks"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start h-12 text-base px-3 hover:bg-accent/50"
+                    >
                       <Bookmark className="h-5 w-5 mr-3 text-muted-foreground" />
                       {t("bookmarks")}
                     </Button>
                   </Link>
-                  <Link href="/settings" onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="ghost" className="w-full justify-start h-12 text-base px-3 hover:bg-accent/50">
+                  <Link
+                    href="/settings"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start h-12 text-base px-3 hover:bg-accent/50"
+                    >
                       <Settings className="h-5 w-5 mr-3 text-muted-foreground" />
                       {t("settings")}
                     </Button>
@@ -320,7 +407,10 @@ export default function Navbar() {
               ) : (
                 <div className="grid grid-cols-2 gap-3 pt-2">
                   <Link href="/auth" onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="outline" className="w-full h-12 text-base font-semibold border-border/60">
+                    <Button
+                      variant="outline"
+                      className="w-full h-12 text-base font-semibold border-border/60"
+                    >
                       {t("signIn")}
                     </Button>
                   </Link>
