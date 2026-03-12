@@ -10,8 +10,13 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.2.0",
+    "@supabase/auth-ui-react": "^0.4.7",
+    "@supabase/auth-ui-shared": "^0.1.8",
+    "@supabase/supabase-js": "^2.99.1",
+    "axios": "^1.8.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "lucide-react": "^0.577.0",
     "next": "16.1.6",
     "postcss": "^8.5.8",

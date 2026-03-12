@@ -1,16 +1,14 @@
 {
   "name": "server",
   "scripts": {
-    "dev": "bun run --hot src/index.ts"
+    "dev": "bun run --hot src/index.js",
+    "build": "bun build src/index.js --outdir dist",
+    "start": "bun run dist/index.js"
   },
   "dependencies": {
-    "hono": "^4.12.7",
-    "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/jsonwebtoken": "^9.0.6"
-  },
-  "devDependencies": {
-    "@types/bun": "latest"
+    "@supabase/auth-helpers-nextjs": "^0.15.0",
+    "@supabase/supabase-js": "^2.99.1",
+    "dotenv": "^17.3.1",
+    "hono": "^4.12.7"
   }
 }
