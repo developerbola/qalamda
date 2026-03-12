@@ -1,40 +1,29 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/lib/auth';
 
 interface OAuthProviderProps {
   provider: 'github' | 'google';
   onLogin?: () => void;
-  onError?: (error: Error) => void;
+  onError?: (error: string) => void;
 }
 
 export function OAuthProvider({ provider, onLogin, onError }: OAuthProviderProps) {
   const [loading, setLoading] = useState(false);
+  const { signInWithOAuth } = useAuth();
 
   const handleLogin = async () => {
     setLoading(true);
     try {
-      const { data, error } = await fetch(`/api/auth/oauth/${provider}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
+      const { error } = await signInWithOAuth(provider);
       if (error) {
-        throw error;
-      }
-
-      const result = await data.json();
-      if (result.error) {
-        throw new Error(result.error);
-      }
-
-      if (onLogin) {
+        if (onError) onError(error);
+      } else if (onLogin) {
         onLogin();
       }
     } catch (err: any) {
       if (onError) {
-        onError(err);
+        onError(err.message || 'OAuth failure');
       }
     } finally {
       setLoading(false);
@@ -43,11 +32,12 @@ export function OAuthProvider({ provider, onLogin, onError }: OAuthProviderProps
 
   return (
     <Button
+      variant="outline"
       onClick={handleLogin}
       disabled={loading}
-      className="w-full justify-center"
+      className="w-full justify-center flex gap-2"
     >
-      {loading ? 'Connecting...' : provider === 'github' ? 'Continue with GitHub' : 'Continue with Google'}
+      {loading ? 'Connecting...' : `Continue with ${provider.charAt(0).toUpperCase() + provider.slice(1)}`}
     </Button>
   );
 }

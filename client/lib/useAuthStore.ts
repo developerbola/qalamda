@@ -1,5 +1,9 @@
 import { create } from "zustand";
 
+/**
+ * Modern User Interface focusing on profile data.
+ * Session/Token management is handled natively by SupabaseSDK.
+ */
 export interface User {
   id: string;
   email: string;
@@ -13,18 +17,20 @@ export interface User {
 
 type AuthState = {
   user: User | null;
-  token: string | null;
   loading: boolean;
   setUser: (u: User | null) => void;
-  setToken: (t: string | null) => void;
   setLoading: (v: boolean) => void;
+  logoutStore: () => void;
 };
 
+/**
+ * Lightweight store for user profile state.
+ * No persistence layer needed as Supabase provides the persistent session.
+ */
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
-  token: null,
   loading: true,
   setUser: (u) => set({ user: u }),
-  setToken: (t) => set({ token: t }),
   setLoading: (v) => set({ loading: v }),
+  logoutStore: () => set({ user: null, loading: false }),
 }));

@@ -85,14 +85,16 @@ export default function HomePage() {
     }
   };
 
-  const checkBookmarkStatus = async (articleId: string) => {
+  const loadBookmarks = async () => {
     if (!user) return;
     try {
       const res = await bookmarkAPI.getAll();
-      const bookmarked = res.data.bookmarks.some((b: Article) => b.id === articleId);
-      if (bookmarked) {
-        setBookmarkedArticles(prev => new Set(prev).add(articleId));
-      }
+      const bookmarkedIds = new Set(
+        (res.data.bookmarks || [])
+          .map((b: { article_id: string }) => b.article_id)
+          .filter(Boolean),
+      );
+      setBookmarkedArticles(bookmarkedIds);
     } catch (error) {
       // Ignore errors
     }
@@ -161,8 +163,8 @@ export default function HomePage() {
     // Check like and bookmark status for articles
     articles.forEach(article => {
       checkLikeStatus(article.id);
-      checkBookmarkStatus(article.id);
     });
+    if (user) loadBookmarks();
   }, [articles, user]);
 
   const getSearchParams = () => {

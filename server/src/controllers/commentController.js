@@ -4,18 +4,18 @@ import { supabase } from "../supabase.js";
 export const getCommentsController = async (c) => {
   const { articleId } = c.req.param();
 
-  const comments = await supabase
+  const { data: comments, error } = await supabase
     .from("comments")
     .select(`
-      comments.*,
-      users.username,
-      users.full_name,
-      users.avatar_url
+      *,
+      users(username, full_name, avatar_url)
     `)
     .eq("article_id", articleId)
     .order("created_at", { ascending: true });
 
-  return c.json({ comments });
+  if (error) return c.json({ error: error.message }, 500);
+
+  return c.json({ comments: comments || [] });
 };
 
 // Create comment

@@ -5,35 +5,38 @@ import { authAPI } from "@/lib/api";
 import { Loader2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+/**
+ * ==================== AUTH CALLBACK ====================
+ * Post-login landing page for OAuth (Google/GitHub).
+ * Ensures profile sync before redirecting to home.
+ */
+
 export default function AuthCallback() {
   const router = useRouter();
-  useEffect(() => {
-    const signin = async () => {
-      try {
-        const sessionRes: any = await supabase.auth.getSession();
-        const token = sessionRes?.data?.session?.access_token;
-        if (token) {
-          sessionStorage.setItem("token", token);
-        }
 
-        try {
-          const res = await authAPI.getMe();
-          if (res?.data?.user) {
-            sessionStorage.setItem("user", JSON.stringify(res.data.user));
-          }
-        } catch (e) {
-          // ignore
+  useEffect(() => {
+    const handleAuth = async () => {
+      try {
+        // 1. Wait for Supabase to persist the session (native)
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session) {
+          // 2. Trigger a one-time profile sync for safety
+          await authAPI.syncProfile();
         }
+      } catch (e) {
+        console.error("[Callback] Profile sync failed", e);
       } finally {
         router.push("/");
       }
     };
-    signin();
-  }, []);
+    
+    handleAuth();
+  }, [router]);
 
   return (
     <div className="h-screen w-full grid place-items-center">
-      <Loader2Icon className="animate-spin" />
+      <Loader2Icon className="animate-spin text-blue-600 h-8 w-8" />
     </div>
   );
 }

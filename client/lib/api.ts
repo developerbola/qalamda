@@ -1,4 +1,12 @@
 import axios from "axios";
+import { supabase } from "@/lib/supabase";
+import { useAuthStore } from "@/lib/useAuthStore";
+
+/**
+ * ==================== AXIOS INTERCEPTOR ====================
+ * Modern interceptor using Supabase sessions directly for authentication.
+ * No redundant state required.
+ */
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -9,135 +17,83 @@ export const api = axios.create({
   },
 });
 
-// Add token to requests if available
-api.interceptors.request.use((config) => {
-  let token: string | null = null;
-  try {
-    token = sessionStorage.getItem("token") || localStorage.getItem("token");
-
-    if (!token) {
-      const userRaw = sessionStorage.getItem("user") || localStorage.getItem("user");
-      if (userRaw) {
-        const parsed = JSON.parse(userRaw);
-        token = parsed?.session?.access_token || parsed?.access_token || parsed?.token || null;
-      }
-    }
-  } catch (e) {
-    // ignore JSON parse errors
-    token = null;
-  }
-
-  if (token) {
-    config.headers = config.headers || {};
-    config.headers.Authorization = `Bearer ${token}`;
+/**
+ * Request: Hydrate with JWT from Supabase.
+ */
+api.interceptors.request.use(async (config) => {
+  const { data: { session } } = await supabase.auth.getSession();
+  
+  if (session?.access_token) {
+    config.headers.Authorization = `Bearer ${session.access_token}`;
   }
   return config;
 });
 
-// Handle response errors
+/**
+ * Response: Handle session expiration.
+ */
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      sessionStorage.removeItem("token");
-      sessionStorage.removeItem("user");
-      window.location.href = "/auth";
+      if (typeof window !== "undefined") {
+        const path = window.location.pathname || "";
+        
+        // Prevent redirect loops for auth pages
+        if (!path.startsWith("/auth")) {
+          supabase.auth.signOut();
+          useAuthStore.getState().logoutStore();
+          window.location.href = "/auth";
+        }
+      }
     }
     return Promise.reject(error);
   },
 );
 
-// Auth APIs
+/**
+ * Clean Auth API wrappers.
+ */
 export const authAPI = {
-  register: (data: {
-    email: string;
-    username: string;
-    password: string;
-    fullName?: string;
-  }) => api.post("/api/auth/register", data),
-
-  login: (data: { email: string; password: string }) =>
-    api.post("/api/auth/login", data),
-
   getMe: () => api.get("/api/auth/me"),
+  syncProfile: () => api.post("/api/auth/sync"),
 };
 
-// User APIs
+// ... keep other APIs (userAPI, articleAPI, etc.)
 export const userAPI = {
   getProfile: (username: string) => api.get(`/api/users/${username}`),
-  updateProfile: (data: {
-    fullName?: string;
-    bio?: string;
-    avatarUrl?: string;
-  }) => api.patch("/api/users/profile", data),
+  updateProfile: (data: any) => api.patch("/api/users/profile", data),
   follow: (userId: string) => api.post(`/api/users/${userId}/follow`),
   unfollow: (userId: string) => api.delete(`/api/users/${userId}/follow`),
-  getFollowStatus: (userId: string) =>
-    api.get(`/api/users/${userId}/follow-status`),
+  getFollowStatus: (userId: string) => api.get(`/api/users/${userId}/follow-status`),
   getBookmarks: () => api.get("/api/users/me/bookmarks"),
 };
 
-// Article APIs
 export const articleAPI = {
-  getAll: (params?: {
-    page?: number;
-    limit?: number;
-    tag?: string;
-    author?: string;
-    search?: string;
-  }) => api.get("/api/articles", { params }),
+  getAll: (params?: any) => api.get("/api/articles", { params }),
   getBySlug: (slug: string) => api.get(`/api/articles/${slug}`),
-  create: (data: {
-    title: string;
-    content: string;
-    excerpt?: string;
-    coverImage?: string;
-    tags?: string[];
-    isPublished?: boolean;
-  }) => api.post("/api/articles", data),
-  update: (
-    articleId: string,
-    data: {
-      title?: string;
-      content?: string;
-      excerpt?: string;
-      coverImage?: string;
-      tags?: string[];
-      isPublished?: boolean;
-    },
-  ) => api.patch(`/api/articles/${articleId}`, data),
-  delete: (articleId: string) => api.delete(`/api/articles/${articleId}`),
+  create: (data: any) => api.post("/api/articles", data),
+  update: (id: string, data: any) => api.patch(`/api/articles/${id}`, data),
+  delete: (id: string) => api.delete(`/api/articles/${id}`),
 };
 
-// Comment APIs
 export const commentAPI = {
-  getByArticle: (articleId: string) =>
-    api.get(`/api/articles/${articleId}/comments`),
-  create: (articleId: string, data: { content: string; parentId?: string }) =>
-    api.post(`/api/articles/${articleId}/comments`, data),
-  delete: (commentId: string) => api.delete(`/api/comments/${commentId}`),
+  getByArticle: (id: string) => api.get(`/api/articles/${id}/comments`),
+  create: (id: string, data: any) => api.post(`/api/articles/${id}/comments`, data),
+  delete: (id: string) => api.delete(`/api/comments/${id}`),
 };
 
-// Like APIs
 export const likeAPI = {
-  toggle: (targetType: "article" | "comment", targetId: string) =>
-    api.post(`/api/${targetType}/${targetId}/like`),
-  getStatus: (targetType: "article" | "comment", targetId: string) =>
-    api.get(`/api/${targetType}/${targetId}/like-status`),
+  toggle: (type: string, id: string) => api.post(`/api/${type}/${id}/like`),
+  getStatus: (type: string, id: string) => api.get(`/api/${type}/${id}/like-status`),
 };
 
-// Bookmark APIs
 export const bookmarkAPI = {
-  toggle: (articleId: string) =>
-    api.post(`/api/articles/${articleId}/bookmark`),
+  toggle: (id: string) => api.post(`/api/articles/${id}/bookmark`),
   getAll: () => userAPI.getBookmarks(),
 };
 
-// Tag APIs
 export const tagAPI = {
   getAll: () => api.get("/api/tags"),
-  getArticles: (tagSlug: string, params?: { page?: number; limit?: number }) =>
-    api.get(`/api/tags/${tagSlug}/articles`, { params }),
+  getArticles: (slug: string, params?: any) => api.get(`/api/tags/${slug}/articles`, { params }),
 };
-
-export type { AxiosResponse } from "axios";

@@ -5,6 +5,10 @@ export const toggleLikeController = async (c) => {
   const userPayload = c.get("user");
   const { targetType, targetId } = c.req.param();
 
+  if (!userPayload) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
   if (!['article', 'comment'].includes(targetType)) {
     return c.json({ error: 'Invalid target type' }, 400);
   }
@@ -25,7 +29,7 @@ export const toggleLikeController = async (c) => {
   const { data: existing, error: existingError } = await supabase
     .from("likes")
     .select("id")
-    .eq("user_id", userPayload.userId)
+    .eq("user_id", userPayload.id)
     .eq("target_type", targetType)
     .eq("target_id", targetId)
     .single();
@@ -59,7 +63,7 @@ export const toggleLikeController = async (c) => {
     await supabase
       .from("likes")
       .insert({
-        user_id: userPayload.userId,
+        user_id: userPayload.id,
         target_type: targetType,
         target_id: targetId,
       });
@@ -85,6 +89,10 @@ export const likeStatusController = async (c) => {
   const userPayload = c.get("user");
   const { targetType, targetId } = c.req.param();
 
+  if (!userPayload) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
   if (!['article', 'comment'].includes(targetType)) {
     return c.json({ error: 'Invalid target type' }, 400);
   }
@@ -93,7 +101,7 @@ export const likeStatusController = async (c) => {
     supabase
       .from("likes")
       .select("id")
-      .eq("user_id", userPayload.userId)
+      .eq("user_id", userPayload.id)
       .eq("target_type", targetType)
       .eq("target_id", targetId)
       .single(),
@@ -106,7 +114,7 @@ export const likeStatusController = async (c) => {
 
   const likesCount = countResult.count || 0;
   return c.json({
-    liked: !!likedResult,
+    liked: !!likedResult?.data,
     likes_count: likesCount,
   });
 };

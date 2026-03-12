@@ -72,7 +72,9 @@ export default function ArticlePage() {
       setArticle(res.data.article);
       setLikesCount(res.data.article.likes_count);
       setComments(
-        res.data.article.comments_count > 0 ? await fetchComments() : [],
+        res.data.article.comments_count > 0
+          ? await fetchComments(res.data.article.id)
+          : [],
       );
     } catch (error) {
       console.error("Failed to fetch article:", error);
@@ -81,9 +83,9 @@ export default function ArticlePage() {
     }
   };
 
-  const fetchComments = async () => {
+  const fetchComments = async (articleId: string) => {
     try {
-      const res = await commentAPI.getByArticle(article!.id);
+      const res = await commentAPI.getByArticle(articleId);
       return res.data.comments;
     } catch (error) {
       console.error("Failed to fetch comments:", error);
@@ -106,7 +108,9 @@ export default function ArticlePage() {
     try {
       const res = await bookmarkAPI.getAll();
       setBookmarked(
-        res.data.bookmarks.some((b: Article) => b.id === article.id),
+        res.data.bookmarks.some(
+          (b: { article_id: string }) => b.article_id === article.id,
+        ),
       );
     } catch (error) {
       // Ignore

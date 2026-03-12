@@ -1,0 +1,85 @@
+CREATE TABLE public.article_tags (
+  article_id uuid NOT NULL,
+  tag_id uuid NOT NULL,
+  CONSTRAINT article_tags_pkey PRIMARY KEY (article_id, tag_id),
+  CONSTRAINT article_tags_article_id_fkey FOREIGN KEY (article_id) REFERENCES public.articles(id),
+  CONSTRAINT article_tags_tag_id_fkey FOREIGN KEY (tag_id) REFERENCES public.tags(id)
+);
+CREATE TABLE public.articles (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  author_id uuid NOT NULL,
+  title character varying NOT NULL,
+  slug character varying NOT NULL UNIQUE,
+  content text NOT NULL,
+  excerpt text,
+  cover_image text,
+  reading_time_minutes integer,
+  is_published boolean DEFAULT false,
+  published_at timestamp without time zone,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  likes_count numeric DEFAULT '0'::numeric,
+  comments_count numeric DEFAULT '0'::numeric,
+  CONSTRAINT articles_pkey PRIMARY KEY (id),
+  CONSTRAINT articles_author_id_fkey FOREIGN KEY (author_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.bookmarks (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  article_id uuid NOT NULL,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT bookmarks_pkey PRIMARY KEY (id),
+  CONSTRAINT bookmarks_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id),
+  CONSTRAINT bookmarks_article_id_fkey FOREIGN KEY (article_id) REFERENCES public.articles(id)
+);
+CREATE TABLE public.comments (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  article_id uuid NOT NULL,
+  author_id uuid NOT NULL,
+  parent_id uuid,
+  content text NOT NULL,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT comments_pkey PRIMARY KEY (id),
+  CONSTRAINT comments_article_id_fkey FOREIGN KEY (article_id) REFERENCES public.articles(id),
+  CONSTRAINT comments_author_id_fkey FOREIGN KEY (author_id) REFERENCES public.users(id),
+  CONSTRAINT comments_parent_id_fkey FOREIGN KEY (parent_id) REFERENCES public.comments(id)
+);
+CREATE TABLE public.follows (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  follower_id uuid NOT NULL,
+  following_id uuid NOT NULL,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT follows_pkey PRIMARY KEY (id),
+  CONSTRAINT follows_follower_id_fkey FOREIGN KEY (follower_id) REFERENCES public.users(id),
+  CONSTRAINT follows_following_id_fkey FOREIGN KEY (following_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.likes (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  target_type character varying NOT NULL CHECK (target_type::text = ANY (ARRAY['article'::character varying, 'comment'::character varying]::text[])),
+  target_id uuid NOT NULL,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT likes_pkey PRIMARY KEY (id),
+  CONSTRAINT likes_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.tags (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  name character varying NOT NULL UNIQUE,
+  slug character varying NOT NULL UNIQUE,
+  description text,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT tags_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.users (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  email character varying NOT NULL UNIQUE,
+  username character varying NOT NULL UNIQUE,
+  password_hash character varying NOT NULL,
+  full_name character varying,
+  bio text,
+  avatar_url text,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT users_pkey PRIMARY KEY (id)
+);

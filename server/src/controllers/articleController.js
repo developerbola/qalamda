@@ -5,6 +5,21 @@ export const createArticleController = async (c) => {
   const userPayload = c.get("user");
   const body = await c.req.json();
 
+  if (!userPayload) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  if (typeof body?.title !== "string" || body.title.trim().length === 0) {
+    return c.json({ error: "Title is required" }, 400);
+  }
+  if (typeof body?.content !== "string" || body.content.trim().length === 0) {
+    return c.json({ error: "Content is required" }, 400);
+  }
+
+  const tags = Array.isArray(body.tags)
+    ? body.tags.filter((t) => typeof t === "string")
+    : [];
+
   // Generate slug from title
   const slug =
     body.title
@@ -24,11 +39,11 @@ export const createArticleController = async (c) => {
   const { data: article, error: articleError } = await supabase
     .from("articles")
     .insert({
-      author_id: userPayload.userId,
-      title: body.title,
+      author_id: userPayload.id,
+      title: body.title.trim(),
       slug,
-      content: body.content,
-      excerpt: body.excerpt || null,
+      content: body.content.trim(),
+      excerpt: typeof body.excerpt === "string" && body.excerpt.trim().length > 0 ? body.excerpt.trim() : null,
       cover_image: body.coverImage || null,
       likes_count: 0,
       reading_time_minutes: readingTime,
@@ -43,8 +58,8 @@ export const createArticleController = async (c) => {
   }
 
   // Handle tags
-  if (body.tags.length > 0) {
-    for (const tagName of body.tags) {
+  if (tags.length > 0) {
+    for (const tagName of tags) {
       const tagSlug = tagName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
       // Get or create tag
@@ -127,7 +142,7 @@ export const getArticlesController = async (c) => {
   if (error) return c.json({ error: error.message }, 500);
 
   return c.json({
-    articles,
+    articles: articles || [],
     total: count || 0,
     page: parseInt(page),
     totalPages: Math.ceil((count || 0) / parseInt(limit)),
@@ -169,7 +184,7 @@ export const updateArticleController = async (c) => {
     return c.json({ error: "Article not found" }, 404);
   }
 
-  if (existing.author_id !== userPayload.userId) {
+  if (existing.author_id !== userPayload.id) {
     return c.json({ error: "Not authorized to update this article" }, 403);
   }
 
@@ -305,7 +320,7 @@ export const deleteArticleController = async (c) => {
     return c.json({ error: "Article not found" }, 404);
   }
 
-  if (existing.author_id !== userPayload.userId) {
+  if (existing.author_id !== userPayload.id) {
     return c.json({ error: "Not authorized to delete this article" }, 403);
   }
 

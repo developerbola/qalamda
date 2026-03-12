@@ -9,7 +9,7 @@ export const getTagsController = async (c) => {
     .limit(50);
 
   if (error) return c.json({ error: error.message }, 500);
-  return c.json({ tags });
+  return c.json({ tags: tags || [] });
 };
 
 // Get articles by tag
@@ -52,7 +52,7 @@ export const getArticlesByTagController = async (c) => {
   if (articlesError) return c.json({ error: articlesError.message }, 500);
 
   return c.json({
-    articles,
+    articles: articles || [],
     total: count || 0,
     page: parseInt(page),
     totalPages: Math.ceil((count || 0) / parseInt(limit)),

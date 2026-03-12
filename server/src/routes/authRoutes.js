@@ -1,29 +1,17 @@
-import {
-  registerController,
-  loginController,
-  logoutController,
-} from "../controllers/authController";
+import { getMeController, syncProfileController } from "../controllers/authController.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 
-// ==================== AUTH ROUTES ====================
+/**
+ * ==================== AUTH ROUTES ====================
+ * Simplified Auth Routes focusing on synchronization & state detection
+ * All Auth actions (Login/Register) now happen directly via Supabase Client
+ * for security & session consistency. 
+ */
 
 export const authRoutes = (app) => {
-  // Register
-  app.post("/api/auth/register", registerController);
+  // GET: /api/auth/me (Returns the DB profile for the current session)
+  app.get("/api/auth/me", authMiddleware, getMeController);
 
-  // Login
-  app.post("/api/auth/login", loginController);
-
-  // Logout
-  app.post("/api/auth/logout", logoutController);
-  // Sync profile (ensure user row exists)
-  app.post("/api/auth/sync-profile", authMiddleware, async (c) => {
-    const { syncProfileController } = await import("../controllers/authController.js");
-    return syncProfileController(c);
-  });
-  // Get current user
-  app.get("/api/auth/me", async (c) => {
-    const { getMeController } = await import("../controllers/authController.js");
-    return getMeController(c);
-  });
+  // POST: /api/auth/sync (Ensures the public users table is in sync with auth.users)
+  app.post("/api/auth/sync", authMiddleware, syncProfileController);
 };

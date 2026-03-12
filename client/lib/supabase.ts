@@ -9,7 +9,5 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
-// Use a dedicated storage key to avoid colliding with our own `user` entry in sessionStorage
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: { storage: sessionStorage, storageKey: "supabase.auth" },
-});
+// Use default localStorage for persistence
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);

@@ -15,24 +15,22 @@ export const getUserController = async (c) => {
   }
 
   // Get follower/following counts
-  const [followersCount, followingCount] = await Promise.all([
+  const [{ count: followersCount }, { count: followingCount }] = await Promise.all([
     supabase
       .from("follows")
-      .select("id")
-      .eq("following_id", user.id)
-      .count("exact"),
+      .select("*", { count: 'exact', head: true })
+      .eq("following_id", user.id),
     supabase
       .from("follows")
-      .select("id")
-      .eq("follower_id", user.id)
-      .count("exact"),
+      .select("*", { count: 'exact', head: true })
+      .eq("follower_id", user.id),
   ]);
 
   return c.json({
     user: {
       ...user,
-      followers_count: followersCount.count,
-      following_count: followingCount.count,
+      followers_count: followersCount || 0,
+      following_count: followingCount || 0,
     },
   });
 };
@@ -150,28 +148,26 @@ export const followStatusController = async (c) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
-  const [isFollowing, followersCount, followingCount] = await Promise.all([
+  const [isFollowing, { count: followersCount }, { count: followingCount }] = await Promise.all([
     supabase
       .from("follows")
       .select("id")
       .eq("follower_id", user.id)
       .eq("following_id", userId)
-      .single(),
+      .maybeSingle(),
     supabase
       .from("follows")
-      .select("id")
-      .eq("following_id", userId)
-      .count("exact"),
+      .select("*", { count: "exact", head: true })
+      .eq("following_id", userId),
     supabase
       .from("follows")
-      .select("id")
-      .eq("follower_id", userId)
-      .count("exact"),
+      .select("*", { count: "exact", head: true })
+      .eq("follower_id", userId),
   ]);
 
   return c.json({
-    is_following: !!isFollowing,
-    followers_count: followersCount.count,
-    following_count: followingCount.count,
+    is_following: !!isFollowing?.data,
+    followers_count: followersCount || 0,
+    following_count: followingCount || 0,
   });
 };

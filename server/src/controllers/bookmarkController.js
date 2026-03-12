@@ -5,6 +5,10 @@ export const toggleBookmarkController = async (c) => {
   const userPayload = c.get("user");
   const { articleId } = c.req.param();
 
+  if (!userPayload) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
   // Check if article exists
   const { data: article, error: articleError } = await supabase
     .from("articles")
@@ -20,7 +24,7 @@ export const toggleBookmarkController = async (c) => {
   const { data: existing, error: existingError } = await supabase
     .from("bookmarks")
     .select("id")
-    .eq("user_id", userPayload.userId)
+    .eq("user_id", userPayload.id)
     .eq("article_id", articleId)
     .single();
 
@@ -41,7 +45,7 @@ export const toggleBookmarkController = async (c) => {
     await supabase
       .from("bookmarks")
       .insert({
-        user_id: userPayload.userId,
+        user_id: userPayload.id,
         article_id: articleId,
       });
 
@@ -53,20 +57,42 @@ export const toggleBookmarkController = async (c) => {
 export const getBookmarksController = async (c) => {
   const userPayload = c.get("user");
 
-  const bookmarks = await supabase
+  if (!userPayload) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  const { data: bookmarks, error } = await supabase
     .from("bookmarks")
     .select(`
-      bookmarks.*,
-      articles.*,
-      users.username as author_username,
-      users.full_name as author_full_name,
-      users.avatar_url as author_avatar_url,
-      likes_count,
-      comments_count
+      id,
+      created_at,
+      article_id,
+      articles(
+        id,
+        title,
+        slug,
+        excerpt,
+        cover_image,
+        reading_time_minutes,
+        published_at,
+        likes_count,
+        comments_count,
+        author_id,
+        users(username, full_name, avatar_url)
+      )
     `)
-    .eq("user_id", userPayload.userId)
+    .eq("user_id", userPayload.id)
     .eq("articles.is_published", true)
     .order("created_at", { ascending: false });
 
-  return c.json({ bookmarks });
+  if (error) {
+    return c.json({ error: error.message }, 500);
+  }
+
+  // Flatten the response so the frontend receives a clean list of articles
+  const bookmarkedArticles = (bookmarks || [])
+    .filter(b => b.articles)
+    .map(b => b.articles);
+
+  return c.json({ bookmarks: bookmarkedArticles });
 };

@@ -162,7 +162,7 @@ const Auth = () => {
             {lastUsed && (
               <div
                 className={cn(
-                  "absolute -top-1 py-[1px] px-[5px] bg-[#444] rounded-[5px] text-[12px]",
+                  "absolute -top-1 py-[1px] px-[5px] bg-secondary rounded-[5px] text-[12px]",
                   lastUsed == "google" ? "left-[41%]" : "left-[90%]",
                 )}
               >
