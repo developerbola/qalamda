@@ -50,13 +50,13 @@ export default function SettingsPage() {
   };
 
   const hasChanges =
-    fullName !== (user.full_name || "") ||
-    username !== (user.username || "") ||
-    bio !== (user.bio || "") ||
-    avatarUrl !== (user.avatar_url || "");
+    fullName.trim() !== (user.full_name || "") ||
+    username.trim() !== (user.username || "") ||
+    bio.trim() !== (user.bio || "") ||
+    avatarUrl.trim() !== (user.avatar_url || "");
 
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen pt-20">
       <div className="max-w-2xl mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900 mb-2">Settings</h1>

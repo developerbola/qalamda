@@ -10,12 +10,13 @@ import {
   User,
   LogOut,
   Bookmark,
-  Menu,
   X,
   Settings,
   Globe,
   Palette,
   Check,
+  SquarePen,
+  TextAlignEnd,
 } from "lucide-react";
 import { useTheme } from "@/lib/theme";
 import { useLanguage } from "@/lib/language";
@@ -33,6 +34,7 @@ import {
   DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import Logo from "./Logo";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -66,7 +68,7 @@ export default function Navbar() {
       <div className="flex items-center justify-between w-2/3">
         {/* Logo */}
         <Link href="/" className="h-max w-[120px]">
-          <img src="/logo.svg" alt="qalamda logo" className="h-full w-auto" />
+          <Logo className="h-full w-auto" />
         </Link>
 
         {/* Desktop Navigation */}
@@ -119,19 +121,28 @@ export default function Navbar() {
                   <Bookmark className="h-4 w-4" />
                 </Button>
               </Link>
+              <Link href="/write">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Write
+                  <SquarePen />
+                </Button>
+              </Link>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    size="sm"
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-accent/50 cursor-pointer transition-colors border border-transparent hover:border-border/50 h-auto"
+                    className="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-full hover:bg-accent/50 cursor-pointer transition-colors border border-transparent hover:border-border/50 h-auto"
                   >
-                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-border/50 shadow-sm">
+                    <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-border/50 shadow-sm">
                       {user.avatar_url ? (
-                        <Avatar>
+                        <Avatar className={"size-5"}>
                           <AvatarImage src={user.avatar_url} />
-                          <AvatarFallback>
+                          <AvatarFallback className={"text-[10px]"}>
                             {user.username.slice(0, 2).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
@@ -267,7 +278,7 @@ export default function Navbar() {
           {mobileMenuOpen ? (
             <X className="h-6 w-6" />
           ) : (
-            <Menu className="h-6 w-6" />
+            <TextAlignEnd className="h-6 w-6" />
           )}
         </button>
       </div>

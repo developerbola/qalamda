@@ -32,14 +32,27 @@ export default function RootLayout({
         <html lang="en" className={cn("font-sans", geist.variable)}>
           <head>
             <title>Qalamda</title>
-            <link rel="shortcut icon" href="favicon.svg" type="image/svg" />
+            <link
+              rel="shortcut icon"
+              href="favicon-light.svg"
+              type="image/svg"
+              media="(prefers-color-scheme: dark)"
+            />
+            <link
+              rel="shortcut icon"
+              href="favicon-dark.svg"
+              type="image/svg"
+              media="(prefers-color-scheme: light)"
+            />
             <meta
               name="description"
               content="Maqolalar o'qish va bilimlaringizni boshqalar bilan ulashish uchun
                 yangi imkoniyat."
             />
           </head>
-          <body className={`${playwrite.variable} ${poppins.variable} antialiased`}>
+          <body
+            className={`${playwrite.variable} ${poppins.variable} antialiased`}
+          >
             <AuthInit />
             <Navbar />
             <main className="">{children}</main>

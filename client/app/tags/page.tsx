@@ -42,7 +42,7 @@ export default function TagsPage() {
 
   return (
     <div className="min-h-screen pt-20">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-[10%] md:px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900 mb-2">Tags</h1>
           <p className="text-slate-600">Explore content by topic.</p>

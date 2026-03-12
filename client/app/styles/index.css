@@ -35,7 +35,7 @@
 }
 
 .dark {
-  --background: #0a0a0a;
+  --background: #131313;
   --foreground: #fafafa;
   --card: #171717;
   --card-foreground: #fafafa;
@@ -75,7 +75,7 @@
   --secondary: #eee8d5;
   --secondary-foreground: #433422;
   --muted: #eee8d5;
-  --muted-foreground: #839496;
+  --muted-foreground: #969383;
   --accent: #eee8d5;
   --accent-foreground: #433422;
   --border: #d5ccbb;

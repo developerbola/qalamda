@@ -54,6 +54,8 @@ export default function WritePage() {
       router.push(`/article/${res.data.article.slug}`);
     } catch (error: any) {
       setError(error.response?.data?.error || "Failed to save article");
+      setPublishing(false);
+      setLoading(false);
     } finally {
       setLoading(false);
     }
@@ -71,7 +73,7 @@ export default function WritePage() {
 
   return (
     <div className="min-h-screen pt-20">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-[10%] md:px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold text-slate-900">Write a Story</h1>

@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { authAPI } from "@/lib/api";
@@ -18,8 +18,10 @@ export default function AuthCallback() {
     const handleAuth = async () => {
       try {
         // 1. Wait for Supabase to persist the session (native)
-        const { data: { session } } = await supabase.auth.getSession();
-        
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
         if (session) {
           // 2. Trigger a one-time profile sync for safety
           await authAPI.syncProfile();
@@ -30,13 +32,13 @@ export default function AuthCallback() {
         router.push("/");
       }
     };
-    
+
     handleAuth();
   }, [router]);
 
   return (
     <div className="h-screen w-full grid place-items-center">
-      <Loader2Icon className="animate-spin text-blue-600 h-8 w-8" />
+      <Loader2Icon className="animate-spin h-8 w-8" />
     </div>
   );
 }

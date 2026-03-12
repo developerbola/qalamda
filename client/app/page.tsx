@@ -16,6 +16,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useRouter } from "next/navigation";
 
 interface Article {
   id: string;
@@ -41,7 +42,6 @@ interface Tag {
   name: string;
   slug: string;
   description: string | null;
-  article_count: number;
 }
 
 export default function HomePage() {
@@ -55,6 +55,7 @@ export default function HomePage() {
   const [bookmarkedArticles, setBookmarkedArticles] = useState<Set<string>>(
     new Set(),
   );
+  const router = useRouter();
 
   const fetchArticles = async (
     pageNum: number,
@@ -224,61 +225,55 @@ export default function HomePage() {
   }
 
   const renderArticleCard = (article: Article) => {
+    console.log("bookmarked", bookmarkedArticles);
+    console.log("article id", article.id);
+
     return (
       <Link href={`/article/${article.slug}`} key={article.id}>
         <article className="group flex flex-col gap-6 py-6 border-t border-border/30">
           {/* Author Avatar */}
-          <Link
-            href={`/profile/${article.users.username}`}
-            className="flex items-center gap-2 text-sm hover:underline"
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              router.push(`/profile/${article.users.username}`);
+            }}
+            variant={"link"}
+            className="flex w-fit items-center gap-2 text-sm hover:underline px-0"
           >
             {article.users.avatar_url && (
               <Avatar className="size-5">
                 <AvatarImage src={article.users.avatar_url} />
-                <AvatarFallback>
+                <AvatarFallback className="text-[10px]">
                   {article.users.username.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
             )}
-            {article.users.full_name}
-          </Link>
+            {article.users.full_name || article.users.username}
+          </Button>
 
           {/* Content */}
-          <div className="flex-1">
+          <div className="flex-1 flex items-center justify-between">
             {/* Author & Date */}
-            <div className="flex items-center gap-2 text-sm mb-2">
-              <span>{formatDate(article.created_at)}</span>
-              {article.reading_time_minutes && (
-                <>
-                  <span className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    {article.reading_time_minutes} min
-                  </span>
-                </>
-              )}
-            </div>
-            {/* Title */}
-
-            <h2 className="text-xl font-bol transition mb-2 line-clamp-2">
-              {article.title}
-            </h2>
-            <p className="text-sm font-bol transition mb-2 line-clamp-2">
-              {article.excerpt}
-            </p>
-
-            {/* Tags & Actions */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                {article.cover_image && (
-                  <img
-                    src={article.cover_image}
-                    alt=""
-                    width={60}
-                    height={40}
-                    className="rounded object-cover"
-                  />
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2 text-sm mb-2">
+                <span>{formatDate(article.created_at)}</span>
+                {article.reading_time_minutes && (
+                  <>
+                    <span className="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {article.reading_time_minutes} min
+                    </span>
+                  </>
                 )}
               </div>
+              {/* Title and Excerpt */}
+              <h2 className="text-2xl font-bold transition mb-2 line-clamp-2">
+                {article.title}
+              </h2>
+              <p className="text-base font-medium transition mb-2 line-clamp-2 text-muted-foreground">
+                {article.excerpt}
+              </p>
 
               <div className="flex items-center gap-4">
                 <button
@@ -295,17 +290,16 @@ export default function HomePage() {
                   <span>{article.likes_count}</span>
                 </button>
 
-                <Link
-                  href={`/article/${article.slug}`}
-                  className="flex items-center gap-1 text-sm text-neutral-500 hover:text-blue-500 transition"
-                >
-                  <MessageCircle className="h-4 w-4" />
-                  <span>{article.comments_count}</span>
-                </Link>
+                {article.comments_count > 0 && (
+                  <div className="flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700 transition">
+                    <MessageCircle className="h-4 w-4" />
+                    <span>{article.comments_count}</span>
+                  </div>
+                )}
 
                 <button
                   onClick={(e) => handleBookmark(article.id, e)}
-                  className={`transition ${
+                  className={`transition cursor-pointer ${
                     bookmarkedArticles.has(article.id)
                       ? "text-blue-600"
                       : "text-neutral-500 hover:text-blue-600"
@@ -317,6 +311,17 @@ export default function HomePage() {
                 </button>
               </div>
             </div>
+
+            {/* Tags & Actions */}
+            {article.cover_image && (
+              <img
+                src={article.cover_image}
+                alt=""
+                width={60}
+                height={40}
+                className="rounded object-cover size-1/4"
+              />
+            )}
           </div>
         </article>
       </Link>
@@ -325,7 +330,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen pt-20">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-[10%] md:px-4 py-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Latest Stories</h1>
@@ -339,10 +344,15 @@ export default function HomePage() {
               <Link
                 key={tag.id}
                 href={`/?tag=${tag.slug}`}
-                className="px-3 py-1 rounded-full text-sm text-neutral-700 hover:border-blue-300 hover:text-blue-600 transition"
+                // className="px-3 py-1 rounded-full text-sm text-muted-foreground hover:text-blue-600 transition"
               >
-                {tag.name}
-                <span className="ml-1">({tag.article_count})</span>
+                <Button
+                  className={"rounded-full"}
+                  variant={"outline"}
+                  size={"sm"}
+                >
+                  {tag.name}
+                </Button>
               </Link>
             ))}
           </div>
@@ -351,7 +361,7 @@ export default function HomePage() {
         {/* Articles */}
         {loading ? (
           <div className="space-y-4">
-            {[...Array(5)].map((_, i) => (
+            {[...Array(4)].map((_, i) => (
               <div
                 key={i}
                 className="animate-pulse py-6 border-b border-neutral-100"

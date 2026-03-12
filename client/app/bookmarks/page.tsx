@@ -68,10 +68,12 @@ export default function BookmarksPage() {
 
   return (
     <div className="min-h-screen pt-20">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-[10%] md:px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Bookmarks</h1>
-          <p className="text-slate-600">Articles you've saved for later.</p>
+          <h1 className="text-3xl font-bold mb-2">Bookmarks</h1>
+          <p className="text-muted-foreground">
+            Articles you've saved for later.
+          </p>
         </div>
 
         {articles.length === 0 ? (
@@ -87,62 +89,61 @@ export default function BookmarksPage() {
         ) : (
           <div className="space-y-4">
             {articles.map((article) => (
-              <article
-                key={article.id}
-                className="rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition"
-              >
-                <div className="flex items-start gap-4">
-                  {article.cover_image && (
-                    <img
-                      src={article.cover_image}
-                      alt=""
-                      width={120}
-                      height={80}
-                      className="rounded-lg object-cover flex-shrink-0"
-                    />
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <h2 className="text-lg font-bold text-slate-900 mb-2 line-clamp-2">
-                      <Link
-                        href={`/article/${article.slug}`}
-                        className="hover:text-blue-600 transition"
-                      >
-                        {article.title}
-                      </Link>
-                    </h2>
-                    {article.excerpt && (
-                      <p className="text-slate-600 text-sm mb-3 line-clamp-2">
-                        {article.excerpt}
-                      </p>
+              <Link href={`/article/${article.slug}`}>
+                <article
+                  key={article.id}
+                  className="rounded-xl border border-border/50 p-4"
+                >
+                  <div className="flex items-start gap-4">
+                    {article.cover_image && (
+                      <img
+                        src={article.cover_image}
+                        alt=""
+                        width={120}
+                        height={80}
+                        className="rounded-lg object-cover h-auto w-[200px] flex-shrink-0"
+                      />
                     )}
-                    <div className="flex items-center gap-4 text-xs text-slate-500">
-                      <Link
-                        href={`/profile/${article.author_username}`}
-                        className="font-medium hover:text-blue-600"
-                      >
-                        {article.author_full_name || article.author_username}
-                      </Link>
-                      <span className="flex items-center gap-1">
-                        <Heart className="h-3 w-3" />
-                        {article.likes_count}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <MessageCircle className="h-3 w-3" />
-                        {article.comments_count}
-                      </span>
-                      {article.reading_time_minutes && (
-                        <span className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {article.reading_time_minutes} min
-                        </span>
+                    <div className="flex-1 min-w-0">
+                      <h2 className="text-lg font-bold mb-2 line-clamp-2">
+                        {article.title}
+                      </h2>
+                      {article.excerpt && (
+                        <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
+                          {article.excerpt}
+                        </p>
                       )}
-                      <span>
-                        {formatDate(article.published_at || article.created_at)}
-                      </span>
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                        <Link
+                          href={`/profile/${article.author_username}`}
+                          className="font-medium hover:text-blue-600"
+                        >
+                          {article.author_full_name || article.author_username}
+                        </Link>
+                        <span className="flex items-center gap-1">
+                          <Heart className="h-3 w-3" />
+                          {article.likes_count}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <MessageCircle className="h-3 w-3" />
+                          {article.comments_count}
+                        </span>
+                        {article.reading_time_minutes && (
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {article.reading_time_minutes} min
+                          </span>
+                        )}
+                        <span>
+                          {formatDate(
+                            article.published_at || article.created_at,
+                          )}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </article>
+                </article>
+              </Link>
             ))}
           </div>
         )}

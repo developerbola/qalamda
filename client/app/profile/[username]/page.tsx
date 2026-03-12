@@ -192,7 +192,7 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen pt-20">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-[10%] md:px-4 py-8">
         {/* Profile Header */}
         <div className="rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
@@ -281,10 +281,6 @@ export default function ProfilePage() {
                     {followingCount}
                   </span>
                   Following
-                </span>
-                <span className="flex items-center gap-1">
-                  <Clock className="h-4 w-4" />
-                  Joined {formatDate(profile.created_at)}
                 </span>
               </div>
             </div>
