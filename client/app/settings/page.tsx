@@ -49,6 +49,12 @@ export default function SettingsPage() {
     }
   };
 
+  const hasChanges =
+    fullName !== (user.full_name || "") ||
+    username !== (user.username || "") ||
+    bio !== (user.bio || "") ||
+    avatarUrl !== (user.avatar_url || "");
+
   return (
     <div className="min-h-screen ">
       <div className="max-w-2xl mx-auto px-4 py-8">
@@ -157,7 +163,7 @@ export default function SettingsPage() {
             </div>
 
             <div className="pt-4 border-t border-slate-200">
-              <Button type="submit" disabled={saving}>
+              <Button type="submit" disabled={saving || !hasChanges}>
                 {saving ? (
                   <>
                     <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
