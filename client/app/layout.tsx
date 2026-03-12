@@ -42,7 +42,7 @@ export default function RootLayout({
           <body className={`${playwrite.variable} ${poppins.variable} antialiased`}>
             <AuthInit />
             <Navbar />
-            <main className="pt-20">{children}</main>
+            <main className="">{children}</main>
           </body>
         </html>
       </LanguageProvider>

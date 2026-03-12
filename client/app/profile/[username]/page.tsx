@@ -190,7 +190,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen pt-20">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Profile Header */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">

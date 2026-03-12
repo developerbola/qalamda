@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "light" | "dark" | "sepia" | "slate";
+type Theme = "light" | "dark" | "sepia";
 
 interface ThemeContextType {
   theme: Theme;
@@ -30,14 +30,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const applyTheme = (t: Theme) => {
     const root = window.document.documentElement;
-    root.classList.remove("light", "dark", "theme-sepia", "theme-slate");
-    
+    root.classList.remove("light", "dark", "theme-sepia");
+
     if (t === "dark") {
       root.classList.add("dark");
     } else if (t === "sepia") {
       root.classList.add("theme-sepia");
-    } else if (t === "slate") {
-      root.classList.add("theme-slate");
     } else {
       root.classList.add("light");
     }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth";
@@ -32,6 +32,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -40,6 +41,11 @@ export default function Navbar() {
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   if (pathname && pathname.startsWith("/auth")) return null;
 
@@ -52,11 +58,11 @@ export default function Navbar() {
 
   const navLinks = [
     { href: "/tags", label: t("tags") },
-    ...(user ? [{ href: "/write", label: t("write") }] : []),
+    ...(mounted && user ? [{ href: "/write", label: t("write") }] : []),
   ];
 
   return (
-    <nav className="fixed flex items-center justify-center top-0 z-50 w-full bg-background/80 backdrop-blur-md h-16 border-b border-border/40">
+    <nav className="fixed flex items-center justify-center top-0 z-50 w-full bg-background h-16 border-b border-border/40">
       <div className="flex items-center justify-between w-2/3">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 h-5 w-[100px]">
@@ -71,9 +77,9 @@ export default function Navbar() {
               href={link.href}
               className={cn(
                 "text-sm font-medium transition-colors",
-                pathname === link.href
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground",
+                // pathname === link.href
+                //   ? "text-foreground"
+                //   : "text-muted-foreground hover:text-foreground",
               )}
             >
               {link.label}
@@ -100,7 +106,9 @@ export default function Navbar() {
 
         {/* Auth & Settings Section */}
         <div className="hidden md:flex items-center gap-1">
-          {user ? (
+          {!mounted ? (
+            <div className="w-8 h-8" />
+          ) : user ? (
             <>
               <Link href="/bookmarks">
                 <Button
@@ -121,11 +129,12 @@ export default function Navbar() {
                   >
                     <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-border/50 shadow-sm">
                       {user.avatar_url ? (
-                        <img
-                          src={user.avatar_url}
-                          alt={user.username}
-                          className="w-full h-full object-cover"
-                        />
+                        <Avatar>
+                          <AvatarImage src={user.avatar_url} />
+                          <AvatarFallback>
+                            {user.username.slice(0, 2).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
                       ) : (
                         <User className="h-4 w-4 text-primary" />
                       )}
@@ -183,13 +192,6 @@ export default function Navbar() {
                         >
                           {t("sepia")}{" "}
                           {theme === "sepia" && <Check className="h-3 w-3" />}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => setTheme("slate")}
-                          className="justify-between"
-                        >
-                          {t("slate")}{" "}
-                          {theme === "slate" && <Check className="h-3 w-3" />}
                         </DropdownMenuItem>
                       </DropdownMenuSubContent>
                     </DropdownMenuSub>
@@ -354,7 +356,9 @@ export default function Navbar() {
 
             {/* Mobile Auth Links */}
             <div className="space-y-2">
-              {user ? (
+              {!mounted ? (
+                <div className="h-12" />
+              ) : user ? (
                 <>
                   <Link
                     href={`/profile/${user.username}`}

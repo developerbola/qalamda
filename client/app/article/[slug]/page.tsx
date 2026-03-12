@@ -16,16 +16,21 @@ import {
   ArrowLeft,
   Send,
 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface Comment {
   id: string;
+  article_id: string;
+  author_id: string;
+  parent_id: string | null;
   content: string;
   created_at: string;
-  parent_id: string | null;
-  author_id: string;
-  username: string;
-  full_name: string | null;
-  avatar_url: string | null;
+  updated_at: string;
+  users: {
+    username: string;
+    full_name: string | null;
+    avatar_url: string | null;
+  };
 }
 
 interface Article {
@@ -235,22 +240,19 @@ export default function ArticlePage() {
 
   const renderComment = (comment: Comment) => {
     const isReply = comment.parent_id !== null;
-    const isAuthor = user?.id === comment.id; // This should be user.id comparison
-
     return (
       <div
         key={comment.id}
         className={`${isReply ? "ml-12 mt-4" : "py-4 border-b border-slate-100"}`}
       >
         <div className="flex gap-3">
-          {comment.avatar_url ? (
-            <img
-              src={comment.avatar_url}
-              alt={comment.full_name || comment.username}
-              width={isReply ? 32 : 40}
-              height={isReply ? 32 : 40}
-              className="rounded-full object-cover"
-            />
+          {comment.users.avatar_url ? (
+            <Avatar>
+              <AvatarImage src={comment.users.avatar_url} />
+              <AvatarFallback>
+                {comment.users.username.slice(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
           ) : (
             <div
               className={`rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center ${isReply ? "w-8 h-8" : "w-10 h-10"}`}
@@ -264,10 +266,10 @@ export default function ArticlePage() {
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
               <Link
-                href={`/profile/${comment.username}`}
+                href={`/profile/${comment.users.username}`}
                 className="font-medium text-slate-900 hover:text-blue-600 text-sm"
               >
-                {comment.full_name || comment.username}
+                {comment.users.full_name || comment.users.username}
               </Link>
               <span className="text-xs text-slate-500">
                 {formatDate(comment.created_at)}
@@ -290,7 +292,7 @@ export default function ArticlePage() {
                 onClick={() =>
                   setReplyingTo(replyingTo === comment.id ? null : comment.id)
                 }
-                className="text-xs text-blue-600 hover:text-blue-700 mt-2"
+                className="cursor-pointer text-xs text-blue-600 hover:text-blue-700 mt-2"
               >
                 Reply
               </button>
@@ -330,7 +332,7 @@ export default function ArticlePage() {
 
   if (!article) {
     return (
-      <div className="min-h-screen  flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-slate-900 mb-2">
             Article not found
@@ -344,7 +346,7 @@ export default function ArticlePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen pt-20">
       <div className="max-w-3xl mx-auto px-4 py-8">
         {/* Back Button */}
         <Link
@@ -369,7 +371,7 @@ export default function ArticlePage() {
             ))}
           </div>
 
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4 leading-tight">
+          <h1 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
             {article.title}
           </h1>
 
@@ -393,7 +395,7 @@ export default function ArticlePage() {
             <div>
               <Link
                 href={`/profile/${article.author_username}`}
-                className="font-medium text-slate-900 hover:text-blue-600"
+                className="font-medium hover:underline"
               >
                 {article.author_full_name || article.author_username}
               </Link>
@@ -484,13 +486,12 @@ export default function ArticlePage() {
             <form onSubmit={handleSubmitComment} className="mb-8">
               <div className="flex gap-3">
                 {user.avatar_url ? (
-                  <img
-                    src={user.avatar_url}
-                    alt={user.full_name || user.username}
-                    width={40}
-                    height={40}
-                    className="rounded-full object-cover"
-                  />
+                  <Avatar>
+                    <AvatarImage src={user.avatar_url} />
+                    <AvatarFallback>
+                      {user.username.slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
                 ) : (
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                     <UserIcon className="h-5 w-5 text-white" />
