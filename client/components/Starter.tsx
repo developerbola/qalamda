@@ -2,24 +2,26 @@ import Image from "next/image";
 import Link from "next/link";
 import { memo } from "react";
 import { Button } from "./ui/button";
+import { useLanguage } from "@/lib/language";
 
 const Start = () => {
+  const { t } = useLanguage();
+
   return (
     <div className="w-full h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-6xl h-[80%] flex items-center justify-between gap-10">
         <div className="flex flex-col gap-6 w-full md:w-1/2">
           <h1 className="font-write text-3xl sm:text-5xl leading-relaxed">
-            O'qing, o'rganing, ulashing!
+            {t("heroTitle")}
           </h1>
 
-          <p className="font-poppins text-[1rem] sm:text-xl text-neutral-600">
-            Maqolalar o'qish va bilimlaringizni boshqalar bilan ulashish uchun
-            yangi imkoniyat.
+          <p className="font-poppins text-[1rem] sm:text-xl text-muted-foreground">
+            {t("heroDescription")}
           </p>
 
           <Link href="/auth" className="cursor-default">
-            <Button className="rounded-full text-sm px-4" size="lg">
-              O'qishni boshlash
+            <Button className="rounded-full text-sm px-6 h-12" size="lg">
+              {t("startReading")}
             </Button>
           </Link>
         </div>

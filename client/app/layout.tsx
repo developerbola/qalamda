@@ -18,27 +18,34 @@ const poppins = Poppins({
   variable: "--font-poppins",
 });
 
+import { ThemeProvider } from "@/lib/theme";
+import { LanguageProvider } from "@/lib/language";
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
-      <head>
-        <title>Qalamda</title>
-        <link rel="shortcut icon" href="favicon.svg" type="image/svg" />
-        <meta
-          name="description"
-          content="Maqolalar o'qish va bilimlaringizni boshqalar bilan ulashish uchun
-            yangi imkoniyat."
-        />
-      </head>
-      <body className={`${playwrite.variable} ${poppins.variable} antialiased`}>
-        <AuthInit />
-        <Navbar />
-        <main className="pt-20">{children}</main>
-      </body>
-    </html>
+    <ThemeProvider>
+      <LanguageProvider>
+        <html lang="en" className={cn("font-sans", geist.variable)}>
+          <head>
+            <title>Qalamda</title>
+            <link rel="shortcut icon" href="favicon.svg" type="image/svg" />
+            <meta
+              name="description"
+              content="Maqolalar o'qish va bilimlaringizni boshqalar bilan ulashish uchun
+                yangi imkoniyat."
+            />
+          </head>
+          <body className={`${playwrite.variable} ${poppins.variable} antialiased`}>
+            <AuthInit />
+            <Navbar />
+            <main className="pt-20">{children}</main>
+          </body>
+        </html>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
