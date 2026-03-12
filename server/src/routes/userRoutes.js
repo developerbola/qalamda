@@ -1,6 +1,6 @@
-import { authMiddleware } from "../middlewares/auth.middleware";
-import { getUserController, updateProfileController, followController, unfollowController, followStatusController } from "../controllers/userController";
-import { getBookmarksController } from "../controllers/bookmarkController";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
+import { getUserController, updateProfileController, followController, unfollowController, followStatusController } from "../controllers/userController.js";
+import { getBookmarksController } from "../controllers/bookmarkController.js";
 
 // ==================== USER ROUTES ====================
 

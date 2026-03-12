@@ -1,5 +1,5 @@
-import { authMiddleware } from "../middlewares/auth.middleware";
-import { toggleLikeController, likeStatusController } from "../controllers/likeController";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
+import { toggleLikeController, likeStatusController } from "../controllers/likeController.js";
 
 // ==================== LIKE ROUTES ====================
 
