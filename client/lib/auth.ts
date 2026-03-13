@@ -30,8 +30,17 @@ const listeners = new Set<(u: User | null) => void>();
 const updateGlobalUser = (u: User | null) => {
   globalUser = u;
   if (typeof window !== "undefined") {
-    if (u) sessionStorage.setItem(PROFILE_KEY, JSON.stringify(u));
-    else sessionStorage.removeItem(PROFILE_KEY);
+    if (u) {
+      sessionStorage.setItem(PROFILE_KEY, JSON.stringify(u));
+      // Set cookies for server-side hints
+      document.cookie = `qalamda_auth_status=authenticated; path=/; max-age=31536000; SameSite=Lax`;
+      document.cookie = `qalamda_username=${u.username}; path=/; max-age=31536000; SameSite=Lax`;
+    } else {
+      sessionStorage.removeItem(PROFILE_KEY);
+      // Remove the cookies
+      document.cookie = `qalamda_auth_status=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+      document.cookie = `qalamda_username=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+    }
   }
   listeners.forEach((l) => l(u));
 };

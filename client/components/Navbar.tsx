@@ -37,7 +37,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Logo from "./Logo";
 import { SidebarTrigger } from "./ui/sidebar";
 
-export default function Navbar() {
+export default function Navbar({ initialUsername }: { initialUsername?: string }) {
   const { user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
@@ -45,6 +45,8 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  const effectiveUsername = user?.username || initialUsername;
 
   useEffect(() => {
     setMounted(true);
@@ -95,9 +97,9 @@ export default function Navbar() {
 
         {/* Auth & Settings Section */}
         <div className="hidden md:flex items-center gap-1">
-          {!mounted ? (
+          {(!mounted && !initialUsername) ? (
             <div className="w-8 h-8" />
-          ) : user ? (
+          ) : (user || initialUsername) ? (
             <>
               <Link href="/bookmarks">
                 <Button
@@ -119,124 +121,139 @@ export default function Navbar() {
                 </Button>
               </Link>
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-full hover:bg-accent/50 cursor-pointer transition-colors border border-transparent hover:border-border/50 h-auto"
-                  >
-                    <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-border/50 shadow-sm">
-                      {user.avatar_url ? (
-                        <Avatar className={"size-5"}>
-                          <AvatarImage src={user.avatar_url} />
-                          <AvatarFallback className={"text-[10px]"}>
-                            {user.username.slice(0, 2).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                      ) : (
-                        <User className="h-4 w-4 text-primary" />
-                      )}
-                    </div>
-                    <span className="text-sm font-medium text-foreground">
-                      {user.username}
-                    </span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 mt-2">
-                  <DropdownMenuGroup>
-                    <DropdownMenuLabel className="text-xs text-muted-foreground uppercase py-2 px-3">
-                      {t("settings")}
-                    </DropdownMenuLabel>
-                    <Link href={`/profile/${user.username}`}>
-                      <DropdownMenuItem className="cursor-pointer py-2 px-3">
-                        <User className="mr-3 h-4 w-4 text-muted-foreground" />
-                        <span>{t("profile")}</span>
-                      </DropdownMenuItem>
-                    </Link>
 
-                    <Link href="/settings">
-                      <DropdownMenuItem className="cursor-pointer py-2 px-3">
-                        <Settings className="mr-3 h-4 w-4 text-muted-foreground" />
-                        <span>{t("settings")}</span>
-                      </DropdownMenuItem>
-                    </Link>
-                  </DropdownMenuGroup>
-
-                  <DropdownMenuGroup>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuSub>
-                      <DropdownMenuSubTrigger className="py-2 px-3">
-                        <Palette className="mr-3 h-4 w-4 text-muted-foreground" />
-                        <span>{t("theme")}</span>
-                      </DropdownMenuSubTrigger>
-                      <DropdownMenuSubContent className="w-40">
-                        <DropdownMenuItem
-                          onClick={() => setTheme("light")}
-                          className="justify-between"
-                        >
-                          {t("light")}{" "}
-                          {theme === "light" && <Check className="h-3 w-3" />}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => setTheme("dark")}
-                          className="justify-between"
-                        >
-                          {t("dark")}{" "}
-                          {theme === "dark" && <Check className="h-3 w-3" />}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => setTheme("sepia")}
-                          className="justify-between"
-                        >
-                          {t("sepia")}{" "}
-                          {theme === "sepia" && <Check className="h-3 w-3" />}
-                        </DropdownMenuItem>
-                      </DropdownMenuSubContent>
-                    </DropdownMenuSub>
-
-                    <DropdownMenuSub>
-                      <DropdownMenuSubTrigger className="py-2 px-3">
-                        <Globe className="mr-3 h-4 w-4 text-muted-foreground" />
-                        <span>{t("language")}</span>
-                      </DropdownMenuSubTrigger>
-                      <DropdownMenuSubContent className="w-40">
-                        <DropdownMenuItem
-                          onClick={() => setLanguage("uz")}
-                          className="justify-between"
-                        >
-                          O'zbekcha{" "}
-                          {language === "uz" && <Check className="h-3 w-3" />}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => setLanguage("uzc")}
-                          className="justify-between"
-                        >
-                          Ўзбекча{" "}
-                          {language === "uzc" && <Check className="h-3 w-3" />}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => setLanguage("ru")}
-                          className="justify-between"
-                        >
-                          Русский{" "}
-                          {language === "ru" && <Check className="h-3 w-3" />}
-                        </DropdownMenuItem>
-                      </DropdownMenuSubContent>
-                    </DropdownMenuSub>
-                  </DropdownMenuGroup>
-
-                  <DropdownMenuGroup>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      className="text-destructive focus:text-destructive cursor-pointer py-2 px-3"
-                      onClick={() => logout()}
+              {!mounted ? (
+                <Button
+                  variant="ghost"
+                  className="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-full hover:bg-accent/50 cursor-pointer transition-colors border border-transparent hover:border-border/50 h-auto"
+                >
+                  <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-border/50 shadow-sm">
+                    <User className="h-4 w-4 text-primary" />
+                  </div>
+                  <span className="text-sm font-medium text-foreground">
+                    {effectiveUsername}
+                  </span>
+                </Button>
+              ) : (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-full hover:bg-accent/50 cursor-pointer transition-colors border border-transparent hover:border-border/50 h-auto"
                     >
-                      <LogOut className="mr-3 h-4 w-4" />
-                      <span>{t("signOut")}</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                      <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-border/50 shadow-sm">
+                        {user?.avatar_url ? (
+                          <Avatar className={"size-5"}>
+                            <AvatarImage src={user.avatar_url} />
+                            <AvatarFallback className={"text-[10px]"}>
+                              {user.username.slice(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                        ) : (
+                          <User className="h-4 w-4 text-primary" />
+                        )}
+                      </div>
+                      <span className="text-sm font-medium text-foreground">
+                        {effectiveUsername}
+                      </span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56 mt-2">
+                    <DropdownMenuGroup>
+                      <DropdownMenuLabel className="text-xs text-muted-foreground uppercase py-2 px-3">
+                        {t("settings")}
+                      </DropdownMenuLabel>
+                      <Link href={`/profile/${effectiveUsername}`}>
+                        <DropdownMenuItem className="cursor-pointer py-2 px-3">
+                          <User className="mr-3 h-4 w-4 text-muted-foreground" />
+                          <span>{t("profile")}</span>
+                        </DropdownMenuItem>
+                      </Link>
+
+                      <Link href="/settings">
+                        <DropdownMenuItem className="cursor-pointer py-2 px-3">
+                          <Settings className="mr-3 h-4 w-4 text-muted-foreground" />
+                          <span>{t("settings")}</span>
+                        </DropdownMenuItem>
+                      </Link>
+                    </DropdownMenuGroup>
+
+                    <DropdownMenuGroup>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuSub>
+                        <DropdownMenuSubTrigger className="py-2 px-3">
+                          <Palette className="mr-3 h-4 w-4 text-muted-foreground" />
+                          <span>{t("theme")}</span>
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuSubContent className="w-40">
+                          <DropdownMenuItem
+                            onClick={() => setTheme("light")}
+                            className="justify-between"
+                          >
+                            {t("light")}{" "}
+                            {theme === "light" && <Check className="h-3 w-3" />}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => setTheme("dark")}
+                            className="justify-between"
+                          >
+                            {t("dark")}{" "}
+                            {theme === "dark" && <Check className="h-3 w-3" />}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => setTheme("sepia")}
+                            className="justify-between"
+                          >
+                            {t("sepia")}{" "}
+                            {theme === "sepia" && <Check className="h-3 w-3" />}
+                          </DropdownMenuItem>
+                        </DropdownMenuSubContent>
+                      </DropdownMenuSub>
+
+                      <DropdownMenuSub>
+                        <DropdownMenuSubTrigger className="py-2 px-3">
+                          <Globe className="mr-3 h-4 w-4 text-muted-foreground" />
+                          <span>{t("language")}</span>
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuSubContent className="w-40">
+                          <DropdownMenuItem
+                            onClick={() => setLanguage("uz")}
+                            className="justify-between"
+                          >
+                            O'zbekcha{" "}
+                            {language === "uz" && <Check className="h-3 w-3" />}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => setLanguage("uzc")}
+                            className="justify-between"
+                          >
+                            Ўзбекча{" "}
+                            {language === "uzc" && <Check className="h-3 w-3" />}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => setLanguage("ru")}
+                            className="justify-between"
+                          >
+                            Русский{" "}
+                            {language === "ru" && <Check className="h-3 w-3" />}
+                          </DropdownMenuItem>
+                        </DropdownMenuSubContent>
+                      </DropdownMenuSub>
+                    </DropdownMenuGroup>
+
+                    <DropdownMenuGroup>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className="text-destructive focus:text-destructive cursor-pointer py-2 px-3"
+                        onClick={() => logout()}
+                      >
+                        <LogOut className="mr-3 h-4 w-4" />
+                        <span>{t("signOut")}</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </>
           ) : (
             <div className="flex items-center gap-2">
@@ -353,12 +370,12 @@ export default function Navbar() {
 
             {/* Mobile Auth Links */}
             <div className="space-y-2">
-              {!mounted ? (
+              {(!mounted && !initialUsername) ? (
                 <div className="h-12" />
-              ) : user ? (
+              ) : (user || initialUsername) ? (
                 <>
                   <Link
-                    href={`/profile/${user.username}`}
+                    href={`/profile/${effectiveUsername}`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <Button

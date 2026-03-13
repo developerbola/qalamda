@@ -29,7 +29,7 @@ const mainLinks = [
   { label: "stats", icon: BarChart2, href: "/stats" },
 ];
 
-export function AppSidebar() {
+export function AppSidebar({ initialUsername }: { initialUsername?: string }) {
   const pathname = usePathname();
   const { user } = useAuth();
   const { t } = useLanguage();
@@ -37,7 +37,9 @@ export function AppSidebar() {
 
   if (pathname && pathname.startsWith("/auth")) return null;
 
-  const profileHref = user ? `/profile/${user.username}` : "/auth";
+  // Use initialUsername from SSR/Cookie if user object isn't hydrated yet
+  const effectiveUsername = user?.username || initialUsername;
+  const profileHref = effectiveUsername ? `/profile/${effectiveUsername}` : "/auth";
 
   return (
     <Sidebar>
