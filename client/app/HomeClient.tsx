@@ -178,41 +178,41 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
     return (
       <Link href={`/article/${article.slug}`} key={article.id}>
         <article className="group flex flex-col gap-6 py-6 border-t border-border/30">
-          {/* Author Avatar */}
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              router.push(`/profile/${article.users.username}`);
-            }}
-            variant={"link"}
-            className="flex w-fit items-center gap-2 text-sm hover:underline px-0"
-          >
-            {article.users.avatar_url && (
-              <Avatar className="size-5">
-                <AvatarImage src={article.users.avatar_url} />
-                <AvatarFallback className="text-[10px]">
-                  {article.users.username.slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-            )}
-            {article.users.full_name || article.users.username}
-          </Button>
-
           {/* Content */}
           <div className="flex-1 flex items-center justify-between">
             {/* Author & Date */}
             <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2 text-sm mb-2">
-                <span>{formatDate(article.created_at)}</span>
-                {article.reading_time_minutes && (
-                  <>
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {article.reading_time_minutes} min
-                    </span>
-                  </>
-                )}
+              <div className="flex gap-3 items-center">
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    router.push(`/profile/${article.users.username}`);
+                  }}
+                  variant={"link"}
+                  className="flex w-fit items-center gap-2 text-sm hover:underline px-0"
+                >
+                  {article.users.avatar_url && (
+                    <Avatar className="size-5">
+                      <AvatarImage src={article.users.avatar_url} />
+                      <AvatarFallback className="text-[10px]">
+                        {article.users.username.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  )}
+                  {article.users.full_name || article.users.username}
+                </Button>
+                <div className="flex items-center gap-2 text-sm">
+                  <span>{formatDate(article.created_at)}</span>
+                  {article.reading_time_minutes && (
+                    <>
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {article.reading_time_minutes} min
+                      </span>
+                    </>
+                  )}
+                </div>
               </div>
               {/* Title and Excerpt */}
               <h2 className="text-2xl font-bold transition mb-2 line-clamp-2">
@@ -223,8 +223,14 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
               </p>
 
               <div className="flex items-center gap-4">
-                <button
-                  onClick={(e) => handleLike(article.id, e)}
+                <p className="text-[13px] flex items-center pt-[3px]">
+                  {new Date(article.published_at).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
+                <div
                   className={`flex items-center gap-1 text-sm transition ${
                     likedArticles.has(article.id)
                       ? "text-red-500"
@@ -234,11 +240,15 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
                   <Heart
                     className={`h-4 w-4 ${likedArticles.has(article.id) ? "fill-current" : ""}`}
                   />
-                  <span>{article.likes_count}</span>
-                </button>
+                  {article.likes_count > 0 && (
+                    <span className="text-destructive">
+                      {article.likes_count}
+                    </span>
+                  )}
+                </div>
 
                 {article.comments_count > 0 && (
-                  <div className="flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700 transition">
+                  <div className="flex items-center gap-1 text-sm text-neutral-500">
                     <MessageCircle className="h-4 w-4" />
                     <span>{article.comments_count}</span>
                   </div>
@@ -248,8 +258,8 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
                   onClick={(e) => handleBookmark(article.id, e)}
                   className={`transition cursor-pointer ${
                     bookmarkedArticles.has(article.id)
-                      ? "text-blue-600"
-                      : "text-neutral-500 hover:text-blue-600"
+                      ? "text-blue-500"
+                      : "text-neutral-500 hover:text-blue-500"
                   }`}
                 >
                   <Bookmark
@@ -277,7 +287,7 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
 
   return (
     <div className="min-h-screen pt-20">
-      <div className="max-w-4xl mx-auto px-[10%] md:px-4 py-8">
+      <div className="max-w-2xl mx-auto px-[10%] md:px-4 py-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">{t("latestStories")}</h1>
