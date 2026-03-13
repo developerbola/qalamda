@@ -170,8 +170,6 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
     );
   }
 
-
-
   const renderArticleCard = (article: Article) => {
     return (
       <Link href={`/article/${article.slug}`} key={article.id}>
@@ -322,7 +320,7 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
 
         {/* Articles */}
         {loading || (user && !hasFetched) ? (
-          <div className="space-y-4">
+          <div className="space-y-4 w-2xl flex-1">
             {[...Array(4)].map((_, i) => (
               <div
                 key={i}
@@ -345,7 +343,7 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
             <p className="text-neutral-500">{t("noArticlesFound")}</p>
           </div>
         ) : (
-          <div className="">{articles.map(renderArticleCard)}</div>
+          articles.map(renderArticleCard)
         )}
 
         {/* Pagination */}

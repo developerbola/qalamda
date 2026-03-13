@@ -37,7 +37,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Logo from "./Logo";
 import { SidebarTrigger } from "./ui/sidebar";
 
-export default function Navbar({ initialUsername }: { initialUsername?: string }) {
+export default function Navbar({
+  initialUsername,
+}: {
+  initialUsername?: string;
+}) {
   const { user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
@@ -69,10 +73,8 @@ export default function Navbar({ initialUsername }: { initialUsername?: string }
   return (
     <nav className="fixed flex items-center justify-center top-0 z-50 w-full bg-background h-16 border-b border-border/40">
       <div className="flex items-center justify-between px-[5%] w-full">
-      {/* <div className="flex items-center justify-between w-[80%]"> */}
-        {/* Logo */}
         <div className="flex items-center gap-2">
-          <SidebarTrigger />
+          {user && <SidebarTrigger />}
           <Link href="/" className="h-max w-[120px]">
             <Logo className="h-full w-auto" />
           </Link>
@@ -97,9 +99,9 @@ export default function Navbar({ initialUsername }: { initialUsername?: string }
 
         {/* Auth & Settings Section */}
         <div className="hidden md:flex items-center gap-1">
-          {(!mounted && !initialUsername) ? (
+          {!mounted && !initialUsername ? (
             <div className="w-8 h-8" />
-          ) : (user || initialUsername) ? (
+          ) : user || initialUsername ? (
             <>
               <Link href="/bookmarks">
                 <Button
@@ -120,7 +122,6 @@ export default function Navbar({ initialUsername }: { initialUsername?: string }
                   <SquarePen />
                 </Button>
               </Link>
-
 
               {!mounted ? (
                 <Button
@@ -228,7 +229,9 @@ export default function Navbar({ initialUsername }: { initialUsername?: string }
                             className="justify-between"
                           >
                             Ўзбекча{" "}
-                            {language === "uzc" && <Check className="h-3 w-3" />}
+                            {language === "uzc" && (
+                              <Check className="h-3 w-3" />
+                            )}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => setLanguage("ru")}
@@ -370,9 +373,9 @@ export default function Navbar({ initialUsername }: { initialUsername?: string }
 
             {/* Mobile Auth Links */}
             <div className="space-y-2">
-              {(!mounted && !initialUsername) ? (
+              {!mounted && !initialUsername ? (
                 <div className="h-12" />
-              ) : (user || initialUsername) ? (
+              ) : user || initialUsername ? (
                 <>
                   <Link
                     href={`/profile/${effectiveUsername}`}

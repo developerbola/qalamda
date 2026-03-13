@@ -12,6 +12,7 @@ import { LanguageProvider } from "@/lib/language";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import Starter from "@/components/Starter";
+import { RightSidebar } from "@/components/RightSidebar";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -81,7 +82,8 @@ export default function ClientLayout({
               {showApp ? (
                 <>
                   <AppSidebar initialUsername={initialUsername} />
-                  <main className="flex justify-center w-full">{children}</main>
+                  <main className="flex justify-center flex-1 w-full min-w-0">{children}</main>
+                  <RightSidebar />
                 </>
               ) : (
                 <Starter />

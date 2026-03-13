@@ -66,7 +66,7 @@ export function AppSidebar({ initialUsername }: { initialUsername?: string }) {
         </SidebarGroup>
 
         {/* divider */}
-        <div className="my-6 border-t" />
+        <div className="my-6 border-t border-border/40" />
 
         {/* FOLLOWING */}
         <SidebarGroup>
