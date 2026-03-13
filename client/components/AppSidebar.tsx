@@ -31,15 +31,16 @@ const mainLinks = [
 
 export function AppSidebar({ initialUsername }: { initialUsername?: string }) {
   const pathname = usePathname();
+  if (pathname && pathname.startsWith("/auth")) return null;
   const { user } = useAuth();
   const { t } = useLanguage();
   const { following } = useUserActivityStore();
 
-  if (pathname && pathname.startsWith("/auth")) return null;
-
   // Use initialUsername from SSR/Cookie if user object isn't hydrated yet
   const effectiveUsername = user?.username || initialUsername;
-  const profileHref = effectiveUsername ? `/profile/${effectiveUsername}` : "/auth";
+  const profileHref = effectiveUsername
+    ? `/profile/${effectiveUsername}`
+    : "/auth";
 
   return (
     <Sidebar>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Sparkles } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 const staffPicks = [
   {
@@ -64,13 +65,16 @@ const whoToFollow = [
 ];
 
 export function RightSidebar() {
+  const pathname = usePathname();
+  if (pathname && pathname.startsWith("/auth")) return null;
   return (
     <aside className="hidden lg:block w-[320px] xl:w-[350px] shrink-0 border-l border-border/40 h-svh sticky top-0 pt-20 pb-6 pr-6 pl-6 overflow-y-auto">
       <div className="space-y-10">
-        
         {/* Staff Picks */}
         <div>
-          <h2 className="font-bold text-base mb-4 text-foreground">Staff Picks</h2>
+          <h2 className="font-bold text-base mb-4 text-foreground">
+            Staff Picks
+          </h2>
           <div className="space-y-4">
             {staffPicks.map((pick) => (
               <div key={pick.id} className="group cursor-pointer">
@@ -82,8 +86,9 @@ export function RightSidebar() {
                     </AvatarFallback>
                   </Avatar>
                   <p className="text-xs text-muted-foreground font-medium truncate">
-                    In <span className="text-foreground">{pick.publication}</span> by{" "}
-                    <span className="text-foreground">{pick.author}</span>
+                    In{" "}
+                    <span className="text-foreground">{pick.publication}</span>{" "}
+                    by <span className="text-foreground">{pick.author}</span>
                   </p>
                 </div>
                 <h3 className="font-bold text-[15px] leading-tight text-foreground group-hover:underline decoration-foreground mb-1.5">
@@ -108,7 +113,9 @@ export function RightSidebar() {
 
         {/* Recommended Topics */}
         <div>
-          <h2 className="font-bold text-base mb-4 text-foreground">Recommended topics</h2>
+          <h2 className="font-bold text-base mb-4 text-foreground">
+            Recommended topics
+          </h2>
           <div className="flex flex-wrap gap-2">
             {recommendedTopics.map((topic) => (
               <Link
@@ -130,13 +137,17 @@ export function RightSidebar() {
 
         {/* Who to follow */}
         <div>
-          <h2 className="font-bold text-base mb-4 text-foreground">Who to follow</h2>
+          <h2 className="font-bold text-base mb-4 text-foreground">
+            Who to follow
+          </h2>
           <div className="space-y-4">
             {whoToFollow.map((user) => (
               <div key={user.id} className="flex gap-3 items-start">
                 <Avatar className="w-8 h-8 mt-1">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback>{user.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                  <AvatarFallback>
+                    {user.name.slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold text-[14px] text-foreground truncate">
@@ -153,7 +164,6 @@ export function RightSidebar() {
             ))}
           </div>
         </div>
-
       </div>
     </aside>
   );
