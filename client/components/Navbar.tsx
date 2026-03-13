@@ -80,21 +80,23 @@ export default function Navbar({
           </Link>
 
           {/* Search Bar */}
-          <form
-            onSubmit={handleSearch}
-            className="hidden md:flex flex-1 max-w-md mx-6"
-          >
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t("search")}
-                className="w-full pl-10 pr-4 py-2 bg-secondary/50 border border-border/50 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all text-foreground"
-              />
-            </div>
-          </form>
+          {(mounted ? !!user : !!initialUsername) && (
+            <form
+              onSubmit={handleSearch}
+              className="hidden md:flex flex-1 max-w-md mx-6"
+            >
+              <div className="relative w-full">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={t("search")}
+                  className="w-full pl-10 pr-4 py-2 bg-secondary/50 border border-border/50 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all text-foreground"
+                />
+              </div>
+            </form>
+          )}
         </div>
 
         {/* Auth & Settings Section */}

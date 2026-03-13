@@ -7,7 +7,6 @@ import "./styles/index.css";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/Navbar";
 import { AuthInit, useAuth } from "@/lib/auth";
-import { Loader2 } from "lucide-react";
 import { ThemeProvider } from "@/lib/theme";
 import { LanguageProvider } from "@/lib/language";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -48,8 +47,6 @@ export default function ClientLayout({
     setMounted(true);
   }, []);
 
-  // On the server or during hydration, we trust the cookie
-  // Once mounted, we trust the actual auth state
   const showApp = mounted ? !!user : isInitiallyAuth;
 
   return (
@@ -81,7 +78,10 @@ export default function ClientLayout({
             <AuthInit />
             <SidebarProvider>
               <Navbar initialUsername={initialUsername} />
-              {showApp ? (
+
+              {pathname === "/auth" ? (
+                children
+              ) : showApp ? (
                 <>
                   <AppSidebar initialUsername={initialUsername} />
                   <main className="flex justify-center flex-1 w-full min-w-0">

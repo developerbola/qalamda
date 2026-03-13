@@ -6,7 +6,6 @@ import { articleAPI, likeAPI, bookmarkAPI } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { useUserActivityStore } from "@/lib/useUserActivityStore";
 import { useTagStore } from "@/lib/useTagStore";
-import Starter from "@/components/Starter";
 import { Button } from "@/components/ui/button";
 import { Bookmark, Clock, MessageCircle, Heart, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
