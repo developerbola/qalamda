@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { tagAPI } from "@/lib/api";
 import { Loader2 } from "lucide-react";
+import { useLanguage } from "@/lib/language";
 
 interface Tag {
   id: string;
@@ -16,6 +17,7 @@ interface Tag {
 export default function TagsPage() {
   const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -44,13 +46,13 @@ export default function TagsPage() {
     <div className="min-h-screen pt-20">
       <div className="max-w-4xl mx-auto px-[10%] md:px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Tags</h1>
-          <p className="text-slate-600">Explore content by topic.</p>
+          <h1 className="text-3xl font-bold text-slate-900 mb-2">{t("tags")}</h1>
+          <p className="text-slate-600">{t("tagsDesc")}</p>
         </div>
 
         {tags.length === 0 ? (
           <div className="rounded-xl shadow-sm border border-slate-200 p-12 text-center">
-            <p className="text-slate-500">No tags available yet.</p>
+            <p className="text-slate-500">{t("noTags")}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -69,8 +71,7 @@ export default function TagsPage() {
                   </p>
                 )}
                 <div className="text-sm text-slate-500">
-                  {tag.article_count} article
-                  {tag.article_count !== 1 ? "s" : ""}
+                  {tag.article_count} {t("articles").toLowerCase()}
                 </div>
               </Link>
             ))}

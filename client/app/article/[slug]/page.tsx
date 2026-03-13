@@ -17,6 +17,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useLanguage } from "@/lib/language";
 
 interface Comment {
   id: string;
@@ -64,6 +65,7 @@ export default function ArticlePage() {
   const params = useParams();
   const slug = params.slug as string;
   const router = useRouter();
+  const { t } = useLanguage();
 
   const { user } = useAuth();
   const [article, setArticle] = useState<Article | null>(null);
@@ -266,7 +268,7 @@ export default function ArticlePage() {
                   onClick={() => handleDeleteComment(comment.id)}
                   className="h-6 text-xs text-red-500 hover:text-red-700"
                 >
-                  Delete
+                  {t("delete")}
                 </Button>
               )}
             </div>
@@ -279,7 +281,7 @@ export default function ArticlePage() {
                 }
                 className="cursor-pointer text-xs text-blue-600 hover:text-blue-700 mt-2"
               >
-                Reply
+                {t("reply")}
               </button>
             )}
 
@@ -320,10 +322,10 @@ export default function ArticlePage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-slate-900 mb-2">
-            Article not found
+            {t("articleNotFound")}
           </h1>
           <Link href="/">
-            <Button>Back to Home</Button>
+            <Button>{t("backToHome")}</Button>
           </Link>
         </div>
       </div>
@@ -427,7 +429,7 @@ export default function ArticlePage() {
 
             <div className="flex items-center gap-2">
               <MessageCircle className="h-5 w-5" />
-              <span>{article.comments_count} comments</span>
+              <span>{article.comments_count} {t("comments").toLowerCase()}</span>
             </div>
           </div>
 
@@ -448,7 +450,7 @@ export default function ArticlePage() {
         {/* Comments Section */}
         <section>
           <h2 className="text-xl font-bold mb-6">
-            Comments ({article.comments_count})
+            {t("comments")} ({article.comments_count})
           </h2>
 
           {/* Comment Form */}
@@ -480,7 +482,7 @@ export default function ArticlePage() {
                       type="submit"
                       disabled={!commentText.trim() || submittingComment}
                     >
-                      {submittingComment ? "Posting..." : "Comment"}
+                      {submittingComment ? t("posting") : t("postComment")}
                     </Button>
                   </div>
                 </div>
@@ -501,7 +503,7 @@ export default function ArticlePage() {
           <div>
             {comments.length === 0 ? (
               <p className="text-muted-foreground text-center py-8">
-                No comments yet. Be the first to comment!
+                {t("noCommentsYet")}
               </p>
             ) : (
               comments

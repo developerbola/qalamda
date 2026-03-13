@@ -6,6 +6,7 @@ import { bookmarkAPI } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Bookmark, Clock, Heart, Loader2, MessageCircle } from "lucide-react";
+import { useLanguage } from "@/lib/language";
 
 interface Article {
   id: string;
@@ -25,6 +26,7 @@ interface Article {
 
 export default function BookmarksPage() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -69,9 +71,9 @@ export default function BookmarksPage() {
     <div className="min-h-screen pt-20">
       <div className="max-w-4xl mx-auto px-[10%] md:px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Bookmarks</h1>
+          <h1 className="text-3xl font-bold mb-2">{t("bookmarks")}</h1>
           <p className="text-muted-foreground">
-            Articles you've saved for later.
+            {t("bookmarksDesc")}
           </p>
         </div>
 
@@ -79,10 +81,10 @@ export default function BookmarksPage() {
           <div className="rounded-xl shadow-sm border border-slate-200 p-12 text-center">
             <Bookmark className="h-12 w-12 text-slate-300 mx-auto mb-4" />
             <p className="text-slate-500 mb-4">
-              You haven't bookmarked any articles yet.
+              {t("noBookmarks")}
             </p>
             <Link href="/">
-              <Button>Explore Articles</Button>
+              <Button>{t("startReading")}</Button>
             </Link>
           </div>
         ) : (

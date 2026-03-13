@@ -17,6 +17,7 @@ import {
   Check,
   Loader2,
 } from "lucide-react";
+import { useLanguage } from "@/lib/language";
 
 interface UserProfile {
   id: string;
@@ -50,6 +51,7 @@ interface Article {
 export default function ProfilePage() {
   const params = useParams();
   const username = params.username as string;
+  const { t } = useLanguage();
 
   const { user: currentUser } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -179,10 +181,10 @@ export default function ProfilePage() {
       <div className="min-h-screen  flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-slate-900 mb-2">
-            User not found
+            {t("userNotFound")}
           </h1>
           <Link href="/">
-            <Button>Back to Home</Button>
+            <Button>{t("backToHome")}</Button>
           </Link>
         </div>
       </div>
@@ -220,7 +222,7 @@ export default function ProfilePage() {
                   <Link href="/settings">
                     <Button variant="outline" size="sm">
                       <Edit className="h-4 w-4 mr-2" />
-                      Edit Profile
+                      {t("editProfile")}
                     </Button>
                   </Link>
                 ) : (
@@ -250,12 +252,12 @@ export default function ProfilePage() {
                     ) : isFollowing ? (
                       <>
                         <Check className="h-4 w-4 mr-2" />
-                        Following
+                        {t("following")}
                       </>
                     ) : (
                       <>
                         <Plus className="h-4 w-4 mr-2" />
-                        Follow
+                        {t("follow")}
                       </>
                     )}
                   </Button>
@@ -273,13 +275,13 @@ export default function ProfilePage() {
                   <span className="font-semibold text-slate-900">
                     {followersCount}
                   </span>
-                  Followers
+                  {t("followers")}
                 </span>
                 <span className="flex items-center gap-1">
                   <span className="font-semibold text-slate-900">
                     {followingCount}
                   </span>
-                  Following
+                  {t("following")}
                 </span>
               </div>
             </div>
@@ -297,7 +299,7 @@ export default function ProfilePage() {
                   : "text-slate-600 hover:text-slate-900"
               }`}
             >
-              Articles
+              {t("articles")}
             </button>
             {isOwnProfile && (
               <button
@@ -309,7 +311,7 @@ export default function ProfilePage() {
                 }`}
               >
                 <Bookmark className="h-4 w-4 inline mr-2" />
-                Bookmarks
+                {t("bookmarks")}
               </button>
             )}
           </div>
@@ -333,12 +335,12 @@ export default function ProfilePage() {
           <div className="rounded-xl shadow-sm border border-slate-200 p-12 text-center">
             <p className="text-slate-500">
               {activeTab === "articles"
-                ? "No articles yet."
-                : "No bookmarks yet."}
+                ? t("noArticles")
+                : t("noBookmarks")}
             </p>
             {isOwnProfile && activeTab === "articles" && (
               <Link href="/write" className="mt-4 inline-block">
-                <Button>Write your first article</Button>
+                <Button>{t("writeFirst")}</Button>
               </Link>
             )}
           </div>

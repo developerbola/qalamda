@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Bookmark, Clock, MessageCircle, Heart, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/lib/language";
 
 interface Article {
   id: string;
@@ -45,6 +46,7 @@ export default function HomePage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const router = useRouter();
+  const { t } = useLanguage();
 
   const {
     likedArticles,
@@ -276,8 +278,8 @@ export default function HomePage() {
       <div className="max-w-4xl mx-auto px-[10%] md:px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Latest Stories</h1>
-          <p className="">Discover stories from writers around the world.</p>
+          <h1 className="text-3xl font-bold mb-2">{t("latestStories")}</h1>
+          <p className="">{t("discoverStories")}</p>
         </div>
 
         {/* Tags */}
@@ -330,7 +332,7 @@ export default function HomePage() {
           </div>
         ) : articles.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-neutral-500">No articles found.</p>
+            <p className="text-neutral-500">{t("noArticlesFound")}</p>
           </div>
         ) : (
           <div className="">{articles.map(renderArticleCard)}</div>
@@ -344,17 +346,17 @@ export default function HomePage() {
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
             >
-              Previous
+              {t("previous")}
             </Button>
             <span className="flex items-center px-4 text-sm text-neutral-600">
-              Page {page} of {totalPages}
+              {t("page")} {page} {t("of")} {totalPages}
             </span>
             <Button
               variant="outline"
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
             >
-              Next
+              {t("next")}
             </Button>
           </div>
         )}

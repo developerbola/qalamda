@@ -18,10 +18,12 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@/components/ui/alert";
+import { useLanguage } from "@/lib/language";
 
 export default function WritePage() {
   const { user } = useAuth();
   const router = useRouter();
+  const { t } = useLanguage();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [excerpt, setExcerpt] = useState("");
@@ -88,7 +90,7 @@ export default function WritePage() {
       <div className="max-w-4xl mx-auto px-[10%] md:px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold">Write a Story</h1>
+          <h1 className="text-2xl font-bold">{t("writeStory")}</h1>
           <div className="flex items-center gap-3">
             <Button
               variant="outline"
@@ -98,12 +100,12 @@ export default function WritePage() {
               {saving ? (
                 <>
                   <Loader2 className="animate-spin h-4 w-4 mr-2" />
-                  Saving...
+                  {t("saving")}
                 </>
               ) : (
                 <>
                   <Save className="h-4 w-4 mr-2" />
-                  Save Draft
+                  {t("saveDraft")}
                 </>
               )}
             </Button>
@@ -111,12 +113,12 @@ export default function WritePage() {
               {publishing ? (
                 <>
                   <Loader2 className="animate-spin h-4 w-4 mr-2" />
-                  Publishing...
+                  {t("publishing")}
                 </>
               ) : (
                 <>
                   <Send className="h-4 w-4 mr-2" />
-                  Publish
+                  {t("publish")}
                 </>
               )}
             </Button>
@@ -126,7 +128,7 @@ export default function WritePage() {
         {error && (
           <Alert className="mb-3">
             <AlertCircleIcon />
-            <AlertTitle>Error on publishing article!</AlertTitle>
+            <AlertTitle>{t("errorPublishing")}</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
@@ -138,7 +140,7 @@ export default function WritePage() {
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Title"
+              placeholder={t("title")}
               className="w-full text-3xl font-bold placeholder-muted-foreground border-none outline-none focus:ring-0 px-0"
             />
           </div>
@@ -148,7 +150,7 @@ export default function WritePage() {
             <textarea
               value={excerpt}
               onChange={(e) => setExcerpt(e.target.value)}
-              placeholder="Add a brief excerpt (optional)"
+              placeholder={t("excerpt")}
               rows={2}
               className="w-full text-foreground/90 placeholder-muted-foreground border-none outline-none focus:ring-0 px-0 resize-none"
             />
@@ -159,7 +161,7 @@ export default function WritePage() {
             <div className="flex items-center gap-2 mb-2">
               <ImageIcon className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium text-muted-foreground">
-                Cover Image URL
+                {t("coverImageUrl")}
               </span>
             </div>
             <input
@@ -176,7 +178,7 @@ export default function WritePage() {
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="Tell your story..."
+              placeholder={t("content")}
               rows={20}
               className="w-full px-0 border-none outline-none focus:ring-0 resize-none text-lg leading-relaxed"
             />
@@ -185,7 +187,7 @@ export default function WritePage() {
           {/* Tags */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
-              Tags (comma-separated)
+              {t("tags")}
             </label>
             <input
               type="text"
@@ -207,13 +209,13 @@ export default function WritePage() {
               />
               <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
               <span className="ml-3 text-sm font-medium text-slate-700">
-                {isPublished ? "Published" : "Draft"}
+                {isPublished ? t("published") : t("draft")}
               </span>
             </label>
             <span className="text-sm text-slate-500">
               {isPublished
-                ? "Your story will be visible to everyone"
-                : "Only you can see this draft"}
+                ? t("publishedDesc")
+                : t("draftDesc")}
             </span>
           </div>
         </div>

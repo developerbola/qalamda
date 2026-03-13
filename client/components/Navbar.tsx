@@ -127,7 +127,7 @@ export default function Navbar() {
                   size="sm"
                   className="text-muted-foreground hover:text-foreground"
                 >
-                  Write
+                  {t("write")}
                   <SquarePen />
                 </Button>
               </Link>
@@ -212,26 +212,26 @@ export default function Navbar() {
                         <Globe className="mr-3 h-4 w-4 text-muted-foreground" />
                         <span>{t("language")}</span>
                       </DropdownMenuSubTrigger>
-                      <DropdownMenuSubContent className="w-32">
-                        <DropdownMenuItem
-                          onClick={() => setLanguage("en")}
-                          className="justify-between"
-                        >
-                          English{" "}
-                          {language === "en" && <Check className="h-3 w-3" />}
-                        </DropdownMenuItem>
+                      <DropdownMenuSubContent className="w-40">
                         <DropdownMenuItem
                           onClick={() => setLanguage("uz")}
                           className="justify-between"
                         >
-                          Uzbek{" "}
+                          O'zbekcha{" "}
                           {language === "uz" && <Check className="h-3 w-3" />}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => setLanguage("uzc")}
+                          className="justify-between"
+                        >
+                          Ўзбекча{" "}
+                          {language === "uzc" && <Check className="h-3 w-3" />}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => setLanguage("ru")}
                           className="justify-between"
                         >
-                          Russian{" "}
+                          Русский{" "}
                           {language === "ru" && <Check className="h-3 w-3" />}
                         </DropdownMenuItem>
                       </DropdownMenuSubContent>
@@ -345,8 +345,8 @@ export default function Navbar() {
               </p>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { code: "en", label: "EN" },
                   { code: "uz", label: "UZ" },
+                  { code: "uzc", label: "ЎЗ" },
                   { code: "ru", label: "RU" },
                 ].map((lang) => (
                   <Button
