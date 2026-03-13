@@ -190,3 +190,34 @@ export const followStatusController = async (c) => {
     following_count: followingCount || 0,
   });
 };
+
+// Get users I am following
+export const getFollowingController = async (c) => {
+  const user = c.get("user");
+
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  const { data: following, error } = await supabase
+    .from("follows")
+    .select(`
+      following_id,
+      users:following_id (
+        id,
+        username,
+        full_name,
+        avatar_url
+      )
+    `)
+    .eq("follower_id", user.id);
+
+  if (error) {
+    console.error("Error fetching following users:", error);
+    return c.json({ error: "Failed to fetch following users" }, 500);
+  }
+
+  const formattedFollowing = following.map((f) => f.users);
+
+  return c.json({ following: formattedFollowing });
+};

@@ -90,6 +90,7 @@ export const userAPI = {
     api.get(`/api/users/${userId}/follow-status`),
   getBookmarks: () => api.get("/api/users/me/bookmarks"),
   getLikes: () => api.get("/api/users/me/likes"),
+  getFollowing: () => api.get("/api/users/me/following"),
 };
 
 export const articleAPI = {

@@ -81,6 +81,12 @@ const translations: Record<Language, Record<string, string>> = {
     draft: "Qoralama",
     publishedDesc: "Hikoyangizni hamma ko'ra oladi",
     draftDesc: "Ushbu qoralamani faqat o'zingiz ko'ra olasiz",
+    home: "Bosh sahifa",
+    library: "Kutubxona",
+    stories: "Hikoyalar",
+    stats: "Statistika",
+    findWriters: "Obuna bo'lish uchun yozuvchilarni toping.",
+    seeSuggestions: "Tavsiyalarni ko'rish",
   },
   uzc: {
     tags: "Теглар",
@@ -152,6 +158,12 @@ const translations: Record<Language, Record<string, string>> = {
     draft: "Қоралама",
     publishedDesc: "Ҳикоянгизни ҳамма кўра олади",
     draftDesc: "Ушбу қораламани фақат ўзингиз кўра оласиз",
+    home: "Бош саҳифа",
+    library: "Кутубхона",
+    stories: "Ҳикоялар",
+    stats: "Статистика",
+    findWriters: "Обуна бўлиш учун ёзувчиларни топинг.",
+    seeSuggestions: "Тавсияларни кўриш",
   },
   ru: {
     tags: "Теги",
@@ -223,6 +235,12 @@ const translations: Record<Language, Record<string, string>> = {
     draft: "Черновик",
     publishedDesc: "Ваша история будет видна всем",
     draftDesc: "Только вы можете видеть этот черновик",
+    home: "Главная",
+    library: "Библиотека",
+    stories: "Истории",
+    stats: "Статистика",
+    findWriters: "Найдите авторов, на которых стоит подписаться.",
+    seeSuggestions: "Посмотреть предложения",
   },
 };
 
