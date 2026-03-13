@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { authAPI } from "@/lib/api";
 import { supabase } from "@/lib/supabase";
+import { useUserActivityStore } from "@/lib/useUserActivityStore";
 
 export interface User {
   id: string;
@@ -88,11 +89,14 @@ export function AuthInit() {
             const { data: synced } = await authAPI.syncProfile();
             if (synced?.user) updateGlobalUser(normalize(synced.user));
           }
+          useUserActivityStore.getState().fetchActivity();
         } catch (e) {
           updateGlobalUser(normalize(session.user));
+          useUserActivityStore.getState().fetchActivity();
         }
       } else {
         updateGlobalUser(null);
+        useUserActivityStore.getState().reset();
       }
     };
 
@@ -101,11 +105,15 @@ export function AuthInit() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if ((event === "SIGNED_IN" || event === "USER_UPDATED") && session?.user) {
+      if (
+        (event === "SIGNED_IN" || event === "USER_UPDATED") &&
+        session?.user
+      ) {
         sync();
       }
       if (event === "SIGNED_OUT") {
         updateGlobalUser(null);
+        useUserActivityStore.getState().reset();
       }
     });
 
@@ -130,7 +138,7 @@ export function useAuth() {
     listeners.add(l);
     // Resolve initial loading state
     if (globalUser !== undefined) setLoading(false);
-    
+
     return () => {
       listeners.delete(l);
     };
@@ -173,6 +181,7 @@ export function useAuth() {
   const logout = async () => {
     await supabase.auth.signOut();
     updateGlobalUser(null);
+    useUserActivityStore.getState().reset();
   };
 
   const signInWithOAuth = async (provider: "github" | "google") => {

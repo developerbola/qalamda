@@ -35,7 +35,12 @@ const Auth = () => {
 
     try {
       if (isSignUp) {
-        const res: any = await auth.register(email, username, password, fullName);
+        const res: any = await auth.register(
+          email,
+          username,
+          password,
+          fullName,
+        );
         if (res?.error) throw new Error(res.error || "Registration failed");
         alert("Account created — you are signed in.");
       } else {

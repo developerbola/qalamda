@@ -5,7 +5,19 @@ import { useRouter } from "next/navigation";
 import { articleAPI } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { Save, Send, Image as ImageIcon } from "lucide-react";
+import {
+  Save,
+  Send,
+  Image as ImageIcon,
+  Loader2,
+  AlertCircleIcon,
+} from "lucide-react";
+import {
+  Alert,
+  AlertAction,
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert";
 
 export default function WritePage() {
   const { user } = useAuth();
@@ -76,7 +88,7 @@ export default function WritePage() {
       <div className="max-w-4xl mx-auto px-[10%] md:px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold text-slate-900">Write a Story</h1>
+          <h1 className="text-2xl font-bold">Write a Story</h1>
           <div className="flex items-center gap-3">
             <Button
               variant="outline"
@@ -85,25 +97,7 @@ export default function WritePage() {
             >
               {saving ? (
                 <>
-                  <svg
-                    className="animate-spin h-4 w-4 mr-2"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      fill="none"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
+                  <Loader2 className="animate-spin h-4 w-4 mr-2" />
                   Saving...
                 </>
               ) : (
@@ -116,25 +110,7 @@ export default function WritePage() {
             <Button onClick={handlePublish} disabled={publishing}>
               {publishing ? (
                 <>
-                  <svg
-                    className="animate-spin h-4 w-4 mr-2"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      fill="none"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
+                  <Loader2 className="animate-spin h-4 w-4 mr-2" />
                   Publishing...
                 </>
               ) : (
@@ -148,12 +124,14 @@ export default function WritePage() {
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
-            {error}
-          </div>
+          <Alert className="mb-3">
+            <AlertCircleIcon />
+            <AlertTitle>Error on publishing article!</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
         )}
 
-        <div className="rounded-xl shadow-sm border border-slate-200 p-6 space-y-6">
+        <div className="rounded-xl p-6 space-y-6">
           {/* Title */}
           <div>
             <input
@@ -161,7 +139,7 @@ export default function WritePage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Title"
-              className="w-full text-3xl font-bold placeholder-slate-400 border-none outline-none focus:ring-0 px-0"
+              className="w-full text-3xl font-bold placeholder-muted-foreground border-none outline-none focus:ring-0 px-0"
             />
           </div>
 
@@ -172,15 +150,15 @@ export default function WritePage() {
               onChange={(e) => setExcerpt(e.target.value)}
               placeholder="Add a brief excerpt (optional)"
               rows={2}
-              className="w-full text-slate-600 placeholder-slate-400 border-none outline-none focus:ring-0 px-0 resize-none"
+              className="w-full text-foreground/90 placeholder-muted-foreground border-none outline-none focus:ring-0 px-0 resize-none"
             />
           </div>
 
           {/* Cover Image URL */}
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <ImageIcon className="h-4 w-4 text-slate-400" />
-              <span className="text-sm font-medium text-slate-700">
+              <ImageIcon className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium text-muted-foreground">
                 Cover Image URL
               </span>
             </div>
@@ -189,7 +167,7 @@ export default function WritePage() {
               value={coverImage}
               onChange={(e) => setCoverImage(e.target.value)}
               placeholder="https://example.com/image.jpg"
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-3 py-2 border border-border/50 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
             />
           </div>
 

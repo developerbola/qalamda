@@ -6,4 +6,12 @@ import { commentRoutes } from "./commentRoutes.js";
 import { likeRoutes } from "./likeRoutes.js";
 import { tagRoutes } from "./tagRoutes.js";
 
-export { healthCheckRoute, authRoutes, userRoutes, articleRoutes, commentRoutes, likeRoutes, tagRoutes };
+export {
+  healthCheckRoute,
+  authRoutes,
+  userRoutes,
+  articleRoutes,
+  commentRoutes,
+  likeRoutes,
+  tagRoutes,
+};

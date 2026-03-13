@@ -15,16 +15,17 @@ export const getUserController = async (c) => {
   }
 
   // Get follower/following counts
-  const [{ count: followersCount }, { count: followingCount }] = await Promise.all([
-    supabase
-      .from("follows")
-      .select("*", { count: 'exact', head: true })
-      .eq("following_id", user.id),
-    supabase
-      .from("follows")
-      .select("*", { count: 'exact', head: true })
-      .eq("follower_id", user.id),
-  ]);
+  const [{ count: followersCount }, { count: followingCount }] =
+    await Promise.all([
+      supabase
+        .from("follows")
+        .select("*", { count: "exact", head: true })
+        .eq("following_id", user.id),
+      supabase
+        .from("follows")
+        .select("*", { count: "exact", head: true })
+        .eq("follower_id", user.id),
+    ]);
 
   return c.json({
     user: {
@@ -53,10 +54,10 @@ export const updateProfileController = async (c) => {
   if (body.fullName) updates.full_name = body.fullName;
   if (body.bio) updates.bio = body.bio;
   if (body.avatarUrl) updates.avatar_url = body.avatarUrl;
-  
+
   if (body.username) {
     const newUsername = body.username.trim().toLowerCase();
-    
+
     // Check if username is taken
     const { data: existingUser } = await supabase
       .from("users")
@@ -165,22 +166,23 @@ export const followStatusController = async (c) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
-  const [isFollowing, { count: followersCount }, { count: followingCount }] = await Promise.all([
-    supabase
-      .from("follows")
-      .select("id")
-      .eq("follower_id", user.id)
-      .eq("following_id", userId)
-      .maybeSingle(),
-    supabase
-      .from("follows")
-      .select("*", { count: "exact", head: true })
-      .eq("following_id", userId),
-    supabase
-      .from("follows")
-      .select("*", { count: "exact", head: true })
-      .eq("follower_id", userId),
-  ]);
+  const [isFollowing, { count: followersCount }, { count: followingCount }] =
+    await Promise.all([
+      supabase
+        .from("follows")
+        .select("id")
+        .eq("follower_id", user.id)
+        .eq("following_id", userId)
+        .maybeSingle(),
+      supabase
+        .from("follows")
+        .select("*", { count: "exact", head: true })
+        .eq("following_id", userId),
+      supabase
+        .from("follows")
+        .select("*", { count: "exact", head: true })
+        .eq("follower_id", userId),
+    ]);
 
   return c.json({
     is_following: !!isFollowing?.data,

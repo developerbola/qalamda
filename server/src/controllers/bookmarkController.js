@@ -34,20 +34,15 @@ export const toggleBookmarkController = async (c) => {
 
   if (existing) {
     // Remove bookmark
-    await supabase
-      .from("bookmarks")
-      .delete()
-      .eq("id", existing.id);
+    await supabase.from("bookmarks").delete().eq("id", existing.id);
 
     return c.json({ bookmarked: false });
   } else {
     // Add bookmark
-    await supabase
-      .from("bookmarks")
-      .insert({
-        user_id: userPayload.id,
-        article_id: articleId,
-      });
+    await supabase.from("bookmarks").insert({
+      user_id: userPayload.id,
+      article_id: articleId,
+    });
 
     return c.json({ bookmarked: true });
   }
@@ -63,7 +58,8 @@ export const getBookmarksController = async (c) => {
 
   const { data: bookmarks, error } = await supabase
     .from("bookmarks")
-    .select(`
+    .select(
+      `
       id,
       created_at,
       article_id,
@@ -80,7 +76,8 @@ export const getBookmarksController = async (c) => {
         author_id,
         users(username, full_name, avatar_url)
       )
-    `)
+    `,
+    )
     .eq("user_id", userPayload.id)
     .eq("articles.is_published", true)
     .order("created_at", { ascending: false });
@@ -91,8 +88,8 @@ export const getBookmarksController = async (c) => {
 
   // Flatten the response so the frontend receives a clean list of articles
   const bookmarkedArticles = (bookmarks || [])
-    .filter(b => b.articles)
-    .map(b => b.articles);
+    .filter((b) => b.articles)
+    .map((b) => b.articles);
 
   return c.json({ bookmarks: bookmarkedArticles });
 };

@@ -1,5 +1,11 @@
 import { authMiddleware } from "../middlewares/auth.middleware.js";
-import { createArticleController, getArticlesController, getArticleController, updateArticleController, deleteArticleController } from "../controllers/articleController.js";
+import {
+  createArticleController,
+  getArticlesController,
+  getArticleController,
+  updateArticleController,
+  deleteArticleController,
+} from "../controllers/articleController.js";
 import { toggleBookmarkController } from "../controllers/bookmarkController.js";
 
 // ==================== ARTICLE ROUTES ====================
@@ -15,11 +21,23 @@ export const articleRoutes = (app) => {
   app.get("/api/articles/:slug", getArticleController);
 
   // Update article
-  app.patch("/api/articles/:articleId", authMiddleware, updateArticleController);
+  app.patch(
+    "/api/articles/:articleId",
+    authMiddleware,
+    updateArticleController,
+  );
 
   // Delete article
-  app.delete("/api/articles/:articleId", authMiddleware, deleteArticleController);
+  app.delete(
+    "/api/articles/:articleId",
+    authMiddleware,
+    deleteArticleController,
+  );
 
   // Toggle bookmark
-  app.post("/api/articles/:articleId/bookmark", authMiddleware, toggleBookmarkController);
+  app.post(
+    "/api/articles/:articleId/bookmark",
+    authMiddleware,
+    toggleBookmarkController,
+  );
 };

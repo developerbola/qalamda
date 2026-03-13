@@ -1,7 +1,8 @@
 import { supabase } from "../supabase.js";
 
 const extractBearerToken = (c) => {
-  const authHeader = c.req.header("Authorization") || c.req.header("authorization");
+  const authHeader =
+    c.req.header("Authorization") || c.req.header("authorization");
   if (!authHeader) return null;
   const match = authHeader.match(/^Bearer\s+(.+)$/i);
   return match ? match[1] : null;
@@ -19,7 +20,10 @@ export const authMiddleware = async (c, next) => {
     const { data, error } = await supabase.auth.getUser(token);
 
     if (error || !data?.user) {
-      console.error("[Auth Middleware] Supabase error:", error?.message || "User not found");
+      console.error(
+        "[Auth Middleware] Supabase error:",
+        error?.message || "User not found",
+      );
       return c.json({ error: "Unauthorized" }, 401);
     }
 

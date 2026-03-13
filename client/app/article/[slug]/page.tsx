@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { formatDistanceToNow } from "date-fns";
 import { articleAPI, commentAPI, likeAPI, bookmarkAPI } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { useUserActivityStore } from "@/lib/useUserActivityStore";
 import { Button } from "@/components/ui/button";
 import {
   Bookmark,
@@ -13,7 +13,6 @@ import {
   MessageCircle,
   Heart,
   User as UserIcon,
-  ArrowLeft,
   Send,
   Loader2,
 } from "lucide-react";
@@ -38,26 +37,33 @@ interface Article {
   id: string;
   title: string;
   slug: string;
+  excerpt: string;
+  cover_image: string;
   content: string;
-  excerpt: string | null;
-  cover_image: string | null;
   reading_time_minutes: number;
-  is_published: boolean;
-  published_at: string | null;
-  created_at: string;
-  updated_at: string;
-  author_username: string;
-  author_full_name: string | null;
-  author_avatar_url: string | null;
-  author_bio: string | null;
+  published_at: string;
   likes_count: number;
   comments_count: number;
-  tags: Array<{ id: string; name: string; slug: string }>;
+  author_id: string;
+  users: {
+    bio: string | null;
+    username: string;
+    full_name: string;
+    avatar_url: string;
+  };
+  tags: [
+    {
+      id: string;
+      name: string;
+      slug: string;
+    },
+  ];
 }
 
 export default function ArticlePage() {
   const params = useParams();
   const slug = params.slug as string;
+  const router = useRouter();
 
   const { user } = useAuth();
   const [article, setArticle] = useState<Article | null>(null);
@@ -65,9 +71,7 @@ export default function ArticlePage() {
   const [loading, setLoading] = useState(true);
   const [commentText, setCommentText] = useState("");
   const [submittingComment, setSubmittingComment] = useState(false);
-  const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
-  const [bookmarked, setBookmarked] = useState(false);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
 
@@ -97,43 +101,22 @@ export default function ArticlePage() {
       return [];
     }
   };
+  const {
+    likedArticles,
+    bookmarkedArticles,
+    toggleLikeLocally,
+    toggleBookmarkLocally,
+    hasFetched,
+  } = useUserActivityStore();
 
-  const checkLikeStatus = async () => {
-    if (!user || !article) return;
-    try {
-      const res = await likeAPI.getStatus("article", article.id);
-      setLiked(res.data.liked);
-    } catch (error) {
-      // Ignore
-    }
-  };
-
-  const checkBookmarkStatus = async () => {
-    if (!user || !article) return;
-    try {
-      const res = await bookmarkAPI.getAll();
-      setBookmarked(
-        res.data.bookmarks.some(
-          (b: { article_id: string }) => b.article_id === article.id,
-        ),
-      );
-    } catch (error) {
-      // Ignore
-    }
-  };
+  const liked = article ? likedArticles.has(article.id) : false;
+  const bookmarked = article ? bookmarkedArticles.has(article.id) : false;
 
   useEffect(() => {
     if (slug) {
       fetchArticle();
     }
   }, [slug]);
-
-  useEffect(() => {
-    if (article && user) {
-      checkLikeStatus();
-      checkBookmarkStatus();
-    }
-  }, [article, user]);
 
   const handleLike = async () => {
     if (!user) {
@@ -148,7 +131,7 @@ export default function ArticlePage() {
 
     try {
       const res = await likeAPI.toggle("article", article.id);
-      setLiked(res.data.liked);
+      toggleLikeLocally(article.id, res.data.liked);
       setLikesCount(res.data.likes_count);
     } catch (error: any) {
       console.error("Failed to toggle like:", error);
@@ -168,7 +151,7 @@ export default function ArticlePage() {
 
     try {
       const res = await bookmarkAPI.toggle(article.id);
-      setBookmarked(res.data.bookmarked);
+      toggleBookmarkLocally(article.id, res.data.bookmarked);
     } catch (error) {
       console.error("Failed to toggle bookmark:", error);
     }
@@ -233,7 +216,7 @@ export default function ArticlePage() {
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "";
     try {
-      return formatDistanceToNow(new Date(dateString), { addSuffix: true });
+      return new Date(dateString).toLocaleString();
     } catch {
       return "";
     }
@@ -241,6 +224,7 @@ export default function ArticlePage() {
 
   const renderComment = (comment: Comment) => {
     const isReply = comment.parent_id !== null;
+
     return (
       <div
         key={comment.id}
@@ -323,7 +307,7 @@ export default function ArticlePage() {
     );
   };
 
-  if (loading) {
+  if (loading || (user && !hasFetched)) {
     return (
       <div className="min-h-screen  flex items-center justify-center">
         <Loader2 className="animate-spin h-12 w-12" />
@@ -349,26 +333,20 @@ export default function ArticlePage() {
   return (
     <div className="min-h-screen pt-20">
       <div className="max-w-3xl mx-auto px-4 py-8">
-        {/* Back Button */}
-        <Link
-          href="/"
-          className="inline-flex items-center text-sm text-slate-500 hover:text-blue-600 mb-6"
-        >
-          <ArrowLeft className="h-4 w-4 mr-1" />
-          Back to home
-        </Link>
-
-        {/* Article Header */}
         <header className="mb-8">
           <div className="flex items-center gap-2 mb-4">
             {article.tags.map((tag) => (
-              <Link
+              <Button
                 key={tag.id}
-                href={`/?tag=${tag.slug}`}
-                className="px-2 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-full hover:bg-blue-100 transition"
+                onClick={() => {
+                  router.push(`/?tag=${tag.slug}`);
+                }}
+                variant={"outline"}
+                size={"sm"}
+                className="rounded-full"
               >
                 {tag.name}
-              </Link>
+              </Button>
             ))}
           </div>
 
@@ -376,37 +354,31 @@ export default function ArticlePage() {
             {article.title}
           </h1>
 
-          {/* Author Info */}
           <div className="flex items-center gap-3 mb-6">
-            <Link href={`/profile/${article.author_username}`}>
-              {article.author_avatar_url ? (
+            <Link href={`/profile/${article.users.username}`}>
+              {article.users.avatar_url ? (
                 <img
-                  src={article.author_avatar_url}
-                  alt={article.author_full_name || article.author_username}
+                  src={article.users.avatar_url}
+                  alt={article.users.full_name || article.users.username}
                   width={48}
                   height={48}
                   className="rounded-full object-cover"
                 />
               ) : (
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-foreground/20 flex items-center justify-center">
                   <UserIcon className="h-6 w-6 text-white" />
                 </div>
               )}
             </Link>
             <div>
               <Link
-                href={`/profile/${article.author_username}`}
+                href={`/profile/${article.users.username}`}
                 className="font-medium hover:underline"
               >
-                {article.author_full_name || article.author_username}
+                {article.users.full_name || article.users.username}
               </Link>
-              {article.author_bio && (
-                <p className="text-sm text-slate-500">{article.author_bio}</p>
-              )}
-              <div className="flex items-center gap-3 text-xs text-slate-500 mt-1">
-                <span>
-                  {formatDate(article.published_at || article.created_at)}
-                </span>
+              <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+                <span>{formatDate(article.published_at)}</span>
                 {article.reading_time_minutes && (
                   <>
                     <span>·</span>
@@ -420,7 +392,6 @@ export default function ArticlePage() {
             </div>
           </div>
 
-          {/* Cover Image */}
           {article.cover_image && (
             <div className="mb-6 rounded-xl overflow-hidden">
               <img
@@ -434,29 +405,27 @@ export default function ArticlePage() {
           )}
         </header>
 
-        {/* Article Content */}
         <div className="prose prose-slate max-w-none mb-12">
-          <div className="whitespace-pre-wrap text-slate-700 leading-relaxed text-lg">
+          <div className="whitespace-pre-wrap text-muted-foreground leading-relaxed text-lg">
             {article.content}
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center justify-between py-4 border-y border-slate-200 mb-8">
+        <div className="flex items-center justify-between py-4 border-y border-border/20 mb-8">
           <div className="flex items-center gap-4">
             <button
               onClick={handleLike}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full transition ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-full cursor-pointer transition ${
                 liked
-                  ? "bg-red-50 text-red-500"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  ? "bg-destructive/10 text-destructive"
+                  : "bg-foreground/5 hover:bg-foreground/10"
               }`}
             >
               <Heart className={`h-5 w-5 ${liked ? "fill-current" : ""}`} />
               <span>{likesCount} likes</span>
             </button>
 
-            <div className="flex items-center gap-2 text-slate-600">
+            <div className="flex items-center gap-2">
               <MessageCircle className="h-5 w-5" />
               <span>{article.comments_count} comments</span>
             </div>
@@ -464,10 +433,10 @@ export default function ArticlePage() {
 
           <button
             onClick={handleBookmark}
-            className={`p-2 rounded-full transition ${
+            className={`p-2 rounded-full transition cursor-pointer ${
               bookmarked
-                ? "bg-blue-50 text-blue-600"
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                ? "bg-blue-500/15 text-blue-500"
+                : "bg-foreground/10 hover:bg-foreground/15"
             }`}
           >
             <Bookmark
@@ -478,7 +447,7 @@ export default function ArticlePage() {
 
         {/* Comments Section */}
         <section>
-          <h2 className="text-xl font-bold text-slate-900 mb-6">
+          <h2 className="text-xl font-bold mb-6">
             Comments ({article.comments_count})
           </h2>
 
@@ -504,7 +473,7 @@ export default function ArticlePage() {
                     onChange={(e) => setCommentText(e.target.value)}
                     placeholder="Add to the discussion..."
                     rows={3}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
+                    className="w-full px-3 py-2 border border-border rounded-lg  focus:border-foreground/30 outline-none resize-none"
                   />
                   <div className="flex justify-end mt-2">
                     <Button
@@ -531,7 +500,7 @@ export default function ArticlePage() {
           {/* Comments List */}
           <div>
             {comments.length === 0 ? (
-              <p className="text-slate-500 text-center py-8">
+              <p className="text-muted-foreground text-center py-8">
                 No comments yet. Be the first to comment!
               </p>
             ) : (

@@ -50,4 +50,4 @@ export const OPTIONS = handler;
 export const DELETE = handler;
 
 // Also export default for some environments
-export default app;
+export default { fetch: app.fetch, port: 3001 };

@@ -1,6 +1,13 @@
 import { authMiddleware } from "../middlewares/auth.middleware.js";
-import { getUserController, updateProfileController, followController, unfollowController, followStatusController } from "../controllers/userController.js";
+import {
+  getUserController,
+  updateProfileController,
+  followController,
+  unfollowController,
+  followStatusController,
+} from "../controllers/userController.js";
 import { getBookmarksController } from "../controllers/bookmarkController.js";
+import { getUserLikesController } from "../controllers/likeController.js";
 
 // ==================== USER ROUTES ====================
 
@@ -18,8 +25,15 @@ export const userRoutes = (app) => {
   app.delete("/api/users/:userId/follow", authMiddleware, unfollowController);
 
   // Check follow status
-  app.get("/api/users/:userId/follow-status", authMiddleware, followStatusController);
+  app.get(
+    "/api/users/:userId/follow-status",
+    authMiddleware,
+    followStatusController,
+  );
 
   // Get current user's bookmarks
   app.get("/api/users/me/bookmarks", authMiddleware, getBookmarksController);
+
+  // Get current user's likes
+  app.get("/api/users/me/likes", authMiddleware, getUserLikesController);
 };

@@ -9,12 +9,12 @@ export const toggleLikeController = async (c) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
-  if (!['article', 'comment'].includes(targetType)) {
-    return c.json({ error: 'Invalid target type' }, 400);
+  if (!["article", "comment"].includes(targetType)) {
+    return c.json({ error: "Invalid target type" }, 400);
   }
 
   // Check if target exists
-  const table = targetType === 'article' ? 'articles' : 'comments';
+  const table = targetType === "article" ? "articles" : "comments";
   const { data: target, error: targetError } = await supabase
     .from(table)
     .select("id")
@@ -40,11 +40,12 @@ export const toggleLikeController = async (c) => {
 
   if (existing) {
     // Unlike
-    await supabase
-      .from("likes")
-      .delete()
-      .eq("id", existing.id);
-    const { data: _likes, error: countErr, count } = await supabase
+    await supabase.from("likes").delete().eq("id", existing.id);
+    const {
+      data: _likes,
+      error: countErr,
+      count,
+    } = await supabase
       .from("likes")
       .select("*", { count: "exact" })
       .eq("target_type", targetType)
@@ -52,7 +53,10 @@ export const toggleLikeController = async (c) => {
 
     const newCount = count || 0;
     // persist to target table
-    await supabase.from(table).update({ likes_count: newCount }).eq("id", targetId);
+    await supabase
+      .from(table)
+      .update({ likes_count: newCount })
+      .eq("id", targetId);
 
     return c.json({
       liked: false,
@@ -60,14 +64,16 @@ export const toggleLikeController = async (c) => {
     });
   } else {
     // Like
-    await supabase
-      .from("likes")
-      .insert({
-        user_id: userPayload.id,
-        target_type: targetType,
-        target_id: targetId,
-      });
-    const { data: _likes, error: countErr, count } = await supabase
+    await supabase.from("likes").insert({
+      user_id: userPayload.id,
+      target_type: targetType,
+      target_id: targetId,
+    });
+    const {
+      data: _likes,
+      error: countErr,
+      count,
+    } = await supabase
       .from("likes")
       .select("*", { count: "exact" })
       .eq("target_type", targetType)
@@ -75,7 +81,10 @@ export const toggleLikeController = async (c) => {
 
     const newCount = count || 0;
     // persist to target table
-    await supabase.from(table).update({ likes_count: newCount }).eq("id", targetId);
+    await supabase
+      .from(table)
+      .update({ likes_count: newCount })
+      .eq("id", targetId);
 
     return c.json({
       liked: true,
@@ -93,8 +102,8 @@ export const likeStatusController = async (c) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
-  if (!['article', 'comment'].includes(targetType)) {
-    return c.json({ error: 'Invalid target type' }, 400);
+  if (!["article", "comment"].includes(targetType)) {
+    return c.json({ error: "Invalid target type" }, 400);
   }
 
   const [likedResult, countResult] = await Promise.all([
@@ -117,4 +126,24 @@ export const likeStatusController = async (c) => {
     liked: !!likedResult?.data,
     likes_count: likesCount,
   });
+};
+
+// Get all likes for current user
+export const getUserLikesController = async (c) => {
+  const userPayload = c.get("user");
+
+  if (!userPayload) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  const { data: likes, error } = await supabase
+    .from("likes")
+    .select("target_id")
+    .eq("user_id", userPayload.id);
+
+  if (error) {
+    return c.json({ error: error.message }, 500);
+  }
+
+  return c.json({ likes: likes.map((l) => l.target_id) });
 };

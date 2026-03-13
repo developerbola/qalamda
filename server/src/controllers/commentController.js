@@ -6,10 +6,12 @@ export const getCommentsController = async (c) => {
 
   const { data: comments, error } = await supabase
     .from("comments")
-    .select(`
+    .select(
+      `
       *,
       users(username, full_name, avatar_url)
-    `)
+    `,
+    )
     .eq("article_id", articleId)
     .order("created_at", { ascending: true });
 
@@ -79,7 +81,7 @@ export const createCommentController = async (c) => {
     .eq("id", articleId);
 
   // Get author info
-  const { data: author } = await supabase
+  const { data: users } = await supabase
     .from("users")
     .select("username, full_name, avatar_url")
     .eq("id", user.id)
@@ -88,7 +90,7 @@ export const createCommentController = async (c) => {
   return c.json({
     comment: {
       ...comment,
-      author,
+      users,
     },
   });
 };

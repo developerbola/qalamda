@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { formatDistanceToNow } from "date-fns";
 import { bookmarkAPI } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
@@ -52,7 +51,7 @@ export default function BookmarksPage() {
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "";
     try {
-      return formatDistanceToNow(new Date(dateString), { addSuffix: true });
+      return new Date(dateString).toLocaleString();
     } catch {
       return "";
     }
@@ -89,10 +88,10 @@ export default function BookmarksPage() {
         ) : (
           <div className="space-y-4">
             {articles.map((article) => (
-              <Link href={`/article/${article.slug}`}>
+              <Link href={`/article/${article.slug}`} key={article.id}>
                 <article
                   key={article.id}
-                  className="rounded-xl border border-border/50 p-4"
+                  className="border-t border-border/50 p-4"
                 >
                   <div className="flex items-start gap-4">
                     {article.cover_image && (

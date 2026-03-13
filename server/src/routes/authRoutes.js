@@ -1,11 +1,14 @@
-import { getMeController, syncProfileController } from "../controllers/authController.js";
+import {
+  getMeController,
+  syncProfileController,
+} from "../controllers/authController.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 
 /**
  * ==================== AUTH ROUTES ====================
  * Simplified Auth Routes focusing on synchronization & state detection
  * All Auth actions (Login/Register) now happen directly via Supabase Client
- * for security & session consistency. 
+ * for security & session consistency.
  */
 
 export const authRoutes = (app) => {

@@ -28,7 +28,8 @@ const translations: Record<Language, Record<string, string>> = {
     sepia: "Sepia",
     slate: "Slate",
     heroTitle: "Read, learn, share!",
-    heroDescription: "A new opportunity to read articles and share your knowledge with others.",
+    heroDescription:
+      "A new opportunity to read articles and share your knowledge with others.",
     startReading: "Start Reading",
   },
   uz: {
@@ -48,7 +49,8 @@ const translations: Record<Language, Record<string, string>> = {
     sepia: "Sepiya",
     slate: "Slate",
     heroTitle: "O'qing, o'rganing, ulashing!",
-    heroDescription: "Maqolalar o'qish va bilimlaringizni boshqalar bilan ulashish uchun yangi imkoniyat.",
+    heroDescription:
+      "Maqolalar o'qish va bilimlaringizni boshqalar bilan ulashish uchun yangi imkoniyat.",
     startReading: "O'qishni boshlash",
   },
   ru: {
@@ -68,12 +70,15 @@ const translations: Record<Language, Record<string, string>> = {
     sepia: "Сепия",
     slate: "Грифельная",
     heroTitle: "Читайте, учитесь, делитесь!",
-    heroDescription: "Новая возможность читать статьи и делиться знаниями с другими.",
+    heroDescription:
+      "Новая возможность читать статьи и делиться знаниями с другими.",
     startReading: "Начать чтение",
   },
 };
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+const LanguageContext = createContext<LanguageContextType | undefined>(
+  undefined,
+);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>("en");
@@ -103,6 +108,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
 export const useLanguage = () => {
   const context = useContext(LanguageContext);
-  if (!context) throw new Error("useLanguage must be used within LanguageProvider");
+  if (!context)
+    throw new Error("useLanguage must be used within LanguageProvider");
   return context;
 };

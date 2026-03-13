@@ -36,7 +36,9 @@ api.interceptors.request.use(async (config) => {
 
   // Fallback to SDK if manual retrieval fails
   if (!token) {
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     token = session?.access_token;
   }
 
@@ -57,7 +59,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       if (typeof window !== "undefined") {
         const path = window.location.pathname || "";
-        
+
         // Prevent redirect loops for auth pages
         if (!path.startsWith("/auth")) {
           sessionStorage.removeItem("qalamda_profile");
@@ -84,8 +86,10 @@ export const userAPI = {
   updateProfile: (data: any) => api.patch("/api/users/profile", data),
   follow: (userId: string) => api.post(`/api/users/${userId}/follow`),
   unfollow: (userId: string) => api.delete(`/api/users/${userId}/follow`),
-  getFollowStatus: (userId: string) => api.get(`/api/users/${userId}/follow-status`),
+  getFollowStatus: (userId: string) =>
+    api.get(`/api/users/${userId}/follow-status`),
   getBookmarks: () => api.get("/api/users/me/bookmarks"),
+  getLikes: () => api.get("/api/users/me/likes"),
 };
 
 export const articleAPI = {
@@ -98,13 +102,15 @@ export const articleAPI = {
 
 export const commentAPI = {
   getByArticle: (id: string) => api.get(`/api/articles/${id}/comments`),
-  create: (id: string, data: any) => api.post(`/api/articles/${id}/comments`, data),
+  create: (id: string, data: any) =>
+    api.post(`/api/articles/${id}/comments`, data),
   delete: (id: string) => api.delete(`/api/comments/${id}`),
 };
 
 export const likeAPI = {
   toggle: (type: string, id: string) => api.post(`/api/${type}/${id}/like`),
-  getStatus: (type: string, id: string) => api.get(`/api/${type}/${id}/like-status`),
+  getStatus: (type: string, id: string) =>
+    api.get(`/api/${type}/${id}/like-status`),
 };
 
 export const bookmarkAPI = {
@@ -114,5 +120,6 @@ export const bookmarkAPI = {
 
 export const tagAPI = {
   getAll: () => api.get("/api/tags"),
-  getArticles: (slug: string, params?: any) => api.get(`/api/tags/${slug}/articles`, { params }),
+  getArticles: (slug: string, params?: any) =>
+    api.get(`/api/tags/${slug}/articles`, { params }),
 };

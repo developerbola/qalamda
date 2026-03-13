@@ -26,7 +26,13 @@ export const getArticlesByTagController = async (c) => {
     .eq("slug", tagSlug)
     .single();
 
-  if (tagError || !tag) return c.json({ articles: [], total: 0, page: parseInt(page), totalPages: 0 });
+  if (tagError || !tag)
+    return c.json({
+      articles: [],
+      total: 0,
+      page: parseInt(page),
+      totalPages: 0,
+    });
 
   // Get article IDs for this tag
   const { data: articleTags } = await supabase
@@ -35,12 +41,22 @@ export const getArticlesByTagController = async (c) => {
     .eq("tag_id", tag.id);
 
   const articleIds = (articleTags || []).map((at) => at.article_id);
-  if (articleIds.length === 0) return c.json({ articles: [], total: 0, page: parseInt(page), totalPages: 0 });
+  if (articleIds.length === 0)
+    return c.json({
+      articles: [],
+      total: 0,
+      page: parseInt(page),
+      totalPages: 0,
+    });
 
   // Fetch articles with author info
   const selectStr = `id, title, slug, excerpt, cover_image, reading_time_minutes, published_at, likes_count, comments_count, author_id, users(username, full_name, avatar_url)`;
 
-  const { data: articles, error: articlesError, count } = await supabase
+  const {
+    data: articles,
+    error: articlesError,
+    count,
+  } = await supabase
     .from("articles")
     .select(selectStr, { count: "exact" })
     .in("id", articleIds)

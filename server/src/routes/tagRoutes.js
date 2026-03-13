@@ -1,4 +1,7 @@
-import { getTagsController, getArticlesByTagController } from "../controllers/tagController.js";
+import {
+  getTagsController,
+  getArticlesByTagController,
+} from "../controllers/tagController.js";
 
 // ==================== TAG ROUTES ====================
 

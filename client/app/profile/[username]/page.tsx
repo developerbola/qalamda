@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { formatDistanceToNow } from "date-fns";
 import { userAPI, articleAPI } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
@@ -161,7 +160,7 @@ export default function ProfilePage() {
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "";
     try {
-      return formatDistanceToNow(new Date(dateString), { addSuffix: true });
+      return new Date(dateString).toLocaleString();
     } catch {
       return "";
     }

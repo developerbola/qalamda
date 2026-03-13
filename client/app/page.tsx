@@ -2,19 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { formatDistanceToNow } from "date-fns";
 import { articleAPI, tagAPI, likeAPI, bookmarkAPI } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { useUserActivityStore } from "@/lib/useUserActivityStore";
 import Starter from "@/components/Starter";
 import { Button } from "@/components/ui/button";
-import {
-  Bookmark,
-  Clock,
-  MessageCircle,
-  Heart,
-  User as UserIcon,
-  Loader2,
-} from "lucide-react";
+import { Bookmark, Clock, MessageCircle, Heart, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
 
@@ -51,11 +44,15 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [likedArticles, setLikedArticles] = useState<Set<string>>(new Set());
-  const [bookmarkedArticles, setBookmarkedArticles] = useState<Set<string>>(
-    new Set(),
-  );
   const router = useRouter();
+
+  const {
+    likedArticles,
+    bookmarkedArticles,
+    toggleLikeLocally,
+    toggleBookmarkLocally,
+    hasFetched,
+  } = useUserActivityStore();
 
   const fetchArticles = async (
     pageNum: number,
@@ -89,33 +86,6 @@ export default function HomePage() {
     }
   };
 
-  const checkLikeStatus = async (articleId: string) => {
-    if (!user) return;
-    try {
-      const res = await likeAPI.getStatus("article", articleId);
-      if (res.data.liked) {
-        setLikedArticles((prev) => new Set(prev).add(articleId));
-      }
-    } catch (error) {
-      // Ignore errors for unauthenticated users
-    }
-  };
-
-  const loadBookmarks = async () => {
-    if (!user) return;
-    try {
-      const res = await bookmarkAPI.getAll();
-      const bookmarkedIds = new Set<string>(
-        (res.data.bookmarks || [])
-          .map((b: any) => (typeof b === "string" ? b : b.article_id))
-          .filter(Boolean),
-      );
-      setBookmarkedArticles(bookmarkedIds);
-    } catch (error) {
-      // Ignore errors
-    }
-  };
-
   const handleLike = async (articleId: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -126,15 +96,8 @@ export default function HomePage() {
 
     try {
       const res = await likeAPI.toggle("article", articleId);
-      if (res.data.liked) {
-        setLikedArticles((prev) => new Set(prev).add(articleId));
-      } else {
-        setLikedArticles((prev) => {
-          const next = new Set(prev);
-          next.delete(articleId);
-          return next;
-        });
-      }
+      toggleLikeLocally(articleId, res.data.liked);
+
       // Update local count
       setArticles((prev) =>
         prev.map((article) =>
@@ -158,15 +121,7 @@ export default function HomePage() {
 
     try {
       const res = await bookmarkAPI.toggle(articleId);
-      if (res.data.bookmarked) {
-        setBookmarkedArticles((prev) => new Set(prev).add(articleId));
-      } else {
-        setBookmarkedArticles((prev) => {
-          const next = new Set(prev);
-          next.delete(articleId);
-          return next;
-        });
-      }
+      toggleBookmarkLocally(articleId, res.data.bookmarked);
     } catch (error) {
       console.error("Failed to toggle bookmark:", error);
     }
@@ -176,14 +131,6 @@ export default function HomePage() {
     fetchArticles(page);
     fetchTags();
   }, [page]);
-
-  useEffect(() => {
-    // Check like and bookmark status for articles
-    articles.forEach((article) => {
-      checkLikeStatus(article.id);
-    });
-    if (user) loadBookmarks();
-  }, [articles, user]);
 
   const getSearchParams = () => {
     const params = new URLSearchParams(window.location.search);
@@ -204,14 +151,13 @@ export default function HomePage() {
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "";
     try {
-      return formatDistanceToNow(new Date(dateString).toLocaleString(), {
-        addSuffix: true,
-      });
+      return new Date(dateString).toLocaleString();
     } catch {
       return "";
     }
   };
 
+  // We remove the return early for hydration loading to show skeletons instead
   if (authLoading) {
     return (
       <div className="h-screen w-full flex items-center justify-center">
@@ -225,9 +171,6 @@ export default function HomePage() {
   }
 
   const renderArticleCard = (article: Article) => {
-    console.log("bookmarked", bookmarkedArticles);
-    console.log("article id", article.id);
-
     return (
       <Link href={`/article/${article.slug}`} key={article.id}>
         <article className="group flex flex-col gap-6 py-6 border-t border-border/30">
@@ -338,14 +281,10 @@ export default function HomePage() {
         </div>
 
         {/* Tags */}
-        {tags.length > 0 && (
+        {tags.length > 0 ? (
           <div className="mb-8 flex flex-wrap gap-2">
             {tags.slice(0, 10).map((tag) => (
-              <Link
-                key={tag.id}
-                href={`/?tag=${tag.slug}`}
-                // className="px-3 py-1 rounded-full text-sm text-muted-foreground hover:text-blue-600 transition"
-              >
+              <Link key={tag.id} href={`/?tag=${tag.slug}`}>
                 <Button
                   className={"rounded-full"}
                   variant={"outline"}
@@ -356,23 +295,34 @@ export default function HomePage() {
               </Link>
             ))}
           </div>
+        ) : (
+          <div className="mb-8 flex flex-wrap gap-2">
+            {[...Array(4)].map((s,idx) => (
+              <Button
+                key={idx}
+                className={"rounded-full w-[100px]"}
+                variant={"outline"}
+                size={"sm"}
+              />
+            ))}
+          </div>
         )}
 
         {/* Articles */}
-        {loading ? (
+        {loading || (user && !hasFetched) ? (
           <div className="space-y-4">
             {[...Array(4)].map((_, i) => (
               <div
                 key={i}
-                className="animate-pulse py-6 border-b border-neutral-100"
+                className="animate-pulse py-6 border-b border-border/40"
               >
                 <div className="flex gap-4">
-                  <div className="w-10 h-10 bg-neutral-200 rounded-full" />
+                  <div className="w-10 h-10 bg-foreground/10 rounded-full" />
                   <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-neutral-200 rounded w-1/4" />
-                    <div className="h-6 bg-neutral-200 rounded w-3/4" />
-                    <div className="h-4 bg-neutral-200 rounded w-full" />
-                    <div className="h-4 bg-neutral-200 rounded w-2/3" />
+                    <div className="h-4 bg-foreground/10 rounded w-1/4" />
+                    <div className="h-6 bg-foreground/10 rounded w-3/4" />
+                    <div className="h-4 bg-foreground/10 rounded w-full" />
+                    <div className="h-4 bg-foreground/10 rounded w-2/3" />
                   </div>
                 </div>
               </div>

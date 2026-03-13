@@ -43,7 +43,10 @@ export const createArticleController = async (c) => {
       title: body.title.trim(),
       slug,
       content: body.content.trim(),
-      excerpt: typeof body.excerpt === "string" && body.excerpt.trim().length > 0 ? body.excerpt.trim() : null,
+      excerpt:
+        typeof body.excerpt === "string" && body.excerpt.trim().length > 0
+          ? body.excerpt.trim()
+          : null,
       cover_image: body.coverImage || null,
       likes_count: 0,
       reading_time_minutes: readingTime,
@@ -114,11 +117,30 @@ export const getArticlesController = async (c) => {
   // If tag filter provided, resolve article IDs for the tag
   let articleIds = null;
   if (tag) {
-    const { data: t } = await supabase.from("tags").select("id").eq("slug", tag).maybeSingle();
-    if (!t) return c.json({ articles: [], total: 0, page: parseInt(page), totalPages: 0 });
-    const { data: ats } = await supabase.from("article_tags").select("article_id").eq("tag_id", t.id);
+    const { data: t } = await supabase
+      .from("tags")
+      .select("id")
+      .eq("slug", tag)
+      .maybeSingle();
+    if (!t)
+      return c.json({
+        articles: [],
+        total: 0,
+        page: parseInt(page),
+        totalPages: 0,
+      });
+    const { data: ats } = await supabase
+      .from("article_tags")
+      .select("article_id")
+      .eq("tag_id", t.id);
     articleIds = (ats || []).map((a) => a.article_id);
-    if (articleIds.length === 0) return c.json({ articles: [], total: 0, page: parseInt(page), totalPages: 0 });
+    if (articleIds.length === 0)
+      return c.json({
+        articles: [],
+        total: 0,
+        page: parseInt(page),
+        totalPages: 0,
+      });
   }
 
   const selectStr = `id, title, slug, excerpt, cover_image, reading_time_minutes, published_at, likes_count, comments_count, author_id, users(username, full_name, avatar_url)`;
@@ -126,19 +148,39 @@ export const getArticlesController = async (c) => {
   // Resolve author filter to author_id if provided
   let authorId = null;
   if (author) {
-    const { data: user, error: userErr } = await supabase.from("users").select("id").eq("username", author).maybeSingle();
-    if (userErr || !user) return c.json({ articles: [], total: 0, page: parseInt(page), totalPages: 0 });
+    const { data: user, error: userErr } = await supabase
+      .from("users")
+      .select("id")
+      .eq("username", author)
+      .maybeSingle();
+    if (userErr || !user)
+      return c.json({
+        articles: [],
+        total: 0,
+        page: parseInt(page),
+        totalPages: 0,
+      });
     authorId = user.id;
   }
 
   // Build query
-  let query = supabase.from("articles").select(selectStr, { count: "exact" }).eq("is_published", true);
+  let query = supabase
+    .from("articles")
+    .select(selectStr, { count: "exact" })
+    .eq("is_published", true);
   if (authorId) query = query.eq("author_id", authorId);
-  if (search) query = query.or(`title.ilike.%${search}%,content.ilike.%${search}%`);
+  if (search)
+    query = query.or(`title.ilike.%${search}%,content.ilike.%${search}%`);
   if (articleIds) query = query.in("id", articleIds);
 
   const end = offset + parseInt(limit) - 1;
-  const { data: articles, error, count } = await query.order("published_at", { ascending: false }).range(offset, end);
+  const {
+    data: articles,
+    error,
+    count,
+  } = await query
+    .order("published_at", { ascending: false })
+    .range(offset, end);
   if (error) return c.json({ error: error.message }, 500);
 
   return c.json({
@@ -154,14 +196,19 @@ export const getArticleController = async (c) => {
   const { slug } = c.req.param();
   const { data: article, error } = await supabase
     .from("articles")
-    .select(`id, title, slug, excerpt, cover_image, content, reading_time_minutes, published_at, likes_count, comments_count, author_id, users(username, full_name, avatar_url, bio)`)
+    .select(
+      `id, title, slug, excerpt, cover_image, content, reading_time_minutes, published_at, likes_count, comments_count, author_id, users(username, full_name, avatar_url)`,
+    )
     .eq("slug", slug)
     .maybeSingle();
 
   if (error || !article) return c.json({ error: "Article not found" }, 404);
 
   // Get tags via article_tags
-  const { data: articleTags } = await supabase.from("article_tags").select("tags(id, name, slug)").eq("article_id", article.id);
+  const { data: articleTags } = await supabase
+    .from("article_tags")
+    .select("tags(id, name, slug)")
+    .eq("article_id", article.id);
   const tags = (articleTags || []).map((at) => at.tags);
 
   return c.json({ article: { ...article, tags } });
@@ -191,7 +238,11 @@ export const updateArticleController = async (c) => {
   // Manual validation replacing Zod
   const validated = {};
   if (body.title !== undefined) {
-    if (typeof body.title !== "string" || body.title.trim().length === 0 || body.title.length > 500) {
+    if (
+      typeof body.title !== "string" ||
+      body.title.trim().length === 0 ||
+      body.title.length > 500
+    ) {
       return c.json({ error: "Invalid title" }, 400);
     }
     validated.title = body.title;
@@ -223,7 +274,10 @@ export const updateArticleController = async (c) => {
     validated.coverImage = body.coverImage;
   }
   if (body.tags !== undefined) {
-    if (!Array.isArray(body.tags) || !body.tags.every((t) => typeof t === "string")) {
+    if (
+      !Array.isArray(body.tags) ||
+      !body.tags.every((t) => typeof t === "string")
+    ) {
       return c.json({ error: "Invalid tags" }, 400);
     }
     validated.tags = body.tags;
