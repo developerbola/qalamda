@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Poppins, Playwrite_DE_VA, Geist } from "next/font/google";
 import "./styles/index.css";
 import { cn } from "@/lib/utils";
@@ -41,6 +42,7 @@ export default function ClientLayout({
 }: ClientLayoutProps) {
   const { user } = useAuth();
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     setMounted(true);
@@ -82,8 +84,10 @@ export default function ClientLayout({
               {showApp ? (
                 <>
                   <AppSidebar initialUsername={initialUsername} />
-                  <main className="flex justify-center flex-1 w-full min-w-0">{children}</main>
-                  <RightSidebar />
+                  <main className="flex justify-center flex-1 w-full min-w-0">
+                    {children}
+                  </main>
+                  {pathname === "/" && <RightSidebar />}
                 </>
               ) : (
                 <Starter />
