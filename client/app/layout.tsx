@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from "react";
 import { Poppins, Playwrite_DE_VA, Geist } from "next/font/google";
 import "./styles/index.css";
 import { cn } from "@/lib/utils";
@@ -31,6 +32,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const { user } = useAuth();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <ThemeProvider>
       <LanguageProvider>
@@ -61,7 +68,7 @@ export default function RootLayout({
             <AuthInit />
             <SidebarProvider>
               <Navbar />
-              {user ? (
+              {mounted && user ? (
                 <>
                   <AppSidebar />
                   <main className="flex justify-center w-full">{children}</main>
