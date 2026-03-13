@@ -72,17 +72,13 @@ export default function BookmarksPage() {
       <div className="max-w-4xl mx-auto px-[10%] md:px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">{t("bookmarks")}</h1>
-          <p className="text-muted-foreground">
-            {t("bookmarksDesc")}
-          </p>
+          <p className="text-muted-foreground">{t("bookmarksDesc")}</p>
         </div>
 
         {articles.length === 0 ? (
           <div className="rounded-xl shadow-sm border border-slate-200 p-12 text-center">
             <Bookmark className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500 mb-4">
-              {t("noBookmarks")}
-            </p>
+            <p className="text-slate-500 mb-4">{t("noBookmarks")}</p>
             <Link href="/">
               <Button>{t("startReading")}</Button>
             </Link>
@@ -115,12 +111,6 @@ export default function BookmarksPage() {
                         </p>
                       )}
                       <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                        <Link
-                          href={`/profile/${article.author_username}`}
-                          className="font-medium hover:text-blue-600"
-                        >
-                          {article.author_full_name || article.author_username}
-                        </Link>
                         <span className="flex items-center gap-1">
                           <Heart className="h-3 w-3" />
                           {article.likes_count}

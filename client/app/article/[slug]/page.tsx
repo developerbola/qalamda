@@ -230,35 +230,34 @@ export default function ArticlePage() {
     return (
       <div
         key={comment.id}
-        className={`${isReply ? "ml-12 mt-4" : "py-4 border-b border-slate-100"}`}
+        className={`${isReply ? "ml-12 py-4 pb-5" : "py-4 border-t border-border/50"}`}
       >
         <div className="flex gap-3">
-          {comment.users.avatar_url ? (
-            <Avatar>
-              <AvatarImage src={comment.users.avatar_url} />
-              <AvatarFallback>
-                {comment.users.username.slice(0, 2).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-          ) : (
-            <div
-              className={`rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center ${isReply ? "w-8 h-8" : "w-10 h-10"}`}
-            >
-              <UserIcon
-                className={`${isReply ? "h-4 w-4" : "h-5 w-5"} text-white`}
-              />
-            </div>
-          )}
-
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
               <Link
                 href={`/profile/${comment.users.username}`}
-                className="font-medium text-slate-900 hover:text-blue-600 text-sm"
+                className="font-medium text-sm hover:underline flex gap-2"
               >
+                {comment.users.avatar_url ? (
+                  <Avatar className={'size-5'}>
+                    <AvatarImage src={comment.users.avatar_url} />
+                    <AvatarFallback className={'text-[10px]'}>
+                      {comment.users.username.slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                ) : (
+                  <div
+                    className={`rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center ${isReply ? "w-8 h-8" : "w-10 h-10"}`}
+                  >
+                    <UserIcon
+                      className={`${isReply ? "h-4 w-4" : "h-5 w-5"} text-white`}
+                    />
+                  </div>
+                )}
                 {comment.users.full_name || comment.users.username}
               </Link>
-              <span className="text-xs text-slate-500">
+              <span className="text-xs text-muted-foreground/60">
                 {formatDate(comment.created_at)}
               </span>
               {user && user.id === comment.author_id && (
@@ -266,20 +265,20 @@ export default function ArticlePage() {
                   variant="ghost"
                   size="sm"
                   onClick={() => handleDeleteComment(comment.id)}
-                  className="h-6 text-xs text-red-500 hover:text-red-700"
+                  className="h-6 text-xs text-destructive"
                 >
                   {t("delete")}
                 </Button>
               )}
             </div>
-            <p className="text-slate-700 text-sm">{comment.content}</p>
+            <p className="text-muted-foreground text-sm">{comment.content}</p>
 
             {user && !isReply && (
               <button
                 onClick={() =>
                   setReplyingTo(replyingTo === comment.id ? null : comment.id)
                 }
-                className="cursor-pointer text-xs text-blue-600 hover:text-blue-700 mt-2"
+                className="cursor-pointer text-xs text-blue-400 mt-2"
               >
                 {t("reply")}
               </button>
@@ -429,7 +428,9 @@ export default function ArticlePage() {
 
             <div className="flex items-center gap-2">
               <MessageCircle className="h-5 w-5" />
-              <span>{article.comments_count} {t("comments").toLowerCase()}</span>
+              <span>
+                {article.comments_count} {t("comments").toLowerCase()}
+              </span>
             </div>
           </div>
 
@@ -465,7 +466,7 @@ export default function ArticlePage() {
                     </AvatarFallback>
                   </Avatar>
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-full bg-foreground/30 flex items-center justify-center">
                     <UserIcon className="h-5 w-5 text-white" />
                   </div>
                 )}
