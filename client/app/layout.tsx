@@ -1,8 +1,9 @@
+"use client";
 import { Poppins, Playwrite_DE_VA, Geist } from "next/font/google";
 import "./styles/index.css";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/Navbar";
-import { AuthInit } from "@/lib/auth";
+import { AuthInit, useAuth } from "@/lib/auth";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -20,12 +21,16 @@ const poppins = Poppins({
 
 import { ThemeProvider } from "@/lib/theme";
 import { LanguageProvider } from "@/lib/language";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
+import Starter from "@/components/Starter";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { user } = useAuth();
   return (
     <ThemeProvider>
       <LanguageProvider>
@@ -54,8 +59,17 @@ export default function RootLayout({
             className={`${playwrite.variable} ${poppins.variable} antialiased`}
           >
             <AuthInit />
-            <Navbar />
-            <main className="">{children}</main>
+            <SidebarProvider>
+              <Navbar />
+              {user ? (
+                <>
+                  <AppSidebar />
+                  <main className="flex justify-center w-full">{children}</main>
+                </>
+              ) : (
+                <Starter />
+              )}
+            </SidebarProvider>
           </body>
         </html>
       </LanguageProvider>

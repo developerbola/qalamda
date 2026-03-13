@@ -136,9 +136,7 @@ export function useAuth() {
       setLoading(false);
     };
     listeners.add(l);
-    // Resolve initial loading state
     if (globalUser !== undefined) setLoading(false);
-
     return () => {
       listeners.delete(l);
     };

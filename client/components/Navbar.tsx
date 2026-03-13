@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Logo from "./Logo";
+import { SidebarTrigger } from "./ui/sidebar";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -65,46 +66,32 @@ export default function Navbar() {
 
   return (
     <nav className="fixed flex items-center justify-center top-0 z-50 w-full bg-background h-16 border-b border-border/40">
-      <div className="flex items-center justify-between w-2/3">
+      <div className="flex items-center justify-between px-[5%] w-full">
+      {/* <div className="flex items-center justify-between w-[80%]"> */}
         {/* Logo */}
-        <Link href="/" className="h-max w-[120px]">
-          <Logo className="h-full w-auto" />
-        </Link>
+        <div className="flex items-center gap-2">
+          <SidebarTrigger />
+          <Link href="/" className="h-max w-[120px]">
+            <Logo className="h-full w-auto" />
+          </Link>
 
-        {/* Desktop Navigation */}
-        {/* <div className="hidden md:flex items-center gap-6">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "text-sm font-medium transition-colors",
-                // pathname === link.href
-                //   ? "text-foreground"
-                //   : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </div> */}
-
-        {/* Search Bar */}
-        <form
-          onSubmit={handleSearch}
-          className="hidden md:flex flex-1 max-w-md mx-6"
-        >
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t("search")}
-              className="w-full pl-10 pr-4 py-2 bg-secondary/50 border border-border/50 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all text-foreground"
-            />
-          </div>
-        </form>
+          {/* Search Bar */}
+          <form
+            onSubmit={handleSearch}
+            className="hidden md:flex flex-1 max-w-md mx-6"
+          >
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={t("search")}
+                className="w-full pl-10 pr-4 py-2 bg-secondary/50 border border-border/50 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all text-foreground"
+              />
+            </div>
+          </form>
+        </div>
 
         {/* Auth & Settings Section */}
         <div className="hidden md:flex items-center gap-1">

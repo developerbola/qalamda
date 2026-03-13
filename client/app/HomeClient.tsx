@@ -81,9 +81,9 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
       if (tag) params.tag = tag;
       if (author) params.author = author;
 
-      const res = await articleAPI.getAll(params);
-      setArticles(res.data.articles || []);
-      setTotalPages(res.data.totalPages);
+      // const res = await articleAPI.getAll(params);
+      // setArticles(res.data.articles || []);
+      // setTotalPages(res.data.totalPages);
     } catch (error) {
       console.error("Failed to fetch articles:", error);
     } finally {
@@ -170,9 +170,7 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
     );
   }
 
-  if (!user) {
-    return <Starter />;
-  }
+
 
   const renderArticleCard = (article: Article) => {
     return (
