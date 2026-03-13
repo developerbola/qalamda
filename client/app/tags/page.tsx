@@ -5,21 +5,26 @@ import Link from "next/link";
 import { tagAPI } from "@/lib/api";
 import { Loader2 } from "lucide-react";
 import { useLanguage } from "@/lib/language";
+import { useTagStore } from "@/lib/useTagStore";
 
 interface Tag {
   id: string;
   name: string;
   slug: string;
   description: string | null;
-  article_count: number;
 }
 
 export default function TagsPage() {
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { tags, hasFetchedTags, setTags } = useTagStore();
+  const [loading, setLoading] = useState(!hasFetchedTags);
   const { t } = useLanguage();
 
   useEffect(() => {
+    if (hasFetchedTags) {
+      setLoading(false);
+      return;
+    }
+
     const fetchTags = async () => {
       try {
         const res = await tagAPI.getAll();
@@ -32,7 +37,7 @@ export default function TagsPage() {
     };
 
     fetchTags();
-  }, []);
+  }, [hasFetchedTags, setTags]);
 
   if (loading) {
     return (
