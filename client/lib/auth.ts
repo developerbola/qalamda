@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { authAPI } from "@/lib/api";
 import { supabase } from "@/lib/supabase";
 import { useUserActivityStore } from "@/lib/useUserActivityStore";
+import { useRouter } from "next/navigation";
 
 export interface User {
   id: string;
@@ -138,6 +139,7 @@ export function AuthInit() {
 export function useAuth() {
   const [user, setUser] = useState<User | null>(globalUser);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const l = (u: User | null) => {
@@ -187,9 +189,10 @@ export function useAuth() {
 
   const logout = async () => {
     await supabase.auth.signOut();
-    updateGlobalUser(null);
-    setUser(null);
-    useUserActivityStore.getState().reset();
+    await updateGlobalUser(null);
+    await setUser(null);
+    await useUserActivityStore.getState().reset();
+    router.push("/");
   };
 
   const signInWithOAuth = async (provider: "github" | "google") => {
