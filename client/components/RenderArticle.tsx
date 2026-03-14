@@ -1,4 +1,3 @@
-import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -6,7 +5,6 @@ import { cn, formatDate } from "@/lib/utils";
 import { Clock, Heart, MessageCircle } from "lucide-react";
 
 const RenderArticle = (article: Article, index: number) => {
-  const router = useRouter();
   return (
     <Link href={`/article/${article.slug}`} key={article.id}>
       <article
@@ -21,11 +19,9 @@ const RenderArticle = (article: Article, index: number) => {
           <div className="flex flex-col gap-1">
             <div className="flex gap-3 items-center">
               <Button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  router.push(`/profile/${article.users.username}`);
-                }}
+                onClick={() =>
+                  window.location.assign(`/profile/${article.users.username}`)
+                }
                 variant={"link"}
                 className="flex w-fit items-center gap-2 text-sm hover:underline px-0"
               >

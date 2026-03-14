@@ -89,7 +89,11 @@ export default function ClientLayout({
                     {children}
                   </main>
                   {pathname === "/" && (
-                    <StickyBox offsetTop={20} offsetBottom={20}>
+                    <StickyBox
+                      offsetTop={0}
+                      offsetBottom={0}
+                      className="h-fit"
+                    >
                       <RightSidebar />
                     </StickyBox>
                   )}

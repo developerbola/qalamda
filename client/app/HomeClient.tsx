@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { articleAPI } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
@@ -21,7 +21,9 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [fetchingMore, setFetchingMore] = useState(false);
   const { t } = useLanguage();
+  const observerTarget = useRef<HTMLDivElement>(null);
 
   const { hasFetched } = useUserActivityStore();
 
@@ -33,32 +35,63 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
     }
   }, [initialTags, hasFetchedTags, setTags]);
 
-  const fetchArticles = async (
-    pageNum: number,
-    search?: string,
-    tag?: string,
-    author?: string,
-  ) => {
-    setLoading(true);
-    try {
-      const params: any = { page: pageNum, limit: 10 };
-      if (search) params.search = search;
-      if (tag) params.tag = tag;
-      if (author) params.author = author;
+  const fetchArticles = useCallback(
+    async (pageNum: number, search?: string, tag?: string, author?: string) => {
+      if (pageNum === 1) {
+        setLoading(true);
+      } else {
+        setFetchingMore(true);
+      }
 
-      const res = await articleAPI.getAll(params);
-      setArticles(res.data.articles || []);
-      setTotalPages(res.data.totalPages);
-    } catch (error) {
-      console.error("Failed to fetch articles:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+      try {
+        const params: any = { page: pageNum, limit: 10 };
+        if (search) params.search = search;
+        if (tag) params.tag = tag;
+        if (author) params.author = author;
+
+        const res = await articleAPI.getAll(params);
+        const newArticles = res.data.articles || [];
+
+        setArticles((prev) =>
+          pageNum === 1 ? newArticles : [...prev, ...newArticles],
+        );
+        setTotalPages(res.data.totalPages);
+      } catch (error) {
+        console.error("Failed to fetch articles:", error);
+      } finally {
+        setLoading(false);
+        setFetchingMore(false);
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
-    fetchArticles(page);
-  }, [page]);
+    const { search, tag, author } = getSearchParams();
+    fetchArticles(page, search, tag, author);
+  }, [page, fetchArticles]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (
+          entries[0].isIntersecting &&
+          page < totalPages &&
+          !loading &&
+          !fetchingMore
+        ) {
+          setPage((prev) => prev + 1);
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => observer.disconnect();
+  }, [page, totalPages, loading, fetchingMore]);
 
   const getSearchParams = () => {
     if (typeof window === "undefined") return {};
@@ -69,13 +102,6 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
       author: params.get("author") || undefined,
     };
   };
-
-  useEffect(() => {
-    const { search, tag, author } = getSearchParams();
-    if (search || tag || author) {
-      fetchArticles(1, search, tag, author);
-    }
-  }, []);
 
   if (authLoading) {
     return (
@@ -157,28 +183,10 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
           articles.map(RenderArticle)
         )}
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="mt-8 flex justify-center gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-            >
-              {t("previous")}
-            </Button>
-            <span className="flex items-center px-4 text-sm text-neutral-600">
-              {t("page")} {page} {t("of")} {totalPages}
-            </span>
-            <Button
-              variant="outline"
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-            >
-              {t("next")}
-            </Button>
-          </div>
-        )}
+        {/* Infinite Scroll Sentinel */}
+        <div ref={observerTarget} className="h-10 w-full" />
+
+        {/* Loading More Indicator */}
       </div>
     </div>
   );

@@ -267,7 +267,7 @@ function SidebarTrigger({
       variant="ghost"
       size="icon-sm"
       className={cn(
-        "md:flex hidden cursor-pointer [&_svg:not([class*='size-'])]:size-6 hover:bg-sidebar-hover",
+        "md:flex hidden cursor-pointer [&_svg:not([class*='size-'])]:size-6 hover:bg-sidebar-hover focus-visible:ring-0 focus-visible:border-0 focus-visible:outline-none",
         className,
       )}
       onClick={(event) => {
