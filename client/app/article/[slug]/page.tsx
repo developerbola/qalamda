@@ -240,9 +240,9 @@ export default function ArticlePage() {
                 className="font-medium text-sm hover:underline flex gap-2"
               >
                 {comment.users.avatar_url ? (
-                  <Avatar className={'size-5'}>
+                  <Avatar className={"size-5"}>
                     <AvatarImage src={comment.users.avatar_url} />
-                    <AvatarFallback className={'text-[10px]'}>
+                    <AvatarFallback className={"text-[10px]"}>
                       {comment.users.username.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
@@ -350,10 +350,13 @@ export default function ArticlePage() {
               </Button>
             ))}
           </div>
+          <div className="my-6 flex flex-col gap-2">
+            <h1 className="text-3xl md:text-4xl font-bold leading-tight">
+              {article.title}
+            </h1>
 
-          <h1 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
-            {article.title}
-          </h1>
+            <p className="text-xl text-muted-foreground">{article.excerpt}</p>
+          </div>
 
           <div className="flex items-center gap-3 mb-6">
             <Link href={`/profile/${article.users.username}`}>
@@ -367,7 +370,7 @@ export default function ArticlePage() {
                 />
               ) : (
                 <div className="w-12 h-12 rounded-full bg-foreground/20 flex items-center justify-center">
-                  <UserIcon className="h-6 w-6 text-white" />
+                  <UserIcon className="h-6 w-6 text-foreground" />
                 </div>
               )}
             </Link>
@@ -407,7 +410,7 @@ export default function ArticlePage() {
         </header>
 
         <div className="prose prose-slate max-w-none mb-12">
-          <div className="whitespace-pre-wrap text-muted-foreground leading-relaxed text-lg">
+          <div className="whitespace-pre-wrap leading-relaxed text-lg">
             {article.content}
           </div>
         </div>
@@ -467,7 +470,7 @@ export default function ArticlePage() {
                   </Avatar>
                 ) : (
                   <div className="w-10 h-10 rounded-full bg-foreground/30 flex items-center justify-center">
-                    <UserIcon className="h-5 w-5 text-white" />
+                    <UserIcon className="h-5 w-5 text-foreground" />
                   </div>
                 )}
                 <div className="flex-1">
@@ -491,7 +494,7 @@ export default function ArticlePage() {
             </form>
           ) : (
             <div className="mb-8 p-4  rounded-lg text-center">
-              <p className="text-slate-600 mb-2">
+              <p className="text-muted-foreground mb-2">
                 Sign in to join the discussion
               </p>
               <Link href="/auth">
