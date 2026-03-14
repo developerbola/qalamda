@@ -2,14 +2,19 @@ import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { formatDate } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import { Clock, Heart, MessageCircle } from "lucide-react";
 
-const RenderArticle = (article: Article) => {
+const RenderArticle = (article: Article, index: number) => {
   const router = useRouter();
   return (
     <Link href={`/article/${article.slug}`} key={article.id}>
-      <article className="group flex flex-col gap-6 py-6 border-t border-border/30">
+      <article
+        className={cn(
+          "group flex flex-col gap-6 py-6 border-border/30",
+          index !== 0 && "border-t",
+        )}
+      >
         {/* Content */}
         <div className="flex-1 flex items-center justify-between gap-10">
           {/* Author & Date */}

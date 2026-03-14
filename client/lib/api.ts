@@ -104,6 +104,7 @@ export const bookmarkAPI = {
 
 export const tagAPI = {
   getAll: () => api.get("/api/tags"),
+  getHomeTags: () => api.get("/api/home-tags"),
   getArticles: (slug: string, params?: any) =>
     api.get<TagsRes>(`/api/tags/${slug}/articles`, { params }),
 };

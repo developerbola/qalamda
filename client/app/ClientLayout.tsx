@@ -1,5 +1,5 @@
 "use client";
-
+import StickyBox from "react-sticky-box";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Poppins, Playwrite_DE_VA, Geist } from "next/font/google";
@@ -78,19 +78,22 @@ export default function ClientLayout({
             <AuthInit />
             <SidebarProvider>
               <Navbar initialUsername={initialUsername} />
-
               {pathname.includes("/auth") ||
               pathname === "/privacy" ||
               pathname === "/terms" ? (
                 children
               ) : showApp ? (
-                <>
+                <div className="flex w-full row">
                   <AppSidebar initialUsername={initialUsername} />
                   <main className="flex justify-center flex-1 w-full">
                     {children}
                   </main>
-                  {pathname === "/" && <RightSidebar />}
-                </>
+                  {pathname === "/" && (
+                    <StickyBox offsetTop={20} offsetBottom={20}>
+                      <RightSidebar />
+                    </StickyBox>
+                  )}
+                </div>
               ) : (
                 <Starter />
               )}

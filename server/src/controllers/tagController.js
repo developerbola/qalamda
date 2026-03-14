@@ -1,6 +1,17 @@
 import { supabase } from "../supabase.js";
 
 // Get all tags (simpler: return tags list)
+export const getHomeTagsController = async (c) => {
+  const { data: tags, error } = await supabase
+    .from("tags")
+    .select("*")
+    .order("name", { ascending: true })
+    .limit(5);
+
+  if (error) return c.json({ error: error.message }, 500);
+  return c.json({ tags: tags || [] });
+};
+
 export const getTagsController = async (c) => {
   const { data: tags, error } = await supabase
     .from("tags")

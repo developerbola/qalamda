@@ -9,11 +9,9 @@ import {
   Home,
   Bookmark,
   User,
-  FileText,
   BarChart2,
   Users,
   Plus,
-  PenBox,
   Hash,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -25,7 +23,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const mainLinks = [
   { label: "home", icon: Home, href: "/" },
-  { label: "library", icon: Bookmark, href: "/bookmarks" },
+  { label: "bookmarks", icon: Bookmark, href: "/bookmarks" },
   { label: "profile", icon: User, href: "/profile" },
   { label: "tags", icon: Hash, href: "/tags" },
   { label: "stats", icon: BarChart2, href: "/stats" },
@@ -38,7 +36,6 @@ export function AppSidebar({ initialUsername }: { initialUsername?: string }) {
   const { t } = useLanguage();
   const { following } = useUserActivityStore();
 
-  // Use initialUsername from SSR/Cookie if user object isn't hydrated yet
   const effectiveUsername = user?.username || initialUsername;
   const profileHref = effectiveUsername
     ? `/profile/${effectiveUsername}`
