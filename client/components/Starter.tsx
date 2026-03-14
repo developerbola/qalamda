@@ -29,10 +29,11 @@ const Start = () => {
         <div className="hidden md:flex w-1/2 h-full items-center justify-center">
           <Image
             src="/hero.png"
-            alt="qalam"
+            alt="hero image"
             width={400}
             height={400}
-            preload
+            priority
+            sizes="(max-width: 768px) 0px, 400px"
             draggable={false}
           />
         </div>

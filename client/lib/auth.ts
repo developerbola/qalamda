@@ -192,6 +192,8 @@ export function useAuth() {
     await updateGlobalUser(null);
     await setUser(null);
     await useUserActivityStore.getState().reset();
+    await localStorage.removeItem("qalamda-theme");
+    await localStorage.removeItem("qalamda-lang");
     router.push("/");
   };
 
