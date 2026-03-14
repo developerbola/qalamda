@@ -68,7 +68,7 @@ export default function BookmarksPage() {
   }
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-20 w-full">
       <div className="max-w-4xl mx-auto px-[10%] md:px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">{t("bookmarks")}</h1>
@@ -125,11 +125,6 @@ export default function BookmarksPage() {
                             {article.reading_time_minutes} min
                           </span>
                         )}
-                        <span>
-                          {formatDate(
-                            article.published_at || article.created_at,
-                          )}
-                        </span>
                       </div>
                     </div>
                   </div>

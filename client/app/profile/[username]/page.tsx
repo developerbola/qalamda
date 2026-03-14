@@ -180,7 +180,7 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen  flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">
+          <h1 className="text-2xl font-bold text-muted-foreground mb-2">
             {t("userNotFound")}
           </h1>
           <Link href="/">
@@ -195,7 +195,7 @@ export default function ProfilePage() {
     <div className="min-h-screen pt-20">
       <div className="max-w-4xl mx-auto px-[10%] md:px-4 py-8">
         {/* Profile Header */}
-        <div className="rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+        <div className="p-6 mb-6">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
             {/* Avatar */}
             {profile.avatar_url ? (
@@ -207,15 +207,15 @@ export default function ProfilePage() {
                 className="rounded-full object-cover"
               />
             ) : (
-              <div className="w-30 h-30 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                <UserIcon className="h-16 w-16 text-white" />
+              <div className="w-30 h-30 rounded-full bg-foreground/40 flex items-center justify-center">
+                <UserIcon className="h-16 w-16 text-foreground" />
               </div>
             )}
 
             {/* Info */}
             <div className="flex-1 text-center sm:text-left">
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-3">
-                <h1 className="text-2xl font-bold text-slate-900">
+                <h1 className="text-2xl font-bold">
                   {profile.full_name || profile.username}
                 </h1>
                 {isOwnProfile ? (
@@ -264,21 +264,21 @@ export default function ProfilePage() {
                 )}
               </div>
 
-              <p className="text-slate-600 mb-3">@{profile.username}</p>
+              <p className="text-muted-foreground mb-3">@{profile.username}</p>
 
               {profile.bio && (
-                <p className="text-slate-700 mb-4">{profile.bio}</p>
+                <p className="text-muted-foreground mb-4">{profile.bio}</p>
               )}
 
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 text-sm text-slate-500">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1">
-                  <span className="font-semibold text-slate-900">
+                  <span className="font-semibold text-foreground">
                     {followersCount}
                   </span>
                   {t("followers")}
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="font-semibold text-slate-900">
+                  <span className="font-semibold text-foreground">
                     {followingCount}
                   </span>
                   {t("following")}
@@ -289,14 +289,14 @@ export default function ProfilePage() {
         </div>
 
         {/* Tabs */}
-        <div className="rounded-xl shadow-sm border border-slate-200 mb-6">
-          <div className="flex border-b border-slate-200">
+        <div className="rounded-xl mb-6">
+          <div className="flex">
             <button
               onClick={() => setActiveTab("articles")}
-              className={`flex-1 py-4 text-sm font-medium transition ${
+              className={`flex-1 py-4 text-sm font-medium cursor-pointer transition ${
                 activeTab === "articles"
-                  ? "text-blue-600 border-b-2 border-blue-600"
-                  : "text-slate-600 hover:text-slate-900"
+                  ? "text-foreground border-b-2 border-border"
+                  : "text-muted-foreground hover:text-foreground/80"
               }`}
             >
               {t("articles")}
@@ -304,10 +304,10 @@ export default function ProfilePage() {
             {isOwnProfile && (
               <button
                 onClick={() => setActiveTab("bookmarks")}
-                className={`flex-1 py-4 text-sm font-medium transition ${
+                className={`flex-1 py-4 text-sm font-medium cursor-pointer transition ${
                   activeTab === "bookmarks"
-                    ? "text-blue-600 border-b-2 border-blue-600"
-                    : "text-slate-600 hover:text-slate-900"
+                    ? "text-foreground border-b-2 border-border"
+                    : "text-muted-foreground hover:text-foreground/80"
                 }`}
               >
                 <Bookmark className="h-4 w-4 inline mr-2" />
@@ -323,20 +323,18 @@ export default function ProfilePage() {
             {[...Array(3)].map((_, i) => (
               <div
                 key={i}
-                className="rounded-xl shadow-sm border border-slate-200 p-6 animate-pulse"
+                className="rounded-xl shadow-sm border border-muted-foreground p-6 animate-pulse"
               >
-                <div className="h-6 bg-slate-200 rounded w-3/4 mb-3"></div>
-                <div className="h-4 bg-slate-200 rounded w-full mb-2"></div>
-                <div className="h-4 bg-slate-200 rounded w-2/3"></div>
+                <div className="h-6 bg-muted-goborder-muted-foreground rounded w-3/4 mb-3"></div>
+                <div className="h-4 bg-muted-goborder-muted-foreground rounded w-full mb-2"></div>
+                <div className="h-4 bg-muted-goborder-muted-foreground rounded w-2/3"></div>
               </div>
             ))}
           </div>
         ) : articles.length === 0 ? (
-          <div className="rounded-xl shadow-sm border border-slate-200 p-12 text-center">
-            <p className="text-slate-500">
-              {activeTab === "articles"
-                ? t("noArticles")
-                : t("noBookmarks")}
+          <div className="rounded-xl shadow-sm border border-muted-foreground p-12 text-center">
+            <p className="text-muted-foreground">
+              {activeTab === "articles" ? t("noArticles") : t("noBookmarks")}
             </p>
             {isOwnProfile && activeTab === "articles" && (
               <Link href="/write" className="mt-4 inline-block">
@@ -347,56 +345,55 @@ export default function ProfilePage() {
         ) : (
           <div className="space-y-4">
             {articles.map((article) => (
-              <article
-                key={article.id}
-                className="rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition"
-              >
-                <div className="flex items-start gap-4">
-                  {article.cover_image && (
-                    <img
-                      src={article.cover_image}
-                      alt=""
-                      width={120}
-                      height={80}
-                      className="rounded-lg object-cover flex-shrink-0"
-                    />
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <h2 className="text-lg font-bold text-slate-900 mb-2 line-clamp-2">
-                      <Link
-                        href={`/article/${article.slug}`}
-                        className="hover:text-blue-600 transition"
-                      >
-                        {article.title}
-                      </Link>
-                    </h2>
-                    {article.excerpt && (
-                      <p className="text-slate-600 text-sm mb-3 line-clamp-2">
-                        {article.excerpt}
-                      </p>
+              <Link href={`/article/${article.slug}`}>
+                <article
+                  key={article.id}
+                  className="p-6 border-t border-border"
+                >
+                  <div className="flex items-start gap-4">
+                    {article.cover_image && (
+                      <img
+                        src={article.cover_image}
+                        alt=""
+                        width={120}
+                        height={80}
+                        className="rounded-lg object-cover flex-shrink-0"
+                      />
                     )}
-                    <div className="flex items-center gap-4 text-xs text-slate-500">
-                      <span className="flex items-center gap-1">
-                        <Heart className="h-3 w-3" />
-                        {article.likes_count}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <MessageCircle className="h-3 w-3" />
-                        {article.comments_count}
-                      </span>
-                      {article.reading_time_minutes && (
-                        <span className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {article.reading_time_minutes} min
-                        </span>
+                    <div className="flex-1 min-w-0">
+                      <h2 className="text-lg font-bold text-foreground mb-2 line-clamp-2">
+                        {article.title}
+                      </h2>
+                      {article.excerpt && (
+                        <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
+                          {article.excerpt}
+                        </p>
                       )}
-                      <span>
-                        {formatDate(article.published_at || article.created_at)}
-                      </span>
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Heart className="h-3 w-3" />
+                          {article.likes_count}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <MessageCircle className="h-3 w-3" />
+                          {article.comments_count}
+                        </span>
+                        {article.reading_time_minutes && (
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {article.reading_time_minutes} min
+                          </span>
+                        )}
+                        <span>
+                          {formatDate(
+                            article.published_at || article.created_at,
+                          )}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </article>
+                </article>
+              </Link>
             ))}
           </div>
         )}

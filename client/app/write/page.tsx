@@ -86,7 +86,7 @@ export default function WritePage() {
   };
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-20 w-full">
       <div className="max-w-4xl mx-auto px-[10%] md:px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">

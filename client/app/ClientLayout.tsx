@@ -79,12 +79,12 @@ export default function ClientLayout({
             <SidebarProvider>
               <Navbar initialUsername={initialUsername} />
 
-              {pathname === "/auth" ? (
+              {pathname === "/auth" || pathname === "/privacy" ? (
                 children
               ) : showApp ? (
                 <>
                   <AppSidebar initialUsername={initialUsername} />
-                  <main className="flex justify-center flex-1 w-full min-w-0">
+                  <main className="flex justify-center flex-1 w-full">
                     {children}
                   </main>
                   {pathname === "/" && <RightSidebar />}

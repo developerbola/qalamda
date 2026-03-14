@@ -13,6 +13,7 @@ import {
   BarChart2,
   Users,
   Plus,
+  PenBox,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth";
@@ -25,7 +26,6 @@ const mainLinks = [
   { label: "home", icon: Home, href: "/" },
   { label: "library", icon: Bookmark, href: "/bookmarks" },
   { label: "profile", icon: User, href: "/profile" },
-  { label: "stories", icon: FileText, href: "/write" },
   { label: "stats", icon: BarChart2, href: "/stats" },
 ];
 
