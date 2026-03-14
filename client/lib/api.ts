@@ -1,12 +1,6 @@
 import axios from "axios";
 import { supabase } from "@/lib/supabase";
 
-/**
- * ==================== AXIOS INTERCEPTOR ====================
- * Modern interceptor using Supabase sessions directly for authentication.
- * No redundant state required.
- */
-
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 export const api = axios.create({
@@ -16,9 +10,6 @@ export const api = axios.create({
   },
 });
 
-/**
- * Request: Hydrate with JWT from Supabase.
- */
 api.interceptors.request.use(async (config) => {
   let token = null;
 
@@ -34,7 +25,6 @@ api.interceptors.request.use(async (config) => {
     }
   }
 
-  // Fallback to SDK if manual retrieval fails
   if (!token) {
     const {
       data: { session },
@@ -50,9 +40,6 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
-/**
- * Response: Handle session expiration.
- */
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -72,15 +59,11 @@ api.interceptors.response.use(
   },
 );
 
-/**
- * Clean Auth API wrappers.
- */
 export const authAPI = {
   getMe: () => api.get("/api/auth/me"),
   syncProfile: () => api.post("/api/auth/sync"),
 };
 
-// ... keep other APIs (userAPI, articleAPI, etc.)
 export const userAPI = {
   getProfile: (username: string) => api.get(`/api/users/${username}`),
   updateProfile: (data: any) => api.patch("/api/users/profile", data),

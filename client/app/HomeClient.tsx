@@ -174,7 +174,7 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
       <Link href={`/article/${article.slug}`} key={article.id}>
         <article className="group flex flex-col gap-6 py-6 border-t border-border/30">
           {/* Content */}
-          <div className="flex-1 flex items-center justify-between">
+          <div className="flex-1 flex items-center justify-between gap-10">
             {/* Author & Date */}
             <div className="flex flex-col gap-1">
               <div className="flex gap-3 items-center">
@@ -210,10 +210,10 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
                 </div>
               </div>
               {/* Title and Excerpt */}
-              <h2 className="text-2xl font-bold transition mb-2 line-clamp-2">
+              <h2 className="text-xl sm:text-2xl font-bold transition mb-2 line-clamp-2">
                 {article.title}
               </h2>
-              <p className="text-base font-medium transition mb-2 line-clamp-2 text-muted-foreground">
+              <p className="text-[12px] sm:text-base font-medium transition mb-2 line-clamp-2 text-muted-foreground">
                 {article.excerpt}
               </p>
 
@@ -268,10 +268,10 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
             {article.cover_image && (
               <img
                 src={article.cover_image}
-                alt=""
-                width={60}
-                height={40}
-                className="rounded object-cover size-1/4"
+                alt={article.title}
+                // width={200}
+                // height={100}
+                className="rounded object-cover h-[70px] sm:h-[100px] min-w-1/4 flex-1 max-w-[30%]"
               />
             )}
           </div>
