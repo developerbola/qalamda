@@ -76,12 +76,8 @@ export default function BookmarksPage() {
         </div>
 
         {articles.length === 0 ? (
-          <div className="rounded-xl shadow-sm border border-slate-200 p-12 text-center">
-            <Bookmark className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500 mb-4">{t("noBookmarks")}</p>
-            <Link href="/">
-              <Button>{t("startReading")}</Button>
-            </Link>
+          <div className="p-12 text-center">
+            <p className="text-muted-foreground mb-4">{t("noBookmarks")}</p>
           </div>
         ) : (
           <div className="space-y-4">

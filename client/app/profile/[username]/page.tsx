@@ -18,6 +18,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useLanguage } from "@/lib/language";
+import { cn } from "@/lib/utils";
 
 interface UserProfile {
   id: string;
@@ -192,7 +193,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-20 w-full">
       <div className="max-w-4xl mx-auto px-[10%] md:px-4 py-8">
         {/* Profile Header */}
         <div className="p-6 mb-6">
@@ -344,11 +345,13 @@ export default function ProfilePage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {articles.map((article) => (
-              <Link href={`/article/${article.slug}`}>
+            {articles.map((article, index) => (
+              <Link href={`/article/${article.slug}`} key={article.id}>
                 <article
-                  key={article.id}
-                  className="p-6 border-t border-border"
+                  className={cn(
+                    "p-6 border-border/40",
+                    index !== 0 && "border-t ",
+                  )}
                 >
                   <div className="flex items-start gap-4">
                     {article.cover_image && (

@@ -188,6 +188,7 @@ export function useAuth() {
   const logout = async () => {
     await supabase.auth.signOut();
     updateGlobalUser(null);
+    setUser(null);
     useUserActivityStore.getState().reset();
   };
 
