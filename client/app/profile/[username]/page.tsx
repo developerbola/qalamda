@@ -10,15 +10,13 @@ import {
   User as UserIcon,
   Bookmark,
   Edit,
-  Heart,
-  MessageCircle,
-  Clock,
   Plus,
   Check,
   Loader2,
 } from "lucide-react";
 import { useLanguage } from "@/lib/language";
 import { cn } from "@/lib/utils";
+import RenderArticle from "@/components/RenderArticle";
 
 interface UserProfile {
   id: string;
@@ -33,22 +31,6 @@ interface UserProfile {
   following_count: number;
 }
 
-interface Article {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string | null;
-  cover_image: string | null;
-  reading_time_minutes: number;
-  published_at: string | null;
-  created_at: string;
-  author_username: string;
-  author_full_name: string | null;
-  author_avatar_url: string | null;
-  likes_count: number;
-  comments_count: number;
-}
-
 export default function ProfilePage() {
   const params = useParams();
   const username = params.username as string;
@@ -56,6 +38,7 @@ export default function ProfilePage() {
 
   const { user: currentUser } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profileLoading, setProfileLoading] = useState(true);
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -74,6 +57,7 @@ export default function ProfilePage() {
       setProfile(res.data.user);
       setFollowersCount(res.data.user.followers_count);
       setFollowingCount(res.data.user.following_count);
+      setProfileLoading(false);
     } catch (error) {
       console.error("Failed to fetch profile:", error);
     }
@@ -169,7 +153,7 @@ export default function ProfilePage() {
     }
   };
 
-  if (loading) {
+  if (profileLoading) {
     return (
       <div className="min-h-screen  flex items-center justify-center">
         <Loader2 className="animate-spin" />
@@ -345,59 +329,7 @@ export default function ProfilePage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {articles.map((article, index) => (
-              <Link href={`/article/${article.slug}`} key={article.id}>
-                <article
-                  className={cn(
-                    "p-6 border-border/40",
-                    index !== 0 && "border-t ",
-                  )}
-                >
-                  <div className="flex items-start gap-4">
-                    {article.cover_image && (
-                      <img
-                        src={article.cover_image}
-                        alt=""
-                        width={120}
-                        height={80}
-                        className="rounded-lg object-cover flex-shrink-0"
-                      />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <h2 className="text-lg font-bold text-foreground mb-2 line-clamp-2">
-                        {article.title}
-                      </h2>
-                      {article.excerpt && (
-                        <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
-                          {article.excerpt}
-                        </p>
-                      )}
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <Heart className="h-3 w-3" />
-                          {article.likes_count}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <MessageCircle className="h-3 w-3" />
-                          {article.comments_count}
-                        </span>
-                        {article.reading_time_minutes && (
-                          <span className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {article.reading_time_minutes} min
-                          </span>
-                        )}
-                        <span>
-                          {formatDate(
-                            article.published_at || article.created_at,
-                          )}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              </Link>
-            ))}
+            {articles.map(RenderArticle)}
           </div>
         )}
       </div>

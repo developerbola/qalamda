@@ -11,32 +11,9 @@ import { Bookmark, Clock, MessageCircle, Heart, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/lib/language";
+import { formatDate } from "@/lib/utils";
+import RenderArticle from "@/components/RenderArticle";
 
-interface Article {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  cover_image: string;
-  reading_time_minutes: number;
-  published_at: string;
-  created_at: string;
-  likes_count: number;
-  comments_count: number;
-  author_id: string;
-  users: {
-    username: string;
-    full_name: string;
-    avatar_url: string;
-  };
-}
-
-interface Tag {
-  id: string;
-  name: string;
-  slug: string;
-  description: string | null;
-}
 
 interface HomeClientProps {
   initialTags?: Tag[];
@@ -90,31 +67,6 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
     }
   };
 
-  const handleLike = async (articleId: string, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!user) {
-      window.location.href = "/auth";
-      return;
-    }
-
-    try {
-      const res = await likeAPI.toggle("article", articleId);
-      toggleLikeLocally(articleId, res.data.liked);
-
-      // Update local count
-      setArticles((prev) =>
-        prev.map((article) =>
-          article.id === articleId
-            ? { ...article, likes_count: res.data.likes_count }
-            : article,
-        ),
-      );
-    } catch (error) {
-      console.error("Failed to toggle like:", error);
-    }
-  };
-
   const handleBookmark = async (articleId: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -152,14 +104,7 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
     }
   }, []);
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return "";
-    try {
-      return new Date(dateString).toLocaleString();
-    } catch {
-      return "";
-    }
-  };
+
 
   if (authLoading) {
     return (
@@ -293,7 +238,7 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
         {tags.length > 0 ? (
           <div className="mb-8 flex flex-wrap gap-2">
             {tags.slice(0, 10).map((tag) => (
-              <Link key={tag.id} href={`/?tag=${tag.slug}`}>
+              <Link key={tag.id} href={`/tag/${tag.slug}`}>
                 <Button
                   className={"rounded-full"}
                   variant={"outline"}
@@ -342,7 +287,7 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
             <p className="text-neutral-500">{t("noArticlesFound")}</p>
           </div>
         ) : (
-          articles.map(renderArticleCard)
+          articles.map(RenderArticle)
         )}
 
         {/* Pagination */}

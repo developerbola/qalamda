@@ -1,28 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { bookmarkAPI } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
-import { Button } from "@/components/ui/button";
-import { Bookmark, Clock, Heart, Loader2, MessageCircle } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useLanguage } from "@/lib/language";
-
-interface Article {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string | null;
-  cover_image: string | null;
-  reading_time_minutes: number;
-  published_at: string | null;
-  created_at: string;
-  author_username: string;
-  author_full_name: string | null;
-  author_avatar_url: string | null;
-  likes_count: number;
-  comments_count: number;
-}
+import RenderArticle from "@/components/RenderArticle";
 
 export default function BookmarksPage() {
   const { user } = useAuth();
@@ -80,54 +63,7 @@ export default function BookmarksPage() {
             <p className="text-muted-foreground mb-4">{t("noBookmarks")}</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {articles.map((article) => (
-              <Link href={`/article/${article.slug}`} key={article.id}>
-                <article
-                  key={article.id}
-                  className="border-t border-border/50 p-4"
-                >
-                  <div className="flex items-start gap-4">
-                    {article.cover_image && (
-                      <img
-                        src={article.cover_image}
-                        alt=""
-                        width={120}
-                        height={80}
-                        className="rounded-lg object-cover h-auto w-[200px] flex-shrink-0"
-                      />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <h2 className="text-lg font-bold mb-2 line-clamp-2">
-                        {article.title}
-                      </h2>
-                      {article.excerpt && (
-                        <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
-                          {article.excerpt}
-                        </p>
-                      )}
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <Heart className="h-3 w-3" />
-                          {article.likes_count}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <MessageCircle className="h-3 w-3" />
-                          {article.comments_count}
-                        </span>
-                        {article.reading_time_minutes && (
-                          <span className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {article.reading_time_minutes} min
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              </Link>
-            ))}
-          </div>
+          <div className="space-y-4">{articles.map(RenderArticle)}</div>
         )}
       </div>
     </div>

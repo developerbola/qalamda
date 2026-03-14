@@ -33,7 +33,6 @@ const Start = () => {
             width={400}
             height={400}
             priority
-            preload
             draggable={false}
           />
         </div>

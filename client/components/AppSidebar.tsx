@@ -14,6 +14,7 @@ import {
   Users,
   Plus,
   PenBox,
+  Hash,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth";
@@ -26,6 +27,7 @@ const mainLinks = [
   { label: "home", icon: Home, href: "/" },
   { label: "library", icon: Bookmark, href: "/bookmarks" },
   { label: "profile", icon: User, href: "/profile" },
+  { label: "tags", icon: Hash, href: "/tags" },
   { label: "stats", icon: BarChart2, href: "/stats" },
 ];
 

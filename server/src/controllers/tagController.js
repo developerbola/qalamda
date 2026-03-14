@@ -52,6 +52,9 @@ export const getArticlesByTagController = async (c) => {
   // Fetch articles with author info
   const selectStr = `id, title, slug, excerpt, cover_image, reading_time_minutes, published_at, likes_count, comments_count, author_id, users(username, full_name, avatar_url)`;
 
+  const from = offset;
+  const to = offset + parseInt(limit) - 1;
+
   const {
     data: articles,
     error: articlesError,
@@ -62,11 +65,9 @@ export const getArticlesByTagController = async (c) => {
     .in("id", articleIds)
     .eq("is_published", true)
     .order("published_at", { ascending: false })
-    .limit(parseInt(limit))
-    .offset(offset);
+    .range(from, to);
 
   if (articlesError) return c.json({ error: articlesError.message }, 500);
-
   return c.json({
     articles: articles || [],
     total: count || 0,
