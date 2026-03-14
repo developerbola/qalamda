@@ -79,7 +79,9 @@ export default function ClientLayout({
             <SidebarProvider>
               <Navbar initialUsername={initialUsername} />
 
-              {pathname === "/auth" || pathname === "/privacy" ? (
+              {pathname.includes("/auth") ||
+              pathname === "/privacy" ||
+              pathname === "/terms" ? (
                 children
               ) : showApp ? (
                 <>
