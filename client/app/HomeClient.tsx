@@ -127,9 +127,6 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
               </>
             )}
           </div>
-
-          {/* right fade */}
-          <div className="pointer-events-none absolute right-0 top-0 h-full w-12 bg-gradient-to-l from-background to-transparent" />
         </header>
 
         {/* Articles */}

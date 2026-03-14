@@ -11,48 +11,39 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use(async (config) => {
-  let token = null;
-
-  if (typeof window !== "undefined") {
-    const raw = sessionStorage.getItem("user");
-    if (raw) {
-      try {
-        const session = JSON.parse(raw);
-        token = session?.access_token;
-      } catch (e) {
-        console.error("[API Request] Failed to parse session from storage", e);
-      }
-    }
+  if (typeof window === "undefined") {
+    return config;
   }
 
-  if (!token) {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    token = session?.access_token;
-  }
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  const token = session?.access_token;
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-  } else {
-    console.warn("[API Request] No active session or access token found");
   }
+  if (typeof window === "undefined") {
+    delete config.headers.Authorization;
+    return config;
+  }
+
   return config;
 });
 
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      if (typeof window !== "undefined") {
-        const path = window.location.pathname || "";
-
-        // Prevent redirect loops for auth pages
-        if (!path.startsWith("/auth")) {
-          sessionStorage.removeItem("qalamda_profile");
-          supabase.auth.signOut();
-          window.location.href = "/auth";
-        }
+    console.log(error);
+    if (error.response?.status === 401 && typeof window !== "undefined") {
+      const path = window.location.pathname || "";
+      if (!path.startsWith("/auth")) {
+        localStorage.removeItem("qalamda_profile");
+        localStorage.removeItem("qalamda_lang");
+        localStorage.removeItem("qalamda_theme");
+        supabase.auth.signOut();
+        window.location.href = "/auth";
       }
     }
     return Promise.reject(error);
@@ -104,7 +95,6 @@ export const bookmarkAPI = {
 
 export const tagAPI = {
   getAll: () => api.get("/api/tags"),
-  getHomeTags: () => api.get("/api/home-tags"),
   getArticles: (slug: string, params?: any) =>
     api.get<TagsRes>(`/api/tags/${slug}/articles`, { params }),
 };

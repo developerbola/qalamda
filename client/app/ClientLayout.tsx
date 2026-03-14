@@ -57,13 +57,13 @@ export default function ClientLayout({
             <title>Qalamda</title>
             <link
               rel="shortcut icon"
-              href="favicon-light.svg"
+              href="/favicon-light.svg"
               type="image/svg"
               media="(prefers-color-scheme: dark)"
             />
             <link
               rel="shortcut icon"
-              href="favicon-dark.svg"
+              href="/favicon-dark.svg"
               type="image/svg"
               media="(prefers-color-scheme: light)"
             />

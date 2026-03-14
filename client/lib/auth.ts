@@ -32,12 +32,12 @@ const updateGlobalUser = (u: User | null) => {
   globalUser = u;
   if (typeof window !== "undefined") {
     if (u) {
-      sessionStorage.setItem(PROFILE_KEY, JSON.stringify(u));
+        localStorage.setItem(PROFILE_KEY, JSON.stringify(u))
       // Set cookies for server-side hints
       document.cookie = `qalamda_auth_status=authenticated; path=/; max-age=31536000; SameSite=Lax`;
       document.cookie = `qalamda_username=${u.username}; path=/; max-age=31536000; SameSite=Lax`;
     } else {
-      sessionStorage.removeItem(PROFILE_KEY);
+      localStorage.removeItem(PROFILE_KEY);
       // Remove the cookies
       document.cookie = `qalamda_auth_status=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
       document.cookie = `qalamda_username=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
@@ -48,12 +48,12 @@ const updateGlobalUser = (u: User | null) => {
 
 // Initialize from storage
 if (typeof window !== "undefined") {
-  const saved = sessionStorage.getItem(PROFILE_KEY);
+  const saved = localStorage.getItem(PROFILE_KEY);
   if (saved) {
     try {
       globalUser = JSON.parse(saved);
     } catch (e) {
-      sessionStorage.removeItem(PROFILE_KEY);
+      localStorage.removeItem(PROFILE_KEY);
     }
   }
 }
