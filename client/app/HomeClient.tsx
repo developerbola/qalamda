@@ -124,12 +124,12 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
   return (
     <div className="min-h-screen pt-20 w-full">
       <div className="max-w-2xl mx-auto px-[12%] md:px-4">
-        <header className="sticky top-16 flex items-center z-20 bg-background">
-          <div className="relative flex gap-5 md:px-0 max-w-full overflow-x-auto no-scrollbar">
+        <header className="sticky top-16 h-12 flex items-center z-20 bg-background">
+          <div className="relative flex items-center gap-5 md:px-0 max-w-full overflow-x-auto no-scrollbar">
             <Button
               onClick={() => handleTagClick()}
               className={cn(
-                "relative rounded-none px-0 py-5 border-0 h-full hover:bg-transparent!",
+                "relative rounded-none px-0 border-0 h-12 hover:bg-transparent!",
                 !searchParams.get("tag") && "active-tab",
               )}
               variant={"ghost"}
@@ -137,13 +137,13 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
               For you
             </Button>
 
-            {tags.length > 0 ? (
+            {tags.length > 0 &&
               tags.map((tag) => (
                 <Button
                   key={tag.id}
                   onClick={() => handleTagClick(tag.slug)}
                   className={cn(
-                    "relative rounded-none px-0 py-5 border-0 h-full hover:bg-transparent!",
+                    "relative rounded-none px-0 border-0 h-12 hover:bg-transparent!",
                     searchParams.get("tag") === tag.slug
                       ? "active-tab text-foreground"
                       : "text-muted-foreground",
@@ -152,23 +152,12 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
                 >
                   {tag.name}
                 </Button>
-              ))
-            ) : (
-              <>
-                {[...Array(4)].map((s, idx) => (
-                  <Button
-                    key={idx}
-                    className={"rounded-none px-0 py-5 border-0"}
-                    variant={"ghost"}
-                    size={"sm"}
-                  />
-                ))}
-              </>
-            )}
+              ))}
             <div
-              className="sticky right-0 h-[60px] w-[40px] z-12"
+              className="sticky right-0 h-[60px] w-[20px] z-12"
               style={{
-                background: "linear-gradient(transparent,var(--background))",
+                background:
+                  "linear-gradient(90deg,transparent,var(--background))",
               }}
             >
               &#10240;

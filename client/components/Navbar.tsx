@@ -76,9 +76,7 @@ export default function Navbar({
       <div className="flex items-center justify-between px-[5%] w-full">
         <div className="flex items-center gap-2">
           {(mounted ? !!user : !!initialUsername) && <SidebarTrigger />}
-          <Link href="/" className="h-max w-[120px]">
-            <Logo className="h-full w-auto" />
-          </Link>
+          <Logo className="h-full w-[120px]" />
 
           {/* Search Bar */}
           {(mounted ? !!user : !!initialUsername) && (

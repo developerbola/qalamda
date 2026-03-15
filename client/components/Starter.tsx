@@ -11,9 +11,12 @@ const Start = () => {
     <div className="w-full h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-6xl h-[80%] flex items-center justify-between gap-10">
         <div className="flex flex-col gap-6 w-full md:w-1/2">
-          <h1 className="font-write text-3xl sm:text-5xl leading-relaxed">
+          <h1
+            className="font-write leading-relaxed"
+            style={{ fontSize: "clamp(2.1rem, 5vw, 2.5rem)" }}
+          >
             {t("heroTitle")}
-          </h1>
+          </h1> 
 
           <p className="font-poppins text-[1rem] sm:text-xl text-muted-foreground">
             {t("heroDescription")}
