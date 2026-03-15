@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Check, Plus, Search, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/language";
 
 interface Tag {
   id: string;
@@ -17,6 +18,7 @@ interface Tag {
 
 export default function TopicsSelectionPage() {
   const { user, updateUser } = useAuth();
+  const { t } = useLanguage();
   const [tags, setTags] = useState<Tag[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -84,10 +86,10 @@ export default function TopicsSelectionPage() {
         {/* Header */}
         <div className="text-center space-y-4 mb-12">
           <h1 className="text-4xl md:text-5xl font-old font-medium tracking-tight text-foreground">
-            What are you interested in?
+            {t("onboardingTitle")}
           </h1>
           <p className="text-lg text-muted-foreground">
-            Choose 3 or more topics to help us customize your reading experience.
+            {t("onboardingDesc")}
           </p>
         </div>
 
@@ -98,7 +100,7 @@ export default function TopicsSelectionPage() {
           </div>
           <input
             type="text"
-            placeholder="Search all topics"
+            placeholder={t("searchTopics")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full h-14 pl-12 pr-6 rounded-full bg-secondary/30 border-none focus:ring-1 focus:ring-foreground/20 text-lg transition-all outline-none"
@@ -131,7 +133,9 @@ export default function TopicsSelectionPage() {
           })}
           
           {filteredTags.length === 0 && (
-            <p className="py-10 text-muted-foreground italic">No topics found matching "{searchQuery}"</p>
+            <p className="py-10 text-muted-foreground italic">
+              {t("noTopicsFound")} "{searchQuery}"
+            </p>
           )}
         </div>
       </div>
@@ -141,9 +145,13 @@ export default function TopicsSelectionPage() {
         <div className="w-full max-w-4xl flex items-center justify-between">
           <div className="text-sm font-medium">
             {selectedTags.length < 3 ? (
-              <span className="text-muted-foreground">Select {3 - selectedTags.length} more to continue</span>
+              <span className="text-muted-foreground">
+                {t("selectMore").replace("{count}", (3 - selectedTags.length).toString())}
+              </span>
             ) : (
-              <span className="text-foreground">{selectedTags.length} topics selected</span>
+              <span className="text-foreground">
+                {t("topicsSelected").replace("{count}", selectedTags.length.toString())}
+              </span>
             )}
           </div>
           
@@ -159,7 +167,7 @@ export default function TopicsSelectionPage() {
             {saving ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
-              "Finish"
+              t("finish")
             )}
           </Button>
         </div>

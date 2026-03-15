@@ -255,3 +255,27 @@ export const saveInterestsController = async (c) => {
     return c.json({ error: "Failed to save interests" }, 500);
   }
 };
+
+// Get user interests
+export const getInterestsController = async (c) => {
+  const user = c.get("user");
+
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  try {
+    const { data: userInterests, error } = await supabase
+      .from("user_interests")
+      .select("tag_id, tags(*)")
+      .eq("user_id", user.id);
+
+    if (error) throw error;
+
+    const formattedTags = userInterests.map((ui) => ui.tags);
+    return c.json({ tags: formattedTags });
+  } catch (error) {
+    console.error("Error fetching interests:", error);
+    return c.json({ error: "Failed to fetch interests" }, 500);
+  }
+};

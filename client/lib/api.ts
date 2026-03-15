@@ -67,6 +67,7 @@ export const userAPI = {
   getFollowing: () => api.get("/api/users/me/following"),
   saveInterests: (tagIds: string[]) =>
     api.post("/api/users/me/interests", { tagIds }),
+  getInterests: () => api.get("/api/users/me/interests"),
 };
 
 export const articleAPI = {

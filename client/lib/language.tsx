@@ -24,12 +24,11 @@ const translations: Record<Language, Record<string, string>> = {
     theme: "Mavzu",
     language: "Til",
     light: "Yorug'",
-    dark: "To'q",
-    sepia: "Sepiya",
-    slate: "Slate",
+    dark: "Qorong'u",
+    sepia: "Qulay",
     heroTitle: "O'qing, o'rganing, ulashing!",
     heroDescription:
-      "Maqolalar o'qish va bilimlaringizni boshqalar bilan ulashish uchun yangi imконiyat.",
+      "Maqolalar o'qish va bilimlaringizni boshqalar bilan ulashish uchun yangi imkoniyat.",
     startReading: "O'qishni boshlash",
     readMore: "Batafsil",
     backToHome: "Bosh sahifaga qaytish",
@@ -83,6 +82,14 @@ const translations: Record<Language, Record<string, string>> = {
     stats: "Statistika",
     findWriters: "Obuna bo'lish uchun yozuvchilarni toping.",
     seeSuggestions: "Tavsiyalarni ko'rish",
+    onboardingTitle: "Sizni nimalar qiziqtiradi?",
+    onboardingDesc:
+      "Mutolaa tajribangizni moslashtirishimiz uchun 3 yoki undan ko'p mavzuni tanlang.",
+    searchTopics: "Barcha mavzulardan qidirish",
+    selectMore: "Davom etish uchun yana {count} ta tanlang",
+    topicsSelected: "{count} ta mavzu tanlandi",
+    finish: "Tayyor",
+    noTopicsFound: "Mos keladigan mavzular topilmadi",
   },
   uzc: {
     tags: "Теглар",
@@ -97,9 +104,8 @@ const translations: Record<Language, Record<string, string>> = {
     theme: "Мавзу",
     language: "Тил",
     light: "Ёруғ",
-    dark: "Тўқ",
-    sepia: "Сепия",
-    slate: "Slate",
+    dark: "Коронгу",
+    sepia: "Кулай",
     heroTitle: "Ўқинг, ўрганинг, улашинг!",
     heroDescription:
       "Мақолалар ўқиш va билимларингизни бошқалар билан улашиш учун янги имконият.",
@@ -156,6 +162,14 @@ const translations: Record<Language, Record<string, string>> = {
     stats: "Статистика",
     findWriters: "Обуна бўлиш учун ёзувчиларни топинг.",
     seeSuggestions: "Тавсияларни кўриш",
+    onboardingTitle: "Сизни нималар қизиқтиради?",
+    onboardingDesc:
+      "Мутолаа тажрибангизни мослаштиришимиз учун 3 ёки ундан кўп мавзуни танланг.",
+    searchTopics: "Барча мавзулардан қидириш",
+    selectMore: "Давом этиш учун яна {count} та танланг",
+    topicsSelected: "{count} та мавзу танланди",
+    finish: "Тайёр",
+    noTopicsFound: "Мос келадиган мавзулар топилмади",
   },
   ru: {
     tags: "Теги",
@@ -171,7 +185,7 @@ const translations: Record<Language, Record<string, string>> = {
     language: "Язык",
     light: "Светлая",
     dark: "Темная",
-    sepia: "Сепия",
+    sepia: "Комфортный",
     slate: "Грифельная",
     heroTitle: "Читайте, учитесь, делитесь!",
     heroDescription:
@@ -229,6 +243,14 @@ const translations: Record<Language, Record<string, string>> = {
     stats: "Статистика",
     findWriters: "Найдите авторов, на которых стоит подписаться.",
     seeSuggestions: "Посмотреть предложения",
+    onboardingTitle: "Что вас интересует?",
+    onboardingDesc:
+      "Выберите 3 или более тем, чтобы мы могли настроить вашу ленту.",
+    searchTopics: "Поиск по всем темам",
+    selectMore: "Выберите еще {count}, чтобы продолжить",
+    topicsSelected: "Выбрано тем: {count}",
+    finish: "Готово",
+    noTopicsFound: "Темы не найдены по запросу",
   },
 };
 

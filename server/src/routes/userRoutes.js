@@ -3,10 +3,9 @@ import {
   getUserController,
   updateProfileController,
   followController,
-  unfollowController,
-  followStatusController,
   getFollowingController,
   saveInterestsController,
+  getInterestsController,
 } from "../controllers/userController.js";
 import { getBookmarksController } from "../controllers/bookmarkController.js";
 import { getUserLikesController } from "../controllers/likeController.js";
@@ -44,4 +43,7 @@ export const userRoutes = (app) => {
 
   // Save user interests
   app.post("/api/users/me/interests", authMiddleware, saveInterestsController);
+
+  // Get user interests
+  app.get("/api/users/me/interests", authMiddleware, getInterestsController);
 };

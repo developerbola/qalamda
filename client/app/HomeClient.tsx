@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { articleAPI } from "@/lib/api";
+import { articleAPI, userAPI } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { useUserActivityStore } from "@/lib/useUserActivityStore";
 import { useTagStore } from "@/lib/useTagStore";
@@ -37,6 +37,26 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
       setTags(initialTags);
     }
   }, [initialTags, hasFetchedTags, setTags]);
+
+  useEffect(() => {
+    const fetchUserInterests = async () => {
+      if (user) {
+        try {
+          const res = await userAPI.getInterests();
+          if (res.data?.tags) {
+            setTags(res.data.tags);
+          }
+        } catch (error) {
+          console.error("Failed to fetch user interests:", error);
+        }
+      }
+    };
+
+    // Only fetch if we are logged in - this ensures we show ONLY interests
+    if (user) {
+      fetchUserInterests();
+    }
+  }, [user, setTags]);
 
   const fetchArticles = useCallback(
     async (pageNum: number, search?: string, tag?: string, author?: string) => {
@@ -136,7 +156,9 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
               onClick={() => handleTagClick()}
               className={cn(
                 "relative rounded-none px-0 border-0 h-12 hover:bg-transparent!",
-                !searchParams.get("tag") && "active-tab",
+                !searchParams.get("tag")
+                  ? "active-tab text-foreground"
+                  : "text-muted-foreground",
               )}
               variant={"ghost"}
             >
