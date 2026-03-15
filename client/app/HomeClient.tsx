@@ -113,6 +113,12 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
+  useEffect(() => {
+    if (user && user.has_interests === false) {
+      router.push("/get-started/topics");
+    }
+  }, [user, router]);
+
   if (authLoading) {
     return (
       <div className="h-screen w-full flex items-center justify-center">

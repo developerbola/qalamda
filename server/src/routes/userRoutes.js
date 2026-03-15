@@ -6,6 +6,7 @@ import {
   unfollowController,
   followStatusController,
   getFollowingController,
+  saveInterestsController,
 } from "../controllers/userController.js";
 import { getBookmarksController } from "../controllers/bookmarkController.js";
 import { getUserLikesController } from "../controllers/likeController.js";
@@ -40,4 +41,7 @@ export const userRoutes = (app) => {
 
   // Get current user's following list
   app.get("/api/users/me/following", authMiddleware, getFollowingController);
+
+  // Save user interests
+  app.post("/api/users/me/interests", authMiddleware, saveInterestsController);
 };

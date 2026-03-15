@@ -49,6 +49,25 @@ export default function ClientLayout({
 
   const showApp = mounted ? !!user : isInitiallyAuth;
 
+  const cleanPaths = ["/auth", "/get-started/topics", "/privacy", "/terms"];
+  const isCleanPath = cleanPaths.some((p) => pathname.startsWith(p));
+
+  const appPrefixes = [
+    "/article",
+    "/bookmarks",
+    "/dashboard",
+    "/profile",
+    "/settings",
+    "/tag",
+    "/tags",
+    "/write",
+    "/stats",
+  ];
+  const isAppPath =
+    pathname === "/" || appPrefixes.some((p) => pathname.startsWith(p));
+
+  const isNotFound = !isCleanPath && !isAppPath;
+
   return (
     <ThemeProvider>
       <LanguageProvider>
@@ -77,10 +96,10 @@ export default function ClientLayout({
           >
             <AuthInit />
             <SidebarProvider>
-              <Navbar initialUsername={initialUsername} />
-              {pathname.includes("/auth") ||
-              pathname === "/privacy" ||
-              pathname === "/terms" ? (
+              {!isNotFound && pathname !== "/get-started/topics" && (
+                <Navbar initialUsername={initialUsername} />
+              )}
+              {isCleanPath || isNotFound ? (
                 children
               ) : showApp ? (
                 <div className="flex w-full row">
@@ -89,11 +108,7 @@ export default function ClientLayout({
                     {children}
                   </main>
                   {pathname === "/" && (
-                    <StickyBox
-                      offsetTop={0}
-                      offsetBottom={0}
-                      className="h-fit"
-                    >
+                    <StickyBox offsetTop={0} offsetBottom={0} className="h-fit">
                       <RightSidebar />
                     </StickyBox>
                   )}

@@ -65,6 +65,8 @@ export const userAPI = {
   getBookmarks: () => api.get("/api/users/me/bookmarks"),
   getLikes: () => api.get("/api/users/me/likes"),
   getFollowing: () => api.get("/api/users/me/following"),
+  saveInterests: (tagIds: string[]) =>
+    api.post("/api/users/me/interests", { tagIds }),
 };
 
 export const articleAPI = {

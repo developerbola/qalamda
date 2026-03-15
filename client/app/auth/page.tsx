@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth";
+import { authAPI } from "@/lib/api";
 import { LogIn, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 const Auth = () => {
   const [loading, setLoading] = useState(false);
@@ -20,7 +22,7 @@ const Auth = () => {
   const [fullName, setFullName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [lastUsed, setLastUsed] = useState<string | null>(null);
-
+  const router = useRouter();
   const auth = useAuth();
 
   useEffect(() => {
@@ -42,10 +44,22 @@ const Auth = () => {
           fullName,
         );
         if (res?.error) throw new Error(res.error || "Registration failed");
-        alert("Account created — you are signed in.");
+        router.push("/get-started/topics");
       } else {
         const res: any = await auth.login(email, password);
         if (res?.error) throw new Error(res.error || "Login failed");
+        
+        // Check if onboarding is needed
+        try {
+          const { data } = await authAPI.getMe();
+          if (data?.user && data.user.has_interests === false) {
+            router.push("/get-started/topics");
+          } else {
+            router.push("/");
+          }
+        } catch (err) {
+          router.push("/");
+        }
       }
     } catch (err: any) {
       setError(err.message);

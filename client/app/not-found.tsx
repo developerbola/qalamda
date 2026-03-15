@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="h-[calc(100vh-80px)] w-full grid place-items-center">
+    <div className="h-screen w-full grid place-items-center">
       <div className="text-center  font-old">
         <h2 className="text-6xl font-poppins">404</h2>
         <h2 className="text-2xl">Bunday sahifa mavjud emas</h2>

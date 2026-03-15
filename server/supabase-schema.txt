@@ -67,6 +67,7 @@ CREATE TABLE public.tags (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   name character varying NOT NULL UNIQUE,
   slug character varying NOT NULL UNIQUE,
+  category character varying DEFAULT 'General',
   description text,
   created_at timestamp without time zone DEFAULT now(),
   CONSTRAINT tags_pkey PRIMARY KEY (id)

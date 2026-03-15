@@ -24,12 +24,18 @@ export default function AuthCallback() {
 
         if (session) {
           // 2. Trigger a one-time profile sync for safety
-          await authAPI.syncProfile();
+          const { data } = await authAPI.syncProfile();
+          if (data?.user && data.user.has_interests === false) {
+            router.push("/get-started/topics");
+            return;
+          }
         }
       } catch (e) {
         console.error("[Callback] Profile sync failed", e);
       } finally {
-        router.push("/");
+        if (!window.location.pathname.includes("/get-started/topics")) {
+          router.push("/");
+        }
       }
     };
 

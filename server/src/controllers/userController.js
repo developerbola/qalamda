@@ -221,3 +221,37 @@ export const getFollowingController = async (c) => {
 
   return c.json({ following: formattedFollowing });
 };
+
+// Save user interests (tags)
+export const saveInterestsController = async (c) => {
+  const user = c.get("user");
+  const { tagIds } = await c.req.json();
+
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  if (!tagIds || !Array.isArray(tagIds)) {
+    return c.json({ error: "Invalid tag IDs" }, 400);
+  }
+
+  try {
+    // Delete existing interests first to refresh the list
+    await supabase.from("user_interests").delete().eq("user_id", user.id);
+
+    if (tagIds.length > 0) {
+      const interests = tagIds.map((tagId) => ({
+        user_id: user.id,
+        tag_id: tagId,
+      }));
+
+      const { error } = await supabase.from("user_interests").insert(interests);
+      if (error) throw error;
+    }
+
+    return c.json({ message: "Interests saved successfully" });
+  } catch (error) {
+    console.error("Error saving interests:", error);
+    return c.json({ error: "Failed to save interests" }, 500);
+  }
+};
