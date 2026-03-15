@@ -50,7 +50,8 @@ export default function Navbar({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  const effectiveUsername = user?.username || initialUsername;
+  const isAuthenticated = mounted ? !!user : !!initialUsername;
+  const effectiveUsername = user?.username || (!mounted ? initialUsername : "");
 
   useEffect(() => {
     setMounted(true);
@@ -103,7 +104,7 @@ export default function Navbar({
         <div className="hidden md:flex items-center gap-1">
           {!mounted && !initialUsername ? (
             <div className="w-8 h-8" />
-          ) : user || initialUsername ? (
+          ) : isAuthenticated ? (
             <>
               <Link href="/bookmarks">
                 <Button
@@ -377,7 +378,7 @@ export default function Navbar({
             <div className="space-y-2">
               {!mounted && !initialUsername ? (
                 <div className="h-12" />
-              ) : user || initialUsername ? (
+              ) : isAuthenticated ? (
                 <>
                   <Link
                     href={`/profile/${effectiveUsername}`}

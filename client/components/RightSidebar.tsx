@@ -68,7 +68,7 @@ export function RightSidebar() {
   const pathname = usePathname();
   if (pathname && pathname.startsWith("/auth")) return null;
   return (
-   <aside className="hidden lg:block w-[320px] xl:w-[350px] border-l border-border/40 mt-15 p-6">
+    <aside className="hidden lg:block w-[320px] xl:w-[350px] border-l border-border/40 mt-15 p-6">
       <div className="space-y-10">
         <div>
           <h2 className="font-bold text-base mb-4 text-foreground">
@@ -103,7 +103,7 @@ export function RightSidebar() {
             ))}
           </div>
           <Link
-            href="#"
+            href="/staff-picks"
             className="inline-block mt-4 text-[13px] text-muted-foreground hover:text-foreground transition-colors"
           >
             See the full list
@@ -127,7 +127,7 @@ export function RightSidebar() {
             ))}
           </div>
           <Link
-            href="#"
+            href="/tags"
             className="inline-block mt-4 text-[13px] text-muted-foreground hover:text-foreground transition-colors"
           >
             See more topics
