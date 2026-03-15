@@ -332,7 +332,7 @@ export default function ArticlePage() {
   }
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-20 w-full">
       <div className="max-w-3xl mx-auto px-4 py-8">
         <header className="mb-8">
           <div className="flex items-center gap-2 mb-4">

@@ -148,13 +148,15 @@
 
 .active-tab::after {
   position: absolute;
-  content: '';
-  top: 100%;
+  content: "";
+  bottom: 1px;
   left: 0;
   width: 100%;
   height: 1px;
   background: var(--foreground);
-  z-index: 999;
+  z-index: 9999;
 }
 
-
+:focus-visible {
+  outline: none !important;
+}

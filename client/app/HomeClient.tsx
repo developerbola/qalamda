@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useLanguage } from "@/lib/language";
 import RenderArticle from "@/components/RenderArticle";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 interface HomeClientProps {
   initialTags?: Tag[];
@@ -24,6 +26,9 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
   const [fetchingMore, setFetchingMore] = useState(false);
   const { t } = useLanguage();
   const observerTarget = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
 
   const { hasFetched } = useUserActivityStore();
 
@@ -67,9 +72,16 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
   );
 
   useEffect(() => {
-    const { search, tag, author } = getSearchParams();
+    const search = searchParams.get("search") || undefined;
+    const tag = searchParams.get("tag") || undefined;
+    const author = searchParams.get("author") || undefined;
     fetchArticles(page, search, tag, author);
-  }, [page, fetchArticles]);
+  }, [page, fetchArticles, searchParams]);
+
+  useEffect(() => {
+    setPage(1);
+    setArticles([]);
+  }, [searchParams]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -93,14 +105,14 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
     return () => observer.disconnect();
   }, [page, totalPages, loading, fetchingMore]);
 
-  const getSearchParams = () => {
-    if (typeof window === "undefined") return {};
-    const params = new URLSearchParams(window.location.search);
-    return {
-      search: params.get("search") || undefined,
-      tag: params.get("tag") || undefined,
-      author: params.get("author") || undefined,
-    };
+  const handleTagClick = (tagSlug?: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (tagSlug) {
+      params.set("tag", tagSlug);
+    } else {
+      params.delete("tag");
+    }
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   if (authLoading) {
@@ -112,47 +124,59 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
   }
 
   return (
-    <div className="min-h-screen pt-20">
-      <div className="max-w-2xl mx-auto px-[10%] md:px-4">
-        <header className="z-20 bg-background border-b border-border/40">
-          <div className="flex gap-1 px-2 md:px-0">
-            <Link href="/">
-              <Button
-                className={
-                  "relative active-tab rounded-none px-4 py-2 border-0 h-full hover:bg-transparent!"
-                }
-                variant={"ghost"}
-              >
-                For you
-              </Button>
-            </Link>
+    <div className="min-h-screen pt-20 w-full">
+      <div className="max-w-2xl mx-auto px-[12%] md:px-4">
+        <header className="sticky top-16 flex items-center z-20 bg-background">
+          <div className="relative flex gap-5 md:px-0 max-w-full overflow-x-auto no-scrollbar">
+            <Button
+              onClick={() => handleTagClick()}
+              className={cn(
+                "relative rounded-none px-0 py-5 border-0 h-full hover:bg-transparent!",
+                !searchParams.get("tag") && "active-tab",
+              )}
+              variant={"ghost"}
+            >
+              For you
+            </Button>
 
             {tags.length > 0 ? (
               tags.map((tag) => (
-                <Link key={tag.id} href={`/tag/${tag.slug}`}>
-                  <Button
-                    className={
-                      "rounded-none px-4 py-5 border-0 h-full text-muted-foreground hover:bg-transparent!"
-                    }
-                    variant={"ghost"}
-                  >
-                    {tag.name}
-                  </Button>
-                </Link>
+                <Button
+                  key={tag.id}
+                  onClick={() => handleTagClick(tag.slug)}
+                  className={cn(
+                    "relative rounded-none px-0 py-5 border-0 h-full hover:bg-transparent!",
+                    searchParams.get("tag") === tag.slug
+                      ? "active-tab text-foreground"
+                      : "text-muted-foreground",
+                  )}
+                  variant={"ghost"}
+                >
+                  {tag.name}
+                </Button>
               ))
             ) : (
               <>
                 {[...Array(4)].map((s, idx) => (
                   <Button
                     key={idx}
-                    className={"rounded-none px-4 py-5 border-0"}
+                    className={"rounded-none px-0 py-5 border-0"}
                     variant={"ghost"}
                     size={"sm"}
                   />
                 ))}
               </>
             )}
+            <div
+              className="sticky right-0 h-[60px] w-[40px] z-12"
+              style={{
+                background: "linear-gradient(transparent,var(--background))",
+              }}
+            >
+              &#10240;
+            </div>
           </div>
+          <div className="absolute h-px w-full bottom-0 bg-border/40" />
         </header>
 
         {/* Articles */}
