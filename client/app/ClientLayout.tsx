@@ -92,10 +92,10 @@ export default function ClientLayout({
             />
           </head>
           <body
-            className={`${playwrite.variable} ${poppins.variable} antialiased`}
+            className={`${playwrite.variable} ${poppins.variable} antialiased w-full flex flex-col`}
           >
             <AuthInit />
-            <SidebarProvider>
+            <SidebarProvider className="flex flex-col">
               {!isNotFound && pathname !== "/get-started/topics" && (
                 <Navbar initialUsername={initialUsername} />
               )}
@@ -108,7 +108,11 @@ export default function ClientLayout({
                     {children}
                   </main>
                   {pathname === "/" && (
-                    <StickyBox offsetTop={0} offsetBottom={0} className="h-fit">
+                    <StickyBox
+                      offsetTop={20}
+                      offsetBottom={20}
+                      className="h-[976px]"
+                    >
                       <RightSidebar />
                     </StickyBox>
                   )}

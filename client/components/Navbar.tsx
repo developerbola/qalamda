@@ -72,7 +72,7 @@ export default function Navbar({
   ];
 
   return (
-    <nav className="fixed flex items-center justify-center top-0 z-50 w-full bg-background h-16 border-b border-border/40">
+    <nav className="sticky flex items-center justify-center top-0 z-50 w-full bg-background h-16 border-b border-border/40">
       <div className="flex items-center justify-between px-[5%] w-full">
         <div className="flex items-center gap-2">
           {(mounted ? !!user : !!initialUsername) && <SidebarTrigger />}

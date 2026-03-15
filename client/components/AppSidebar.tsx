@@ -43,8 +43,8 @@ export function AppSidebar({ initialUsername }: { initialUsername?: string }) {
     : "/auth";
 
   return (
-    <Sidebar>
-      <SidebarContent className="pt-20 px-1 text-sm">
+    <Sidebar className="sticky">
+      <SidebarContent className="pt-5 px-1 text-sm">
         {/* MAIN LINKS */}
         <SidebarGroup className="px-0">
           <SidebarGroupContent className="space-y-1 w-full">
@@ -105,7 +105,10 @@ export function AppSidebar({ initialUsername }: { initialUsername?: string }) {
             ) : !hasFetched ? (
               <div className="space-y-3 px-2">
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="flex items-center gap-3 animate-pulse">
+                  <div
+                    key={i}
+                    className="flex items-center gap-3 animate-pulse"
+                  >
                     <div className="size-6 bg-muted rounded-full" />
                     <div className="h-4 bg-muted rounded w-24" />
                   </div>
