@@ -6,6 +6,8 @@ import {
   getFollowingController,
   saveInterestsController,
   getInterestsController,
+  unfollowController,
+  followStatusController,
 } from "../controllers/userController.js";
 import { getBookmarksController } from "../controllers/bookmarkController.js";
 import { getUserLikesController } from "../controllers/likeController.js";
