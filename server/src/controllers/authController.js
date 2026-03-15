@@ -78,9 +78,9 @@ const performProfileSync = async (supaUser) => {
     .select("*", { count: "exact", head: true })
     .eq("user_id", data?.id || supaUser.id);
 
-  return { 
-    ...data, 
-    has_interests: (interestCount || 0) > 0 
+  return {
+    ...data,
+    has_interests: (interestCount || 0) > 0,
   };
 };
 
@@ -116,7 +116,21 @@ export const getMeController = async (c) => {
       .maybeSingle();
 
     // If no DB profile exists, self-heal by syncing now
-    const user = profile || (await performProfileSync(supaUser));
+    let user = profile;
+    if (!user) {
+      user = await performProfileSync(supaUser);
+    } else {
+      // If profile exists, we still need to check has_interests
+      const { count: interestCount } = await supabase
+        .from("user_interests")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id);
+
+      user = {
+        ...user,
+        has_interests: (interestCount || 0) > 0,
+      };
+    }
 
     return c.json({ user });
   } catch (err) {

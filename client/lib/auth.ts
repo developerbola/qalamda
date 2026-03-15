@@ -83,7 +83,7 @@ const normalize = (raw: any): User | null => {
     avatar_url: u.avatar_url || meta.avatar_url || meta.picture || null,
     created_at: u.created_at || null,
     updated_at: u.updated_at || null,
-    has_interests: u.has_interests ?? false,
+    has_interests: u.has_interests,
   } as User;
 };
 
