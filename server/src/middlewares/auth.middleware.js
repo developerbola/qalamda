@@ -34,3 +34,20 @@ export const authMiddleware = async (c, next) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 };
+
+export const optionalAuthMiddleware = async (c, next) => {
+  try {
+    const token = extractBearerToken(c);
+    if (!token) {
+      return await next();
+    }
+
+    const { data, error } = await supabase.auth.getUser(token);
+    if (data?.user) {
+      c.set("user", data.user);
+    }
+    await next();
+  } catch (err) {
+    await next();
+  }
+};

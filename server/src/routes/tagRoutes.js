@@ -1,3 +1,4 @@
+import { optionalAuthMiddleware } from "../middlewares/auth.middleware.js";
 import {
   getTagsController,
   getArticlesByTagController,
@@ -7,7 +8,7 @@ import {
 export const tagRoutes = (app) => {
   // Get all tags
   app.get("/api/tags", getTagsController);
-  app.get("/api/home-tags", getHomeTagsController);
+  app.get("/api/home-tags", optionalAuthMiddleware, getHomeTagsController);
 
   // Get articles by tag
   app.get("/api/tags/:tagSlug/articles", getArticlesByTagController);

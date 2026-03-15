@@ -2,11 +2,25 @@ import { supabase } from "../supabase.js";
 
 // Get all tags (simpler: return tags list)
 export const getHomeTagsController = async (c) => {
+  const user = c.get("user");
+
+  if (user) {
+    const { data: userInterests, error: interestError } = await supabase
+      .from("user_interests")
+      .select("tag_id, tags(*)")
+      .eq("user_id", user.id);
+
+    if (!interestError && userInterests?.length > 0) {
+      const interests = userInterests.map((ui) => ui.tags);
+      return c.json({ tags: interests });
+    }
+  }
+
   const { data: tags, error } = await supabase
     .from("tags")
     .select("*")
     .order("name", { ascending: true })
-    .limit(5);
+    .limit(10);
 
   if (error) return c.json({ error: error.message }, 500);
   return c.json({ tags: tags || [] });
