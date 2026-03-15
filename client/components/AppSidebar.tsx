@@ -44,7 +44,7 @@ export function AppSidebar({ initialUsername }: { initialUsername?: string }) {
 
   return (
     <Sidebar className="sticky">
-      <SidebarContent className="pt-5 px-1 text-sm">
+      <SidebarContent className="mt-20 px-1 text-sm">
         {/* MAIN LINKS */}
         <SidebarGroup className="px-0">
           <SidebarGroupContent className="space-y-1 w-full">

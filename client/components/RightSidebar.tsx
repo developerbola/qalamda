@@ -68,7 +68,7 @@ export function RightSidebar() {
   const pathname = usePathname();
   if (pathname && pathname.startsWith("/auth")) return null;
   return (
-    <aside className="hidden lg:block w-[320px] xl:w-[350px] border-l border-border/40 p-6">
+    <aside className="hidden lg:block w-[320px] xl:w-[350px] border-l border-border/40 p-6 pt-20">
       <div className="space-y-10">
         <div>
           <h2 className="font-bold text-base mb-4 text-foreground">

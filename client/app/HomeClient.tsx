@@ -148,7 +148,7 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
   }
 
   return (
-    <div className="min-h-screen pt-5 w-full">
+    <div className="min-h-screen pt-20 w-full">
       <div className="max-w-2xl mx-auto px-[12%] md:px-4">
         <header className="sticky top-16 h-12 flex items-center z-20 bg-background">
           <div className="relative flex items-center gap-5 md:px-0 max-w-full overflow-x-auto no-scrollbar">
