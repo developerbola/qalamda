@@ -3,6 +3,56 @@ import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { cn, formatDate } from "@/lib/utils";
 import { Clock, Heart, MessageCircle } from "lucide-react";
+import { useLanguage } from "@/lib/language";
+
+export const ArticleSkeleton = () => (
+  <div className="w-full flex-1">
+    {[...Array(4)].map((_, i) => (
+      <div
+        key={i}
+        className={cn(
+          "animate-pulse py-6 border-border/30",
+          i !== 0 && "border-t",
+        )}
+      >
+        <div className="flex items-center justify-between gap-10">
+          <div className="flex-1 flex flex-col gap-1">
+            {/* Author line */}
+            <div className="flex gap-3 items-center mb-1">
+              <div className="size-5 bg-foreground/10 rounded-full" />
+              <div className="h-4 bg-foreground/10 rounded w-24" />
+              <div className="h-4 bg-foreground/10 rounded w-20" />
+            </div>
+            {/* Title */}
+            <div className="h-7 bg-foreground/10 rounded w-3/4 mb-2" />
+            {/* Excerpt */}
+            <div className="space-y-2 mb-2">
+              <div className="h-4 bg-foreground/10 rounded w-full" />
+              <div className="h-4 bg-foreground/10 rounded w-2/3" />
+            </div>
+            {/* Footer */}
+            <div className="flex items-center gap-4 mt-2">
+              <div className="h-3 bg-foreground/10 rounded w-20" />
+              <div className="h-3 bg-foreground/10 rounded w-10" />
+              <div className="h-3 bg-foreground/10 rounded w-10" />
+            </div>
+          </div>
+          {/* Image */}
+          <div className="rounded bg-foreground/10 h-[70px] sm:h-[100px] min-w-[25%] max-w-[30%] flex-1" />
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+export const NoArticlesFound = () => {
+  const { t } = useLanguage();
+  return (
+    <div className="text-center py-12">
+      <p className="text-neutral-500">{t("noArticlesFound")}</p>
+    </div>
+  );
+};
 
 const RenderArticle = (article: Article, index: number) => {
   return (
@@ -18,23 +68,22 @@ const RenderArticle = (article: Article, index: number) => {
           {/* Author & Date */}
           <div className="flex flex-col gap-1">
             <div className="flex gap-3 items-center">
-              <Button
-                onClick={() =>
-                  window.location.assign(`/profile/${article.users.username}`)
-                }
-                variant={"link"}
-                className="flex w-fit items-center gap-2 text-sm hover:underline px-0"
-              >
-                {article.users.avatar_url && (
-                  <Avatar className="size-5">
-                    <AvatarImage src={article.users.avatar_url} />
-                    <AvatarFallback className="text-[10px]">
-                      {article.users.username.slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                )}
-                {article.users.full_name || article.users.username}
-              </Button>
+              <Link href={`/profile/${article.users.username}`}>
+                <Button
+                  variant={"link"}
+                  className="flex w-fit items-center gap-2 text-sm hover:underline px-0"
+                >
+                  {article.users.avatar_url && (
+                    <Avatar className="size-5">
+                      <AvatarImage src={article.users.avatar_url} />
+                      <AvatarFallback className="text-[10px]">
+                        {article.users.username.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  )}
+                  {article.users.full_name || article.users.username}
+                </Button>
+              </Link>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <span>{formatDate(article.created_at)}</span>
                 {article.reading_time_minutes && (
@@ -94,5 +143,8 @@ const RenderArticle = (article: Article, index: number) => {
     </Link>
   );
 };
+
+RenderArticle.Skeleton = ArticleSkeleton;
+RenderArticle.Empty = NoArticlesFound;
 
 export default RenderArticle;

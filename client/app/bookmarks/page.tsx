@@ -42,14 +42,6 @@ export default function BookmarksPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="animate-spin" />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen pt-20 w-full">
       <div className="max-w-4xl mx-auto px-[10%] md:px-4 py-8">
@@ -58,12 +50,12 @@ export default function BookmarksPage() {
           <p className="text-muted-foreground">{t("bookmarksDesc")}</p>
         </div>
 
-        {articles.length === 0 ? (
-          <div className="p-12 text-center">
-            <p className="text-muted-foreground mb-4">{t("noBookmarks")}</p>
-          </div>
+        {loading ? (
+          <RenderArticle.Skeleton />
+        ) : articles.length === 0 ? (
+          <RenderArticle.Empty />
         ) : (
-          <div className="space-y-4">{articles.map(RenderArticle)}</div>
+          articles.map(RenderArticle)
         )}
       </div>
     </div>

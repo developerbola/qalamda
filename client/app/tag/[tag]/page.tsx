@@ -12,7 +12,7 @@ const ArticlesByTag = () => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(false);
   const { t } = useLanguage();
-  
+
   useEffect(() => {
     async function fetchArticles() {
       setLoading(true);
@@ -29,13 +29,9 @@ const ArticlesByTag = () => {
         <h1 className="text-xl font-bold mb-4">Articles tagged with: {tag}</h1>
         <div className="space-y-4 h-full flex-1">
           {loading ? (
-            <div className="w-full flex justify-center flex-1">
-              <Loader2 className="animate-spin" />
-            </div>
-          ) : !loading && articles.length == 0 ? (
-            <span className="text-center w-full text-muted-foreground">
-              {t("noArticlesFound")}
-            </span>
+            <RenderArticle.Skeleton />
+          ) : articles.length === 0 ? (
+            <RenderArticle.Empty />
           ) : (
             articles.map(RenderArticle)
           )}

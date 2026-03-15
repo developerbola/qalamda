@@ -8,7 +8,6 @@ import { useUserActivityStore } from "@/lib/useUserActivityStore";
 import { useTagStore } from "@/lib/useTagStore";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { useLanguage } from "@/lib/language";
 import RenderArticle from "@/components/RenderArticle";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -24,7 +23,6 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [fetchingMore, setFetchingMore] = useState(false);
-  const { t } = useLanguage();
   const observerTarget = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -181,28 +179,9 @@ export default function HomeClient({ initialTags }: HomeClientProps) {
 
         {/* Articles */}
         {loading || (user && !hasFetched) ? (
-          <div className="space-y-4 w-2xl flex-1">
-            {[...Array(4)].map((_, i) => (
-              <div
-                key={i}
-                className="animate-pulse py-6 border-b border-border/40"
-              >
-                <div className="flex gap-4">
-                  <div className="w-10 h-10 bg-foreground/10 rounded-full" />
-                  <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-foreground/10 rounded w-1/4" />
-                    <div className="h-6 bg-foreground/10 rounded w-3/4" />
-                    <div className="h-4 bg-foreground/10 rounded w-full" />
-                    <div className="h-4 bg-foreground/10 rounded w-2/3" />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <RenderArticle.Skeleton />
         ) : articles.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-neutral-500">{t("noArticlesFound")}</p>
-          </div>
+          <RenderArticle.Empty />
         ) : (
           articles.map(RenderArticle)
         )}

@@ -28,19 +28,23 @@ const PROFILE_KEY = "qalamda_profile";
 let globalUser: User | null = null;
 const listeners = new Set<(u: User | null) => void>();
 
-const updateGlobalUser = (u: User | null) => {
+const updateGlobalUser = (u: User | null, token?: string) => {
   globalUser = u;
   if (typeof window !== "undefined") {
     if (u) {
-        localStorage.setItem(PROFILE_KEY, JSON.stringify(u))
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(u));
       // Set cookies for server-side hints
       document.cookie = `qalamda_auth_status=authenticated; path=/; max-age=31536000; SameSite=Lax`;
       document.cookie = `qalamda_username=${u.username}; path=/; max-age=31536000; SameSite=Lax`;
+      if (token) {
+        document.cookie = `qalamda_token=${token}; path=/; max-age=31536000; SameSite=Lax`;
+      }
     } else {
       localStorage.removeItem(PROFILE_KEY);
       // Remove the cookies
       document.cookie = `qalamda_auth_status=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
       document.cookie = `qalamda_username=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+      document.cookie = `qalamda_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
     }
   }
   listeners.forEach((l) => l(u));
@@ -91,17 +95,18 @@ export function AuthInit() {
         data: { session },
       } = await supabase.auth.getSession();
       if (session?.user) {
+        const token = session.access_token;
         try {
           const { data } = await authAPI.getMe();
           if (data?.user) {
-            updateGlobalUser(normalize(data.user));
+            updateGlobalUser(normalize(data.user), token);
           } else {
             const { data: synced } = await authAPI.syncProfile();
-            if (synced?.user) updateGlobalUser(normalize(synced.user));
+            if (synced?.user) updateGlobalUser(normalize(synced.user), token);
           }
           useUserActivityStore.getState().fetchActivity();
         } catch (e) {
-          updateGlobalUser(normalize(session.user));
+          updateGlobalUser(normalize(session.user), token);
           useUserActivityStore.getState().fetchActivity();
         }
       } else {
